@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "champion calibrate.gamma=0.25, scale=0.01, group_by=series_id; coverage_in 0.650, above_q90 0.252, below_q10 0.098, skill_pooled 0.1517. Tuning gamma*scale upward (0.75*0.01=0.0075 in exp_005) improved dev skill/coverage but failed holdout; lowering gamma*scale not yet tested. -> The current calibration strength (gamma*scale=0.0025) may be insufficient to adapt quickly enough to regime changes and series-level idiosyncrasies, but prior attempt to triple it resulted in overfitting. A moderate increase to gamma=0.5 (product 0.005) should allow better coverage convergence while maintaining holdout generalization. Change: Increase calibrate.gamma from 0.25 to 0.5 (scale still 0.01, group_by series_id), so gamma*scale=0.005. DEV sweep of calibrate.gamma: 0.35->+0.1541, 0.5->+0.1574, 0.65->+0.1585; chose 0.65.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "lookback": 30,
+    "m": 15,
+    "lo_clip": 0.5,
+    "hi_clip": 2.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.65,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

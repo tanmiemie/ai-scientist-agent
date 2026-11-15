@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "calibration coverage_in = 0.7779 (just under 0.80 target); group_by = instrument_class (6 groups), meaning calibration likely suffers from limited granularity or imbalanced data by instrument type. The worst coverage and most miscalibrated series are mostly in gpurentalprices|neocloud_rate_card, while afhubbard|hyperscaler_spot and fastgpu_daily|hyperscaler_spot seem better calibrated. -> Refining calibration granularity by grouping by source_id (which yields more homogeneous and fine-grained segments than by instrument_class) will allow the online interval correction to more tightly adapt to distinct distribution drift patterns per data source. This will improve coverage alignment and pooled skill, especially where instrument_class mixes divergent sources. Change: Change calibrate.group_by from instrument_class to source_id.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "source_id"
+ }
+}

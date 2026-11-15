@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "The champion's coverage_in is 0.697 (target 0.8), with consistent undercoverage in fastgpu_daily|hyperscaler_spot (above_q90 0.274, below_q10 0.226) and fastgpu_daily|neocloud_spot (above_q90 0.282, below_q10 0.163). All recent successful experiments improved skill at the cost of reducing coverage further, despite progressively smaller calibrate.gamma values. With calibrate.scale fixed at 0.01, we have not tested whether gently increasing scale can recover coverage. -> Increasing calibrate.scale (with gamma fixed at 0.15) will make calibration steps larger in price units, allowing the intervals to grow faster in response to systematic miscoverage. This should improve overall coverage_in\u2014especially in undercovered groups\u2014if the change is not so large as to induce overshooting and skill loss. We expect skill_pooled to decrease slightly if coverage is gained, but any gain above +0.005 in coverage_in alongside a minimal skill decline would be positive. Change: Increase calibrate.scale from 0.01 to 0.02, keeping gamma fixed at 0.15 and group_by='instrument_class'. DEV sweep of calibrate.scale: 0.015->+0.2399, 0.02->+0.2264, 0.03->+0.1905; chose 0.015.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.15,
+  "scale": 0.015,
+  "group_by": "instrument_class"
+ }
+}

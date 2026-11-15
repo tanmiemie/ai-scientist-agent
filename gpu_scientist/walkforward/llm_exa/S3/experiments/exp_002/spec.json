@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "calibration coverage_in is 0.7779 (close, but just under 0.80 target) and above_q90 is 0.128 (still high; ideally 0.10). Calibrate.scale is at 0.005; in calibration, this is log-units per step (about a 0.5% adjustment per error). Increasing scale to 0.01 should further widen intervals, boost coverage and perhaps bring above_q90 and below_q10 closer to 0.10. -> Increasing calibrate.scale from 0.005 to 0.01 (holding gamma*scale constant or increasing step size) will nudge coverage_in closer to the 0.80 target, and may help above_q90 and below_q10 move closer to 0.10, since slightly undercoverage and slight skew remain. This should help overall calibration if widening is not too aggressive. Change: Increase calibrate.scale from 0.005 (champion) to 0.01. DEV sweep of calibrate.scale: 0.003->+0.2186, 0.007->+0.1863, 0.01->+0.1786, 0.02->+0.0470; chose 0.003.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.003,
+  "group_by": "instrument_class"
+ }
+}

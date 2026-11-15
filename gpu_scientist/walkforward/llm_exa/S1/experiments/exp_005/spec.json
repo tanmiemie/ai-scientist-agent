@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "The champion achieves dev skill_pooled 0.236 and coverage_in 0.723, but notable undercoverage remains in fastgpu_daily|hyperscaler_spot (above_q90: 0.262, below_q10: 0.202) and fastgpu_daily|neocloud_spot (above_q90: 0.262, below_q10: 0.163). Lowering calibration gamma from 0.5 to 0.25 improved skill modestly but decreased coverage further (0.76 to 0.72). Series-based and gpu_model-based calibration further reduced coverage and skill. The champion uses calibrate.group_by: instrument_class. -> Further reducing calibration step size (gamma) from 0.25 to 0.125 will make recalibration less aggressive and may improve coverage_in by decreasing the frequency of intervals being 'chased' out of position after outliers, especially for long-horizon undercovered groups such as fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot. This may slightly reduce skill if intervals become overly wide, but if undercoverage is mostly due to lag, gentler calibration may help overall. Change: Reduce calibrate.gamma from 0.25 to 0.125 (scale fixed at 0.01, group_by=instrument_class). DEV sweep of calibrate.gamma: 0.125->+0.2357, 0.1->+0.2155, 0.15->+0.2430; chose 0.15.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.15,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

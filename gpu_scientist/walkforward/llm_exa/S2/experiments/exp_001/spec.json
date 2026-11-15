@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "Coverage in is very low at 0.455 (target is 0.80). Skill is higher for longer horizons, and severe undercoverage is seen for fastgpu_daily|neocloud_rate_card (above q90: 0.535, below: 0.133) and gpurentalprices|neocloud_rate_card (above: 0.503, below: 0.073), with mean_log_err_q50 positive, especially at longer horizons. -> Drift underestimates real market variation, especially for longer horizons and for neocloud_rate_card. Adding the 'vol_tail' model (which adaptively expands predictive intervals using past volatility) should widen and recalibrate intervals, raising coverage toward the 0.80 target with minimal expected skill loss\u2014especially for groups where above-q90 coverage is much too high (ie true values are routinely above the q90). Change: Add vol_tail (window=60, lookback=30, m=10, lo_clip=0.5, hi_clip=2.0) as a second model, combine by mean ensemble. Champion is single drift; this is mean [drift, vol_tail]. DEV sweep of models.1.params.m: 3->+0.1298, 5->+0.1303, 7->+0.1308, 10->+0.1312, 15->+0.1314; chose 15.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "lookback": 30,
+    "m": 15,
+    "lo_clip": 0.5,
+    "hi_clip": 2.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

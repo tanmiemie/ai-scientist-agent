@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "Dev coverage_in is 0.6499 (target 0.80), with 0.25 above q90 and 0.10 below q10 (intervals too narrow, skewed above). Series-level calibration was an improvement vs earlier groupings. The only calibration parameter yet untuned is gamma*scale (currently 0.0025 via gamma=0.25, scale=0.01). Diagnosis shows poor coverage especially for fastgpu_daily|neocloud_rate_card (above_q90 0.273, below 0.13; many points above q50), and coverage continues to fall short for the neocloud_rate_card groups. -> Increasing the calibration step size (by raising gamma to 0.5, keeping scale at 0.01 so gamma*scale=0.005) will adapt intervals more aggressively to errors, improving coverage 'in' toward target, especially in groups with the largest miscoverage. Since group_by=series_id already targets the worst-off series, gain in coverage should not come at large cost to skill unless gamma*scale is set very high. Change: Increase calibrate.gamma from 0.25 to 0.5 (scale held at 0.01, so gamma*scale=0.005). DEV sweep of calibrate.gamma: 0.35->+0.1541, 0.5->+0.1574, 0.75->+0.1577; chose 0.75.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "lookback": 30,
+    "m": 15,
+    "lo_clip": 0.5,
+    "hi_clip": 2.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.75,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

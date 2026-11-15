@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Diagnosis table by series group: afhubbard|hyperscaler_spot is the only group with very tight intervals (coverage_above_q90 0.065, below_q10 0.055, BOTH below 0.10 target) and skill 0.145 (second best), suggesting calibration is slightly overcorrected for this group compared to others. -> Calibrating intervals jointly across all instrument classes (calibrate.group_by = all) rather than by instrument_class (current champion), will allow the global calibrator to adjust interval width more flexibly according to recent realized coverage. This should reduce overcorrection for high-performing groups (e.g., afhubbard|hyperscaler_spot: above_q90 0.065, below_q10 0.055) and slightly widen intervals overall, likely nudging coverage_in closer to the 0.80 target without overfitting to class-level idiosyncrasies. We expect no loss or a small gain in skill, mainly by improving coverage balance. Change: Set calibrate.group_by to 'all' instead of 'instrument_class'.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "all"
+ }
+}
