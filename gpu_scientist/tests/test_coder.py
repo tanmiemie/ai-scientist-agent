@@ -2,6 +2,7 @@
 import pytest
 
 import coder
+import config as C
 
 GOOD = '''import numpy as np
 from data import log_changes
@@ -64,3 +65,70 @@ def test_name_must_match_and_be_new():
 def test_defaults_must_be_literal_numbers():
     assert coder.static_check(GOOD.replace('"k": 1.5', '"k": "x"'), "wide_test")
     assert coder.static_check(GOOD.replace('{"window": 60, "k": 1.5}', 'dict(window=60)'), "wide_test")
+
+
+GUARD_PROBE = r'''
+import os, socket, sys
+sys.path.insert(0, os.getcwd())
+import sandbox_guard
+sandbox_guard.install(write_dirs=[sys.argv[1]])
+out = []
+for name, f in [("read_home", lambda: open(os.path.expanduser("~/.bashrc")).read()),
+                ("write_outside", lambda: open(os.path.join(os.path.dirname(sys.argv[1]), "x.txt"), "w")),
+                ("socket", lambda: socket.socket()),
+                ("subprocess", lambda: __import__("subprocess").run(["true"])),
+                ("pandas_handle", lambda: __import__("pandas.io.common", fromlist=["x"]).get_handle("/etc/hostname", "r"))]:
+    try:
+        f(); out.append(name + ":allowed")
+    except PermissionError:
+        out.append(name + ":blocked")
+open(os.path.join(sys.argv[1], "ok.txt"), "w").write("fine")
+print(" ".join(out))
+'''
+
+
+def test_runtime_guard_blocks_files_network_processes(tmp_path):
+    import subprocess
+    import sys
+    allowed = tmp_path / "allowed"
+    allowed.mkdir()
+    p = subprocess.run([sys.executable, "-c", GUARD_PROBE, str(allowed)], cwd=C.ROOT, capture_output=True, text=True)
+    assert p.returncode == 0, p.stderr
+    assert p.stdout.split() == ["read_home:blocked", "write_outside:blocked", "socket:blocked",
+                                "subprocess:blocked", "pandas_handle:blocked"]
+    assert (allowed / "ok.txt").read_text() == "fine"
+
+
+def test_name_of_a_tried_model_cannot_be_reused(monkeypatch):
+    monkeypatch.setattr(coder.ledger, "load", lambda: [{"id": "exp_003", "spec": {"models": [{"name": "my_try"}]}}])
+    assert "already tried in exp_003" in coder.check_name("my_try")[0]
+    assert coder.check_name("my_other") == []
+
+
+def test_guard_allows_only_the_official_scorer_call(tmp_path):
+    import subprocess
+    import sys
+    probe = r'''
+import os, sys
+sys.path.insert(0, os.getcwd())
+import config as C, sandbox_guard
+sandbox_guard.install(write_dirs=[sys.argv[1]])
+import subprocess
+ok = [sys.executable, "-B", str(C.STARTER / "scorer.py"), "--tier", "x"]
+bad = [sys.executable, "-B", str(C.STARTER / "scorer.py"), "--out", "/etc/x"]
+for name, cmd in [("scorer", ok), ("scorer_out_elsewhere", bad), ("python", [sys.executable, "-c", "1"])]:
+    try:
+        subprocess.run(cmd, capture_output=True); print(name + ":allowed")
+    except PermissionError:
+        print(name + ":blocked")
+'''
+    p = subprocess.run([sys.executable, "-c", probe, str(tmp_path)], cwd=C.ROOT, capture_output=True, text=True)
+    assert p.returncode == 0, p.stderr
+    assert p.stdout.split() == ["scorer:allowed", "scorer_out_elsewhere:blocked", "python:blocked"]
+
+
+def test_sandbox_refuses_without_network_namespace(monkeypatch):
+    monkeypatch.setattr(coder, "_UNSHARE", False)
+    monkeypatch.delenv("GPU_CODER_ALLOW_NETNS_FALLBACK", raising=False)
+    assert "refusing to run generated code" in coder.sandbox({"job": "smoke"})["error"]
+    assert "refusing to run generated code" in coder.lookahead_test("x")["error"]

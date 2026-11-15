@@ -41,6 +41,8 @@ def load_generated(directory) -> list[str]:
 
 if os.environ.get("GPU_LOAD_GENERATED") == "1":
     import config as _C
+    import sandbox_guard
+    sandbox_guard.install(write_dirs=[_C.EXPERIMENTS, _C.WORK, os.environ.get("TMPDIR"), os.environ.get("MPLCONFIGDIR")])
     load_generated(_C.EXPERIMENTS / "models")
 
 

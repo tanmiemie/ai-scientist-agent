@@ -30,6 +30,7 @@ import subprocess
 import sys
 
 import config as C
+import ledger
 import models as M
 
 ALLOWED_MODULES = {"numpy", "pandas", "scipy", "__future__"}
@@ -47,6 +48,17 @@ SMOKE_PAIRS, SMOKE_BUDGET_S = 20, 5.0
 ERR_CHARS = 1500
 GATE_TIMEOUT_S, RUN_TIMEOUT_S = 300, 900
 ROOT = C.ROOT
+
+
+_ITER_BASE: dict = {}
+
+
+def iter_dir(iteration: int):
+    """<experiments>/coder/iter_<n>; numbering continues after a previous run in the same folder."""
+    root = C.EXPERIMENTS / "coder"
+    if root not in _ITER_BASE:
+        _ITER_BASE[root] = max((int(p.name[5:]) for p in root.glob("iter_*") if p.name[5:].isdigit()), default=0)
+    return root / f"iter_{_ITER_BASE[root] + iteration:02d}"
 
 
 def gen_dir():
@@ -134,6 +146,9 @@ def check_name(name) -> list[str]:
         return ["new_model.name must match [a-z][a-z0-9_]{1,30}"]
     if name in M.REGISTRY:
         return [f"a model named {name!r} already exists; pick a new name"]
+    for r in ledger.load():
+        if name in {m.get("name") for m in (r.get("spec") or {}).get("models", [])}:
+            return [f"a model named {name!r} was already tried in {r.get('id')}; pick a new name"]
     return []
 
 
@@ -169,12 +184,20 @@ def _prefix() -> list[str]:
             _UNSHARE = subprocess.run(["unshare", "-rn", "true"], capture_output=True, timeout=10).returncode == 0
         except Exception:
             _UNSHARE = False
-    return ["unshare", "-rn"] if _UNSHARE else []
+    if _UNSHARE:
+        return ["unshare", "-rn"]
+    if os.environ.get("GPU_CODER_ALLOW_NETNS_FALLBACK") == "1":   # explicit opt-in: runtime guard only
+        return []
+    raise RuntimeError("no network namespace (`unshare -rn` failed); refusing to run generated code. "
+                       "Set GPU_CODER_ALLOW_NETNS_FALLBACK=1 to rely on the in-process guard alone.")
 
 
 def _env(extra: dict | None = None) -> dict:
     env = {k: v for k, v in os.environ.items()
            if not any(s in k for s in ("KEY", "TOKEN", "SECRET", "PASSWORD"))}   # no credentials in the sandbox
+    tmp = C.EXPERIMENTS / "coder" / "tmp"
+    tmp.mkdir(parents=True, exist_ok=True)
+    env.update({"TMPDIR": str(tmp), "MPLCONFIGDIR": str(tmp)})
     env.update({"GPU_LOAD_GENERATED": "1", "GPU_EXPERIMENTS": str(C.EXPERIMENTS), "PYTHONDONTWRITEBYTECODE": "1",
                 "GPU_DEV": ",".join(C.DEV_ORIGINS), "GPU_HOLDOUT": ",".join(C.HOLDOUT_ORIGINS)})
     env.update(extra or {})
@@ -183,12 +206,14 @@ def _env(extra: dict | None = None) -> dict:
 
 def sandbox(job: dict, timeout: int = RUN_TIMEOUT_S, extra_env: dict | None = None) -> dict:
     """Run one job of sandbox_child.py with no network; return its JSON result or {"error": ...}."""
-    cmd = _prefix() + [sys.executable, "-B", str(ROOT / "sandbox_child.py")]
     try:
+        cmd = _prefix() + [sys.executable, "-B", str(ROOT / "sandbox_child.py")]
         p = subprocess.run(cmd, input=json.dumps(job), capture_output=True, text=True, timeout=timeout,
                            cwd=ROOT, env=_env(extra_env))
     except subprocess.TimeoutExpired:
         return {"error": f"timeout: the job did not finish within {timeout} s"}
+    except RuntimeError as e:
+        return {"error": str(e)}
     lines = [l for l in p.stdout.splitlines() if l.startswith("@@RESULT ")]
     if p.returncode == 0 and lines:
         return json.loads(lines[-1][len("@@RESULT "):])
@@ -196,13 +221,15 @@ def sandbox(job: dict, timeout: int = RUN_TIMEOUT_S, extra_env: dict | None = No
 
 
 def lookahead_test(name: str) -> dict:
-    cmd = _prefix() + [sys.executable, "-B", "-m", "pytest", "tests/test_no_lookahead.py", "-q", "-x",
-                       "-p", "no:cacheprovider", "-k", "test_no_lookahead"]
     try:
+        cmd = _prefix() + [sys.executable, "-B", "-m", "pytest", "tests/test_no_lookahead.py", "-q", "-x",
+                           "-p", "no:cacheprovider", "-k", "test_no_lookahead"]
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=GATE_TIMEOUT_S, cwd=ROOT,
                            env=_env({"GPU_LOOKAHEAD_MODELS": name}))
     except subprocess.TimeoutExpired:
         return {"error": f"timeout: test_no_lookahead did not finish within {GATE_TIMEOUT_S} s"}
+    except RuntimeError as e:
+        return {"error": str(e)}
     if p.returncode == 0:
         return {"ok": True, "summary": p.stdout.strip().splitlines()[-1]}
     return {"error": (p.stdout + "\n" + p.stderr).strip()[-ERR_CHARS:]}
@@ -213,7 +240,7 @@ def gate(new_model: dict, iteration: int, attempt: int) -> dict:
     """Snapshot the attempt, then run static -> smoke -> lookahead. Returns
     {"name", "attempt", "passed": [...gates passed], "failed": gate or None, "error": text or None}."""
     name, code = new_model.get("name"), new_model.get("code")
-    d = C.EXPERIMENTS / "coder" / f"iter_{iteration:02d}"
+    d = iter_dir(iteration)
     d.mkdir(parents=True, exist_ok=True)
     (d / f"attempt_{attempt}.py").write_text(code if isinstance(code, str) else json.dumps(code))
     res = {"name": name, "attempt": attempt, "file": str((d / f"attempt_{attempt}.py").relative_to(C.EXPERIMENTS)),
@@ -229,6 +256,8 @@ def gate(new_model: dict, iteration: int, attempt: int) -> dict:
     if errs:
         return fail("static", "\n".join(errs))
     res["passed"].append("static")
+    import data
+    data.build()
     staging = C.EXPERIMENTS / "coder" / "staging"          # the only generated file the children load
     if staging.exists():
         shutil.rmtree(staging)
@@ -257,7 +286,7 @@ def gate(new_model: dict, iteration: int, attempt: int) -> dict:
 
 
 def copy_attempts(iteration: int, exp_id: str):
-    src = C.EXPERIMENTS / "coder" / f"iter_{iteration:02d}"
+    src = iter_dir(iteration)
     for f in sorted(src.glob("attempt_*.py")):
         shutil.copy(f, C.EXPERIMENTS / exp_id / f.name)
 
