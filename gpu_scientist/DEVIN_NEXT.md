@@ -18,7 +18,9 @@ within 7 days, and vice versa.
    HOLDOUT split (see honest_eval.py). Do not change experiments_final/ or submission_final/.
 A clear negative result is fine.
 
-## B. Long-horizon value view, 2-3 years  (branch `devin/long-horizon`)
+## B. Long-horizon value view: CANCELLED, Claude is writing LONG_HORIZON.md. Skip this task.
+
+(Original text kept for reference.)
 DEVIN_OVERNIGHT.md task 5, unchanged. Keep rental and resale strictly separate: rental prices and
 utilisation inform the economics behind resale value but are different markets. Cite every web source
 with link and date; low/base/high cases; say what would change the view.
