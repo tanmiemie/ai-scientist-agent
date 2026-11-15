@@ -166,7 +166,11 @@ false, extra models under single) make the spec identical to the champion and ar
 Reply with JSON only:
 {"observation": "<the number(s) you act on>", "hypothesis": "<what you expect and why>",
  "change": "<the one change vs the champion>", "expected_effect": "<which groups/metric should move>",
- "spec": {...}}"""
+ "spec": {...},
+ "sweep": {"param": "<dotted path in spec, e.g. models.0.params.window or calibrate.gamma>",
+           "values": [<2 to 5 values>]}}
+"sweep" is optional: use it when the right value of one numeric parameter is unknown. Each value is
+scored on DEV only; only the best one is run as the experiment and meets the HOLDOUT gate."""
 
 LESSON_SYSTEM = """You write the one- or two-sentence lesson for a research ledger. State what the
 numbers showed (dev and holdout change vs champion, coverage) and what it implies for the next
@@ -312,6 +316,48 @@ class HeuristicProposer:
                 f"coverage {cd['coverage_in']:.2f}->{cov:.2f}. {rec['reason']}")
 
 
+# ---------------------------------------------------------------- automatic DEV sweep
+MAX_SWEEP = 5
+
+
+def _set(spec: dict, path: str, value) -> dict:
+    out = json.loads(json.dumps(spec))
+    keys = path.split(".")
+    node = out
+    for k in keys[:-1]:
+        k = int(k) if isinstance(node, list) else k
+        if isinstance(node, dict) and k not in node:
+            node[k] = {}
+        node = node[k]
+    last = keys[-1]
+    node[int(last) if isinstance(node, list) else last] = value
+    return out
+
+
+def dev_sweep(spec: dict, sweep: dict, heavy: bool, tried: set) -> tuple[dict, list]:
+    """Score each value of one parameter on DEV only; return the best spec and the sweep table.
+    HOLDOUT is never forecast here, so the gate sees exactly one candidate per idea."""
+    import tempfile
+    from pathlib import Path
+    rows = []
+    for v in list(sweep.get("values", []))[:MAX_SWEEP]:
+        cand = _set(spec, sweep["param"], v)
+        errs = validate(cand, heavy)
+        if not errs and spec_hash(cand) in tried:
+            errs = ["already tried"]
+        if errs:
+            rows.append({"value": v, "refused": errs})
+            continue
+        with tempfile.TemporaryDirectory() as d:
+            m = run_experiment.dev_score(cand, Path(d))
+        rows.append({"value": v, "dev": round(m[C.PRIMARY_METRIC], 5), "coverage": round(m["coverage_in"], 3)})
+    scored = [r for r in rows if "dev" in r]
+    if not scored:
+        return spec, rows
+    best = max(scored, key=lambda r: r["dev"])
+    return _set(spec, sweep["param"], best["value"]), rows
+
+
 # ---------------------------------------------------------------- the loop
 def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
     C.EXPERIMENTS.mkdir(parents=True, exist_ok=True)
@@ -348,12 +394,27 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
                 break
             continue
         hyp = f"{prop.get('observation', '')} -> {prop.get('hypothesis', '')} Change: {prop.get('change', '')}".strip()
+        sweep_rows = None
+        if isinstance(prop.get("sweep"), dict) and prop["sweep"].get("param") and prop["sweep"].get("values"):
+            spec, sweep_rows = dev_sweep(clean(spec), prop["sweep"], heavy, ctx["tried"])
+            ok = [r for r in sweep_rows if "dev" in r]
+            if ok:
+                hyp += (f" DEV sweep of {prop['sweep']['param']}: " +
+                        ", ".join(f"{r['value']}->{r['dev']:+.4f}" for r in ok) +
+                        f"; chose {max(ok, key=lambda r: r['dev'])['value']}.")
+            if spec_hash(spec) in ctx["tried"]:
+                print(f"[iter {i + 1}] sweep winner was already tried; counted as a rejection")
+                rejects += 1
+                if rejects >= max_rejects:
+                    break
+                continue
         spec = {"_hypothesis": hyp, **clean(spec)}
         rec = run_experiment.run(spec, hyp, parent=ctx["champion"]["id"], verbose=False)
         lesson = proposer.lesson(rec, ctx)
         ledger.lesson(rec["id"], lesson)
         with open(log, "a") as f:
-            f.write(json.dumps({"id": rec["id"], "proposal": prop, "refused_before": refused, "accepted": rec["accepted"],
+            f.write(json.dumps({"id": rec["id"], "proposal": prop, "refused_before": refused, "sweep": sweep_rows,
+                                "accepted": rec["accepted"],
                                 "lesson": lesson, "llm_calls": getattr(proposer, "calls", [])}, default=str) + "\n")
         proposer.calls = []
         k = C.PRIMARY_METRIC

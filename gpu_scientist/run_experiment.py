@@ -39,6 +39,17 @@ def main():
     run(json.loads(open(a.spec).read()), a.hypothesis, a.parent, a.id)
 
 
+def dev_score(spec: dict, out_dir) -> dict:
+    """Score a spec on DEV only, without the ledger and without ever forecasting a HOLDOUT origin.
+    Used by the automatic DEV sweep in autoresearch.py, so only the chosen value meets the gate."""
+    series_csv, catalog_csv = data.build()
+    panel = data.Panel.load(series_csv, catalog_csv)
+    origins = pd.date_range(C.WARMUP_START, C.DEV_ORIGINS[1])
+    fc, _, _ = online.run(spec, panel, origins, panel.series_ids(), C.HORIZONS)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return evaluate.score(fc, C.DEV_ORIGINS, out_dir, "dev", series_csv, catalog_csv)
+
+
 def run(spec: dict, hypothesis: str, parent: str | None = None, eid: str | None = None, verbose: bool = True) -> dict:
     """Run one experiment end to end and return its ledger record (also used by autoresearch.py)."""
     a = argparse.Namespace(hypothesis=hypothesis, parent=parent)
