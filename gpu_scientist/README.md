@@ -29,9 +29,13 @@ rental prices 1, 3 and 7 days ahead, and improves itself in two loops:
 
 ## Quickstart
 
-Put this folder next to `gpu-price-pack-v0.1.1-handover/` (or set `GPU_PACK=/path/to/pack`).
+The data pack (about 285 MB, CC BY 4.0) is attached to the
+[`data-pack-v0.1.1` release](https://github.com/tanmiemie/ai-scientist-agent/releases/tag/data-pack-v0.1.1).
+`bash get_pack.sh` downloads it, checks its SHA-256 and unpacks it next to this folder, where the code looks by default
+(or put it anywhere and set `GPU_PACK=/path/to/pack`).
 
 ```
+bash get_pack.sh                     # data pack -> ../gpu-price-pack-v0.1.1-handover/
 python3 -m pip install duckdb pandas numpy pyarrow matplotlib tabulate
 bash run_all.sh                      # rebuild everything from the pack and write the submission
 python3 ledger.py show               # what has been tried
