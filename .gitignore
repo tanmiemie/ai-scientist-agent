@@ -18,4 +18,5 @@ gpu_scientist/demo_run/
 
 # Data pack (download with gpu_scientist/get_pack.sh)
 gpu-price-pack-v0.1.1-handover/
+.gpu-price-pack-v0.1.1-handover.partial/
 gpu-price-pack-v0.1.1-handover_pack-only.zip
