@@ -220,5 +220,5 @@ HOLDOUT by collector (pooled skill): afhubbard (4 series) +0.2386 → +0.2525, f
 
 - **No difference on TEST:** +0.0417 vs +0.0415. One run each; LLM repeats vary more than this (memory ablation), so batching neither helps nor hurts measurably.
 - **More acceptances, same overfit pattern:** batch accepted 7 vs 5, but the extra ones are small DEV gains (S3 exp_002/003: DEV +0.028/+0.003) that did not carry to TEST (S3 0.0463 → 0.0649 → 0.0649, below the seed). S1's batch champion is the first calibration step only (exp_001), which happens to test best.
-- **Scores barely discriminate:** of 90 ideas the totals sit at 19–28 (median 25–26); the reflection rarely changes the ranking. 12/90 ideas were refused by the validator (mostly out-of-range or already-tried specs); the top-ranked idea ran in 16/18 iterations, the other 2 fell to the next valid idea.
+- **Scores barely discriminate:** of 90 ideas the totals sit at 19–28 (median 25–26); the reflection rarely changes the ranking. 12/90 ideas were refused, all as exact repeats of an already-tried spec (none out of range); the top-ranked idea ran in 16/18 iterations, the other 2 fell to the next valid idea.
 - Review fixes: a non-numeric score (e.g. `"8/10"`) no longer aborts `rank()`, and `--ideas batch --exa` now passes the Exa evidence into both prompts (it was dropped; this run did not use Exa).
