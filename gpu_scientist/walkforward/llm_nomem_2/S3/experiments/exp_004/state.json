@@ -1,0 +1,25 @@
+{
+ "weights": {},
+ "calibration_up": {
+  "afhubbard|h1": 0.003999999999999971,
+  "afhubbard|h3": 0.017999999999999964,
+  "afhubbard|h7": -0.01900000000000005,
+  "gpurentalprices|h1": 0.005999999999999834,
+  "gpurentalprices|h3": 0.05399999999999988,
+  "gpurentalprices|h7": 0.08499999999999999,
+  "fastgpu_daily|h1": 0.0249999999999998,
+  "fastgpu_daily|h3": 0.08999999999999997,
+  "fastgpu_daily|h7": 0.11500000000000005
+ },
+ "calibration_dn": {
+  "afhubbard|h1": -0.0010000000000000451,
+  "afhubbard|h3": 0.027999999999999955,
+  "afhubbard|h7": 0.030999999999999986,
+  "gpurentalprices|h1": -0.024000000000000184,
+  "gpurentalprices|h3": -0.0010000000000002078,
+  "gpurentalprices|h7": -0.07000000000000015,
+  "fastgpu_daily|h1": -0.0900000000000001,
+  "fastgpu_daily|h3": 0.054999999999999896,
+  "fastgpu_daily|h7": 0.08000000000000002
+ }
+}

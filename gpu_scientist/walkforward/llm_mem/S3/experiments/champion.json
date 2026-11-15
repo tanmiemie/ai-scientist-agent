@@ -1,0 +1,55 @@
+{
+ "id": "exp_005",
+ "spec": {
+  "_hypothesis": "skill on fastgpu_daily|neocloud_spot and fastgpu_daily|hyperscaler_spot is dramatically worse vs other groups (0.239 and 0.182 vs 0.049 elsewhere); drift base skill in these groups is especially poor (0.008 and 0.001), yet leader signals in the diagnosis table have lagged correlations >0.9 for multiple series. -> Adding the leader model (which uses lagged leading indicators from other data sources at high correlation) to the ensemble will yield a substantial improvement in skill for fastgpu_daily|neocloud_spot and fastgpu_daily|hyperscaler_spot, with potential improvement in overall skill, especially at longer horizons, while maintaining coverage near target. Change: Add leader model to the model list and average (mean) with drift; keep calibration settings unchanged.",
+  "models": [
+   {
+    "name": "drift"
+   },
+   {
+    "name": "leader"
+   }
+  ],
+  "combine": {
+   "method": "mean"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.183879,
+  "skill_median_of_series": 0.177484,
+  "skill_geomean": 0.090595,
+  "coverage_in": 0.803951,
+  "coverage_above_q90": 0.105058,
+  "coverage_below_q10": 0.090991,
+  "share_series_positive": 0.75,
+  "by_horizon": {
+   "1": 0.076552,
+   "3": 0.173559,
+   "7": 0.211593
+  },
+  "n_cells": 3341,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.128731,
+  "skill_median_of_series": 0.209763,
+  "skill_geomean": 0.171733,
+  "coverage_in": 0.756795,
+  "coverage_above_q90": 0.09299,
+  "coverage_below_q10": 0.150215,
+  "share_series_positive": 0.757576,
+  "by_horizon": {
+   "1": 0.086918,
+   "3": 0.045374,
+   "7": 0.176766
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

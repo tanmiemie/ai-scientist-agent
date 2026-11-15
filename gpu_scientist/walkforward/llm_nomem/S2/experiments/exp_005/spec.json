@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "The group fastgpu_daily|neocloud_spot has particularly bad skill (0.211), elevated coverage above q90 (0.161), and a candidate leading signal pair to gpurentalprices.neocloud_spot.B200.spot.median (lag_days 1, corr 0.974). Also, drift as a base model yields -0 skill here. -> Adding the 'leader' model with default params and ensembling by mean with drift will improve skill for fastgpu_daily|neocloud_spot by leveraging predictive signal from correlated leading series, with possible modest overall DEV gain. Mean combine is most likely to help if the two models are anticorrelated in error. Change: Combine 'drift' and 'leader' with method='mean', keeping all other champion settings.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

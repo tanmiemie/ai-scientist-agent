@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is much too low: overall in (0.46), above_q90 0.41 and below_q10 0.12. Ideal is 0.80. Some groups overshoot, but overall intervals are too narrow: e.g. neocloud_rate_card on-demand series are 51-83% above q90. -> Enabling calibration with the default settings (gamma=0.5, scale=0.01) will expand the intervals and improve coverage, especially overall and for 7-day horizons, which are most undercovered (above_q90=0.56). While this may slightly worsen skill, a substantial coverage increase towards the target is likely. Change: Enable calibration with gamma=0.5, scale=0.01 (default) across instrument_class (default group).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

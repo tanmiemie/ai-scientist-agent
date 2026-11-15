@@ -106,14 +106,20 @@ python3 run_experiment.py --spec specs/optional/10_chronos_alone.json --parent <
 The plumbing was smoke-tested offline with `"model_id": "__fake__"`; the real weights have not been
 run yet. If a Chronos spec is accepted, copy it into `specs/` so `run_all.sh` reproduces it.
 
-## Results so far (scorer.py, 37 headline rental series, daily origins)
+## Results (official ledger `experiments_final/`, scorer.py, 37 headline series, daily origins)
 
 | exp | idea | dev pooled | holdout pooled | coverage (dev) | decision |
 |---|---|---|---|---|---|
-| 000 | starter drift (reference) | +0.071 | +0.044 | 0.46 | start |
-| 001 | recent 60-day window + one-step upper floor | +0.168 | +0.090 | 0.64 | accepted |
-| 002 | + online per-group calibration | +0.174 | +0.098 | 0.80 | accepted (champion) |
-| 003 | hedge ensemble with step-hazard and 30-day drift | +0.173 | +0.107 | 0.80 | rejected on dev |
+| 000 | starter drift (reference) | +0.071 | +0.044 | 0.45 | start |
+| 001 | recent 60-day window + upper floor | +0.168 | +0.090 | 0.64 | kept |
+| 002 | + online calibration by collector × class | +0.183 | +0.097 | 0.79 | kept |
+| 003 | hedge ensemble | +0.177 | +0.104 | 0.75 | rejected (DEV) |
+| 004 | + momentum after rises | +0.187 | +0.100 | 0.78 | kept |
+| 005 | calibration by GPU model | +0.191 | +0.022 | 0.74 | rejected (HOLDOUT gate) |
+| 006 | Chronos-Bolt widths | +0.136 | +0.188 | 0.80 | rejected (DEV) |
+| 007 | momentum only on real repricing (provider count unchanged) | +0.191 | +0.101 | 0.79 | kept: **champion, submitted** |
+
+Uncertainty, per-series tests and the full story: `../FINDINGS.md`, `uncertainty.py`, `SIGNIFICANCE.md`.
 
 Skill is versus the flat last value. Data: gpu-price-pack v0.1.1-handover (CC BY 4.0); keep its
 `ATTRIBUTION.md` with this work.

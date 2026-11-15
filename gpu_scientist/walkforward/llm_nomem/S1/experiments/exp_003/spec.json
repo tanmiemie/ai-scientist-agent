@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration coverage is low at 0.758 (target 0.80); intervals are too narrow across series. Increasing the calibration scale slightly may help widen intervals and increase coverage. The current scale is 0.01. -> Increasing calibrate.scale from 0.01 to 0.015 (keeping gamma=0.5) will widen prediction intervals, thus improving overall and groupwise coverage, especially at q10 and q90. The risk of overfitting is low since this is a simple adjustment and target coverage is not met. Change: Increase calibrate.scale from 0.01 to 0.015",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.015,
+  "group_by": "instrument_class"
+ }
+}

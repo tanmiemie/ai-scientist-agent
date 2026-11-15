@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Overall coverage is only 0.455; skill is 0.0474. Coverage above q90 is 0.42 (vs. 0.10 target), below q10 is 0.12 (target 0.10). Coverage by group and horizon shows substantial undercoverage. -> Calibrating the intervals should increase coverage much closer to the target of 0.8 without substantially degrading skill. The largest current failure is dramatic undercoverage (q90: 0.42 vs 0.10; q10: 0.12 vs 0.10). Change: Enable calibration with default gamma=0.5 and scale=0.01, grouping by instrument_class.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

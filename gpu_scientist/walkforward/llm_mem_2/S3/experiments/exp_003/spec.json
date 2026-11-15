@@ -1,0 +1,27 @@
+{
+ "_hypothesis": "By group, drift underperforms leader in all but gpurentalprices|marketplace_ask (drift=0.179, leader=0.194) and afhubbard|hyperscaler_spot (drift=0.174, leader=0.115); in fastgpu_daily|neocloud_spot, leader skill is notably higher (drift=0.008, leader=0.25). The mean ensemble weights are uniform (0.5/0.5), and groupwise skill differs. Using a dynamic ensemble (hedge) with group_by set to instrument_class would allow the stronger model in each context to gain weight. In the current champion, combine.method is mean. This experiment tests whether the ability to change weights adaptively by instrument_class helps, especially for fastgpu_daily|neocloud_spot and similar groups. -> Allowing the ensemble to adaptively reweight drift vs leader by instrument_class (using hedge with eta=2.0) will allow groups where leader is superior to upweight it and vice versa, potentially improving skill, especially in heterogeneous groups where one model clearly outperforms the other. Change: Set combine.method to hedge with eta=2.0 and group_by=instrument_class (from mean).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "instrument_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

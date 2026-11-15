@@ -1,0 +1,31 @@
+{
+ "weights": {},
+ "calibration_up": {
+  "hyperscaler_spot|h1": -0.0030000000000000226,
+  "hyperscaler_spot|h3": 0.020000000000000004,
+  "hyperscaler_spot|h7": 0.01849999999999999,
+  "marketplace_ask|h1": 0.009749999999999991,
+  "marketplace_ask|h3": 0.005249999999999991,
+  "marketplace_ask|h7": 0.00624999999999999,
+  "neocloud_rate_card|h1": 0.019749999999999934,
+  "neocloud_rate_card|h3": 0.05624999999999998,
+  "neocloud_rate_card|h7": 0.11925000000000005,
+  "neocloud_spot|h1": 0.00924999999999997,
+  "neocloud_spot|h3": 0.02275,
+  "neocloud_spot|h7": 0.07975000000000006
+ },
+ "calibration_dn": {
+  "hyperscaler_spot|h1": 0.01949999999999997,
+  "hyperscaler_spot|h3": 0.03750000000000002,
+  "hyperscaler_spot|h7": 0.04100000000000001,
+  "marketplace_ask|h1": 0.0022499999999999916,
+  "marketplace_ask|h3": 0.00024999999999999307,
+  "marketplace_ask|h7": 0.006249999999999992,
+  "neocloud_rate_card|h1": -0.045250000000000096,
+  "neocloud_rate_card|h3": 0.011249999999999906,
+  "neocloud_rate_card|h7": 0.034249999999999954,
+  "neocloud_spot|h1": -0.04575000000000004,
+  "neocloud_spot|h3": -0.03225000000000003,
+  "neocloud_spot|h7": -0.01775000000000003
+ }
+}

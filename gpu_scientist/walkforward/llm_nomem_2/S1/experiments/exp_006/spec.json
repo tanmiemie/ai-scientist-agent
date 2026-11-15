@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is low (0.758454 < target 0.8) and the most problematic series and series groups have very poor skill\u2014the worst have zero or negative skill and no coverage in the tails. The calibration is by instrument_class; the skill distribution shows some series (notably in neocloud_rate_card and neocloud_spot) behave very differently. All models so far use only per-instrument_class calibration. -> Calibrating by series_id (instead of instrument_class) will better correct for the idiosyncratic miscalibration in the worst series, increasing overall coverage and possibly skill, especially in groups/series with extremely poor coverage (e.g., all zero in tails). Change: Change calibrate.group_by from instrument_class to series_id.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

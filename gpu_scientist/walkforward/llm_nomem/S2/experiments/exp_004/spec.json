@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "champion skill_pooled 0.16315; drift base model skill by group includes near-zero or negative (e.g., fastgpu_daily|neocloud_spot: -0, fastgpu_daily|hyperscaler_spot: -0.03); 'vol_tail' (dev only) is allowed and may help model volatility, especially with negative drift performance. Coverage is a little low (0.7896 vs 0.80 target), especially for 'gpurentalprices|neocloud_rate_card' (0.135 above q90, 0.069 below q10). -> Adding the 'vol_tail' model to the ensemble and switching to a mean (equal-weight) combination will better capture volatility and uncertainty in rate cards and spot groups, especially where 'drift' alone underperforms. This should improve calibration (coverage near 0.80) and pinball loss, notably in high-volatility series. We expect obvious improvement (>=0.005) if drift is missing jumps or underestimates spread. Change: Switch combine.method from 'single' (drift only) to 'mean' of drift and vol_tail (both with default params).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

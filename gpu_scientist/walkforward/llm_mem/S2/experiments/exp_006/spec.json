@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration coverage_in is 0.7896 (target 0.80). Some series show persistent undercoverage or overcoverage, but step size is fixed at scale=0.01 (1%). Gamma=0.5 (default). Lowering scale will allow finer, less abrupt calibration adjustments that may better home in on 0.8 target without excessive interval broadening. Last gamma-only or group_by-only changes failed to boost generalization; scale has never been tried. -> Reducing calibration scale from 0.01 to 0.005 (gamma=0.5 unchanged) will lead to more stable/gradual interval correction, reducing overshoot and more accurately hitting the 0.80 coverage target (with minimal skill loss). Pooled skill and coverage should improve especially for high-volatility series (e.g. fastgpu_daily|neocloud_spot and neocloud_rate_card), where intervals sometimes overshoot or remain too narrow. Change: Reduce calibrate.scale from 0.01 to 0.005 (all else unchanged).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "instrument_class"
+ }
+}

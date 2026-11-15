@@ -115,6 +115,7 @@ def spec_hash(spec: dict) -> str:
 
 
 # ---------------------------------------------------------------- context the proposer sees
+USE_EXA = False    # set by --exa: outside evidence from exa_scout.py each iteration
 NO_MEMORY = False  # set by --no-memory: the proposer sees no past hypotheses or lessons (ablation)
 
 
@@ -166,7 +167,16 @@ false, extra models under single) make the spec identical to the champion and ar
 Reply with JSON only:
 {"observation": "<the number(s) you act on>", "hypothesis": "<what you expect and why>",
  "change": "<the one change vs the champion>", "expected_effect": "<which groups/metric should move>",
- "spec": {...}}"""
+ "spec": {...},
+ "source_url": <url or null>,
+ "sweep": {"param": "<dotted path in spec, e.g. models.0.params.window or calibrate.gamma>",
+           "values": [<2 to 5 values>]}}
+If OUTSIDE EVIDENCE (web results found by Exa, dated on or before this run's cutoff) is given, you may
+build on it: a method to borrow, or market context that explains a pattern in the diagnosis. Put the URL
+you relied on in "source_url" (or null if none), and still express the idea with the allowed models
+and parameters. Never treat a web claim as a result: the experiment tests it.
+"sweep" is optional: use it when the right value of one numeric parameter is unknown. Each value is
+scored on DEV only; only the best one is run as the experiment and meets the HOLDOUT gate."""
 
 LESSON_SYSTEM = """You write the one- or two-sentence lesson for a research ledger. State what the
 numbers showed (dev and holdout change vs champion, coverage) and what it implies for the next
@@ -207,6 +217,10 @@ class LLMProposer:
         user = json.dumps({"allowed_models_and_default_params": allowed_models(self.heavy),
                            "champion": ctx["champion"], "history_most_recent_last": ctx["history"]}, indent=1)
         user += "\n\nDIAGNOSIS OF THE CHAMPION (DEV):\n" + ctx["diagnosis_md"]
+        if ctx.get("outside"):
+            o = ctx["outside"]
+            user += (f"\n\nOUTSIDE EVIDENCE (Exa, published on or before {o['cutoff']}; newest found this turn, "
+                     f"then the evidence memory):\n" + json.dumps(o["memory_for_prompt"], indent=1))
         if feedback:
             user += f"\n\nYour previous proposal was refused: {feedback}\nPropose a different, valid experiment."
         txt = self._chat(SYSTEM, user, as_json=True)
@@ -312,6 +326,48 @@ class HeuristicProposer:
                 f"coverage {cd['coverage_in']:.2f}->{cov:.2f}. {rec['reason']}")
 
 
+# ---------------------------------------------------------------- automatic DEV sweep
+MAX_SWEEP = 5
+
+
+def _set(spec: dict, path: str, value) -> dict:
+    out = json.loads(json.dumps(spec))
+    keys = path.split(".")
+    node = out
+    for k in keys[:-1]:
+        k = int(k) if isinstance(node, list) else k
+        if isinstance(node, dict) and k not in node:
+            node[k] = {}
+        node = node[k]
+    last = keys[-1]
+    node[int(last) if isinstance(node, list) else last] = value
+    return out
+
+
+def dev_sweep(spec: dict, sweep: dict, heavy: bool, tried: set) -> tuple[dict, list]:
+    """Score each value of one parameter on DEV only; return the best spec and the sweep table.
+    HOLDOUT is never forecast here, so the gate sees exactly one candidate per idea."""
+    import tempfile
+    from pathlib import Path
+    rows = []
+    for v in list(sweep.get("values", []))[:MAX_SWEEP]:
+        cand = _set(spec, sweep["param"], v)
+        errs = validate(cand, heavy)
+        if not errs and spec_hash(cand) in tried:
+            errs = ["already tried"]
+        if errs:
+            rows.append({"value": v, "refused": errs})
+            continue
+        with tempfile.TemporaryDirectory() as d:
+            m = run_experiment.dev_score(cand, Path(d))
+        rows.append({"value": v, "dev": round(m[C.PRIMARY_METRIC], 5), "coverage": round(m["coverage_in"], 3)})
+    scored = [r for r in rows if "dev" in r]
+    if not scored:
+        return spec, rows
+    best = max(scored, key=lambda r: r["dev"])
+    return _set(spec, sweep["param"], best["value"]), rows
+
+
 # ---------------------------------------------------------------- the loop
 def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
     C.EXPERIMENTS.mkdir(parents=True, exist_ok=True)
@@ -324,6 +380,12 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
     rejects = 0
     for i in range(iters):
         ctx = context()
+        if USE_EXA:
+            import exa_scout
+            ctx["outside"] = exa_scout.scout(ctx, i + 1)
+            o = ctx["outside"]
+            print(f"[iter {i + 1}] Exa: {len(o['found_this_turn'])} results, {o['new_in_memory']} new in memory"
+                  + (f", errors {o['errors']}" if o["errors"] else ""))
         prop, feedback, refused = {}, None, []
         for _ in range(3):
             prop = proposer.propose(ctx, feedback) or {}
@@ -348,12 +410,30 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
                 break
             continue
         hyp = f"{prop.get('observation', '')} -> {prop.get('hypothesis', '')} Change: {prop.get('change', '')}".strip()
+        sweep_rows = None
+        if isinstance(prop.get("sweep"), dict) and prop["sweep"].get("param") and prop["sweep"].get("values"):
+            spec, sweep_rows = dev_sweep(clean(spec), prop["sweep"], heavy, ctx["tried"])
+            ok = [r for r in sweep_rows if "dev" in r]
+            if ok:
+                hyp += (f" DEV sweep of {prop['sweep']['param']}: " +
+                        ", ".join(f"{r['value']}->{r['dev']:+.4f}" for r in ok) +
+                        f"; chose {max(ok, key=lambda r: r['dev'])['value']}.")
+            if spec_hash(spec) in ctx["tried"]:
+                print(f"[iter {i + 1}] sweep winner was already tried; counted as a rejection")
+                rejects += 1
+                if rejects >= max_rejects:
+                    break
+                continue
         spec = {"_hypothesis": hyp, **clean(spec)}
         rec = run_experiment.run(spec, hyp, parent=ctx["champion"]["id"], verbose=False)
         lesson = proposer.lesson(rec, ctx)
         ledger.lesson(rec["id"], lesson)
         with open(log, "a") as f:
-            f.write(json.dumps({"id": rec["id"], "proposal": prop, "refused_before": refused, "accepted": rec["accepted"],
+            exa_log = ({k: ctx["outside"][k] for k in ("cutoff", "queries", "found_this_turn", "errors")}
+                       if ctx.get("outside") else None)
+            f.write(json.dumps({"id": rec["id"], "proposal": prop, "refused_before": refused, "sweep": sweep_rows,
+                                "exa": exa_log, "source_url": prop.get("source_url"),
+                                "accepted": rec["accepted"],
                                 "lesson": lesson, "llm_calls": getattr(proposer, "calls", [])}, default=str) + "\n")
         proposer.calls = []
         k = C.PRIMARY_METRIC
@@ -380,11 +460,14 @@ def main():
     ap.add_argument("--model", default=None)
     ap.add_argument("--seed", default=None, help=f"spec used if the ledger has no champion (default {SEED_SPEC.name})")
     ap.add_argument("--allow-heavy", action="store_true", help="let the proposer use chronos/chronos2/timestral")
+    ap.add_argument("--exa", action="store_true",
+                    help="each iteration, search the web with Exa (EXA_API_KEY) for methods and dated market news")
     ap.add_argument("--no-memory", action="store_true",
                     help="ablation: hide past hypotheses and lessons from the proposer")
     a = ap.parse_args()
-    global NO_MEMORY
+    global NO_MEMORY, USE_EXA
     NO_MEMORY = a.no_memory
+    USE_EXA = a.exa
     prop = (LLMProposer(a.provider, a.model, a.allow_heavy) if a.proposer == "llm"
             else HeuristicProposer(a.allow_heavy))
     loop(prop, a.iters, a.max_rejects, a.seed, a.allow_heavy)

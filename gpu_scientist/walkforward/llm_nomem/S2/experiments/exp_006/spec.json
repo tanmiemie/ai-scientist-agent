@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "coverage_in is low at 0.7896 (target is 0.80); skill_geomean is 0.0662; calibration uses group_by instrument_class -> Calibration may better correct for systematic bias if applied at a more granular group, possibly improving interval coverage. Specifically, since some groups (e.g., neocloud_rate_card and neocloud_spot) show opposite mean_log_err_q50 and miscoverage patterns, calibrating by source_id may yield better coverage and reduce systematic error. Change: Change calibrate.group_by from instrument_class to source_id",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_id"
+ }
+}

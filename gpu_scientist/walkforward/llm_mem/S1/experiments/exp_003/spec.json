@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Increasing calibrate.scale from 0.01 to 0.02 caused a drastic skill_pooled drop (-0.143), even though dev coverage increased from 0.758 to 0.768. Therefore, tuning calibrate.scale in finer increments may boost coverage without tanking skill. The champion (scale=0.01) is too conservative for series like 'fastgpu_daily|neocloud_spot' (dev above_q90 0.228, below_q10 0.163, coverage 0.76) and 'gpurentalprices|neocloud_rate_card'. -> Increasing calibrate.scale modestly from 0.01 to 0.012 (a +20% step) will slightly widen intervals and nudge coverage above 0.76 towards the 0.80 target, particularly improving undercovered regions (e.g., 'fastgpu_daily|neocloud_rate_card' and 'gpurentalprices|neocloud_rate_card') while avoiding the skill collapse seen with a scale jump to 0.02. Change: Increase calibrate.scale from 0.01 to 0.012 (keeping gamma and group_by the same).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.012,
+  "group_by": "instrument_class"
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "id": "exp_001",
+ "spec": {
+  "_hypothesis": "coverage_in is only 0.46256 (target 0.80), above_q90=0.414251 and below_q10=0.123188 both too high; champion has no calibration. Over-quantile hits most in fastgpu_daily|neocloud_rate_card (above_q90: 0.517) and gpurentalprices|neocloud_rate_card (above_q90: 0.514). -> Enabling interval calibration with mild settings will reduce the excessive number of truth-above-q90 and truth-below-q10 events, improving coverage to be closer to the target 0.80, especially for the neocloud_rate_card groups. Mild correction (gamma=0.5, scale=0.01) should improve coverage without degrading skill by more than noise. Change: Enable interval calibration using gamma=0.5, scale=0.01, group_by=instrument_class.",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.177809,
+  "skill_median_of_series": 0.145108,
+  "skill_geomean": -0.113369,
+  "coverage_in": 0.758454,
+  "coverage_above_q90": 0.15157,
+  "coverage_below_q10": 0.089976,
+  "share_series_positive": 0.638889,
+  "by_horizon": {
+   "1": 0.040453,
+   "3": 0.044111,
+   "7": 0.250451
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.144176,
+  "skill_median_of_series": 0.110077,
+  "skill_geomean": 0.00427,
+  "coverage_in": 0.841785,
+  "coverage_above_q90": 0.063895,
+  "coverage_below_q10": 0.09432,
+  "share_series_positive": 0.666667,
+  "by_horizon": {
+   "1": 0.066002,
+   "3": 0.059346,
+   "7": 0.224315
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}

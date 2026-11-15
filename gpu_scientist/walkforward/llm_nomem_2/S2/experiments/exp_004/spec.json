@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "drift has poor or even negative skill in fastgpu_daily|hyperscaler_spot (\u22120.03), fastgpu_daily|neocloud_rate_card (0.023), fastgpu_daily|neocloud_spot (\u22120), but afhubbard|hyperscaler_spot is much higher (0.169). Coverage in afhubbard|hyperscaler_spot is also very low (q90: 6%, q10: 4%). -> The poor and heterogeneous baseline skill and low coverage in some groups suggests the single drift model is too rigid. Adding a volatility-sensitive model (vol_tail) to a mean ensemble can help capture uncertainty and correct tight intervals, especially in segments like afhubbard|hyperscaler_spot and gpurentalprices|marketplace_ask where drift undercovers. Change: Change combine.method from 'single' to 'mean' and add the vol_tail model with default params to the ensemble.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

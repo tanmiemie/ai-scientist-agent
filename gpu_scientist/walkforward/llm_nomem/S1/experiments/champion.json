@@ -1,0 +1,52 @@
+{
+ "id": "exp_004",
+ "spec": {
+  "_hypothesis": "Champion coverage_in = 0.758 (target 0.80). Coverage_above_q90 at 0.1516 and below_q10 at 0.09 indicate mild miscalibration, slightly underconfident in the upper tail. Drift model alone, calibrated per instrument_class, dominates every group (mean ensemble weight = 1 everywhere). -> Lowering calibrate.gamma from 0.5 to 0.25 (with scale = 0.01) will tighten interval adaptation, reducing overshooting in the tail coverage (above_q90 and below_q10), and increase overall coverage closer to the 0.80 target, particularly in groups where coverage_above_q90 exceeds 0.15. Change: Set calibrate.gamma to 0.25 (from 0.5) in otherwise unchanged champion spec.",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.25,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.235954,
+  "skill_median_of_series": 0.17781,
+  "skill_geomean": 0.011381,
+  "coverage_in": 0.722826,
+  "coverage_above_q90": 0.184179,
+  "coverage_below_q10": 0.092995,
+  "share_series_positive": 0.75,
+  "by_horizon": {
+   "1": 0.090844,
+   "3": 0.101197,
+   "7": 0.309918
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.15324,
+  "skill_median_of_series": 0.144965,
+  "skill_geomean": 0.051687,
+  "coverage_in": 0.817444,
+  "coverage_above_q90": 0.085193,
+  "coverage_below_q10": 0.097363,
+  "share_series_positive": 0.722222,
+  "by_horizon": {
+   "1": 0.070765,
+   "3": 0.082168,
+   "7": 0.226402
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}

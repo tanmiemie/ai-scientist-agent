@@ -1,0 +1,27 @@
+{
+ "_hypothesis": "The mean ensemble gives equal weights to drift and leader in all groups, yet the leader model strongly outperforms drift in fastgpu_daily|neocloud_spot (leader=0.25, drift=0.008) and fastgpu_daily|neocloud_rate_card (leader=0.166, drift=0.05), while the reverse is true only for afhubbard|hyperscaler_spot (drift=0.174, leader=0.115). Mean weights do not reflect this. Previous attempts with hedge by instrument_class hurt skill, so perhaps a more granular group will perform better. -> Switching the adaptive hedge ensemble's group_by from instrument_class to series_id will allow the ensemble to assign weights that reflect the sharp heterogeneity in base model performance between individual series. This should improve dev skill in series such as fastgpu_daily|neocloud_spot and fastgpu_daily|neocloud_rate_card (where leader dominates), with minimal risk to overall coverage if calibration group remains at instrument_class. Change: Set combine.method to 'hedge' (eta=2.0) and combine.group_by to 'series_id'.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "series_id"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

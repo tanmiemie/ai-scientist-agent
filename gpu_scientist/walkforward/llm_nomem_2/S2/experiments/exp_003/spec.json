@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "Worst series have negative skill (e.g., fastgpu_daily.neocloud_spot.A100_80GB.spot.median with -inf skill, fastgpu_daily.neocloud_rate_card.H100_SXM_80GB.on_demand.median with -1.036 skill), while 'leader' signals are highly correlated and could potentially improve these series. -> Adding the 'leader' base model (default params) to the current 'drift'-only spec and combining them using a mean ensemble could improve the skill, especially for poorly performing series where lead-lag relationships exist, without harming coverage or overfitting (since both are simple models). Change: Add the 'leader' base model and change 'combine' to 'mean' to ensemble 'drift' and 'leader'.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is low: overall 0.76 in vs 0.80 target; above q90 is 15.2% and below q10 is 9.0%. Coverage is low in almost every group (esp. gpurentalprices|marketplace_ask and all neocloud groups). -> Calibration step size may be too low, resulting in under-correction and under-coverage (intervals too narrow/shifted). Increasing gamma*scale should push coverage closer to nominal 80%. Change: Increase calibrate.gamma from 0.5 to 1.0 (gamma*scale grows from 0.005 to 0.01).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 1.0,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

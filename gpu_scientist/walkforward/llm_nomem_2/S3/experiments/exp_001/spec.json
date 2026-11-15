@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Overall coverage_in is 0.456 (target 0.80), q90 coverage is 0.418, q10 is 0.126. All show undercoverage. -> Enabling post-hoc interval calibration should increase coverage toward the target 0.80, especially at q90 and q10. Calibration can correct systematic underestimation of uncertainty. Change: Enable calibration with default gamma=0.5, scale=0.01, group_by instrument_class.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

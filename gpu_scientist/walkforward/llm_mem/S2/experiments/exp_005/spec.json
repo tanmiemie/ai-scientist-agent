@@ -1,0 +1,31 @@
+{
+ "_hypothesis": "calibration coverage_in is 0.7896 (target 0.80), and above_q90/ below_q10 are slightly off: 0.1188 and 0.0916. Drift model is the only base, with the strongest coverage shortfall in high-volatility/ fast-changing series (e.g., fastgpu_daily|neocloud_spot: above_q90=0.161, below_q10=0.124, skill=0.211). Previous attempts to tune calibration parameters and change calibrate.group_by led to overfitting or loss in dev coverage. Among available models, composition allows volatility breakout dynamics. Drift alone underperforms in fast-changing series (see negative/near-zero skills there). -> Adding the composition model (default params) alongside drift, averaged, will help capture volatility bursts and outliers, mainly in fast-moving groups (fastgpu_daily|neocloud_spot; fastgpu_daily|hyperscaler_spot). This should slightly improve skill and moderate interval coverage (by providing heavier tails), especially in these volatile segments, without harming overall coverage. Change: Add composition model (default params) and set combine.method to mean.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "composition",
+   "params": {
+    "window": 60,
+    "k_up": 1.0,
+    "k_dn": 1.0,
+    "floor": 1.0,
+    "k": 1,
+    "beta": 0.25,
+    "rho": 0.3,
+    "thresh": 0.05,
+    "k_rev": 3
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

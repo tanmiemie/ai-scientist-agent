@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "By horizon: skill at 1d is 0.057, at 3d is 0.051, at 7d is 0.241; interval coverage: 1d-0.32, 3d-0.475, 7d-0.601 (all under target 0.80). Calibration params are gamma=0.5, scale=0.01. Reducing gamma to 0.25 (exp_004) led to skill_pooled +0.037 but coverage_in down to 0.758. A smaller adjustment (gamma=0.35) may nudge coverage up toward 0.80 without over-tightening intervals or harming skill. -> The current calibration step size (gamma=0.5) might be slightly too aggressive, resulting in intervals that are close to (but not at) the desired coverage. Reducing gamma to 0.35 (with scale=0.01) will slow calibration, possibly increasing coverage and improving stability, while keeping intervals tight enough to maintain skill. Change: Reduce calibrate.gamma from 0.5 to 0.35; all else unchanged.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.35,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

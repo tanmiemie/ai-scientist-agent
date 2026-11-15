@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "coverage_in = 0.8016 (good), but skill for some groups is poor, especially fastgpu_daily|hyperscaler_spot (0.182), fastgpu_daily|neocloud_rate_card (0.19), and fastgpu_daily|neocloud_spot (0.239). All ensemble weights are 1 for drift, so we have not tried benefits of combining with other models. Drift's skill by group drops to near zero or below for many except afhubbard|hyperscaler_spot. Calibration uses instrument_class; maybe more granularity would help underperforming groups. -> Calibrating per series_id will allow the interval correction to adapt to idiosyncratic bias in each series (e.g. persistent over/underconfidence or drift), especially for underperforming series/groups, improving skill by reducing error and increasing coverage reliability in tails without harming overall coverage. Change: Change calibrate.group_by from instrument_class to series_id.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Skill worsens with horizon: 0.082 (1d), 0.104 (3d), 0.237 (7d). Horizon 7 has especially high y_above_q50 (0.597), suggesting underconfidence. -> Increasing calibrate.scale from 0.01 to 0.02 (i.e., increasing the speed of interval width adjustment) will help correct delayed reactions to large forecast errors at longer horizons, reducing underconfidence bias especially for 7-day forecasts (where y_above_q50=0.597 and mean_log_err_q50=0.016). This should improve coverage and reduce skill loss at horizon=7, with minimal loss to overall interval calibration due to the already-well-behaved low horizons. Change: Increase calibrate.scale from 0.01 to 0.02 (holding gamma constant).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.02,
+  "group_by": "instrument_class"
+ }
+}

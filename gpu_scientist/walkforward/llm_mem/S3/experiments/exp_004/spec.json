@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "skill_pooled=0.1786, skill_worsens_with_horizon (1d=0.082, 7d=0.237), y_above_q50 increases with horizon and days since change (e.g., y_above_q50 at 7d=0.597), prior scale=0.01: previous try at scale=0.02 failed, but no smaller increase tried -> A slightly larger step size (scale) for interval calibration (0.015 instead of 0.01) may help correct the underconfidence and slow reactivity seen at longer horizons (where intervals lag behind price changes), without the overreaction and skill collapse seen at 0.02. This should increase skill at 7d, possibly 3d, while maintaining target coverage. Change: Increase calibrate.scale from 0.01 to 0.015, keeping gamma constant.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.015,
+  "group_by": "instrument_class"
+ }
+}

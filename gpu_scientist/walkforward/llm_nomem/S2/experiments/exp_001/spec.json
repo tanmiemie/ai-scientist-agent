@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "The overall coverage under champion is very low: coverage_in=0.45 (should be near 0.8), with above_q90 at 0.42 and below_q10 at 0.12. This means the predicted intervals are much too narrow. Coverage by all meaningful slices (series group, horizon, dsc_bucket) is similarly poor. The champion does not use calibration. -> Enabling interval calibration (with default parameters) will widen the intervals and bring coverage much closer to the target of 0.80, especially reducing the fraction of points above q90 and below q10, at the cost of slight over-coverage if overcorrected. Change: Enable calibration, using calibrate.enabled=true, gamma=0.5, scale=0.01, group_by=instrument_class (defaults).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

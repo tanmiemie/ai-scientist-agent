@@ -54,6 +54,23 @@ def _diff(parent: dict | None, spec: dict) -> str:
     return "; ".join(out) or "no parameter change (re-run)"
 
 
+def _review_lines(path: Path) -> list[str]:
+    """Kept flags from review.py (LLM reviewer ensemble), if it was run. Flags never change the decision."""
+    if not path.exists():
+        return []
+    rv = json.loads(path.read_text())
+    n = rv.get("n_reviews", 5)
+    if not rv.get("kept_flags"):
+        return [f"**Reviewer flags.** none kept ({n} reviews, {rv.get('model')}).", ""]
+    out = [f"**Reviewer flags** (kept if ≥{rv.get('keep_if_votes_at_least', 3)} of {n} reviews; they do not change "
+           f"the decision):"]
+    for k in rv["kept_flags"]:
+        it = rv["items"][k]
+        ev = (it["evidence"][0] if it["evidence"] else "").replace("\n", " ")
+        out.append(f"- `{k}` ({it['votes']}/{n}, severity {it['severity']}): {ev}")
+    return out + [""]
+
+
 def build(exp_dir: Path | None = None) -> Path:
     exp_dir = Path(exp_dir or C.EXPERIMENTS)
     recs = [json.loads(l) for l in (exp_dir / "ledger.jsonl").read_text().splitlines() if l.strip()]
@@ -111,12 +128,32 @@ def build(exp_dir: Path | None = None) -> Path:
         L += [f"**Decision.** {r.get('reason', '')}", ""]
         if r.get("lesson"):
             L += [f"**Lesson written to memory.** {r['lesson'].strip()}", ""]
+        L += _review_lines(exp_dir / r["id"] / "review.json")
 
     if rejected:
         L += ["## What the loop ruled out", ""]
         for r in rejected:
             L.append(f"- **{r['id']}**: {(r.get('lesson') or r.get('reason') or '').strip()}")
         L.append("")
+    log = exp_dir / "autoresearch_log.jsonl"
+    if log.exists():
+        ents = [json.loads(l) for l in log.read_text().splitlines() if l.strip()]
+        ents = [e for e in ents if e.get("exa")]
+        if ents:
+            L += ["## Outside evidence (Exa)", "",
+                  "Each iteration searched the web with Exa before proposing, for a method and for dated "
+                  "market news published on or before the run's cutoff. What the proposer said it used:", "",
+                  "| experiment | kept | source the proposer relied on | found this turn |", "|---|---|---|---|"]
+            for e in ents:
+                found = e["exa"].get("found_this_turn", [])
+                kinds = ", ".join(f"{k} {sum(r['kind'] == k for r in found)}" for k in ("method", "market"))
+                L.append(f"| {e.get('id')} | {'yes' if e.get('accepted') else 'no'} | "
+                         f"{e.get('source_url') or 'none'} | {kinds} |")
+            mem = exp_dir / "evidence.jsonl"
+            if mem.exists():
+                n = sum(1 for l in mem.read_text().splitlines() if l.strip())
+                L += ["", f"Evidence memory: {n} dated sources in `{exp_dir.name}/evidence.jsonl`."]
+            L.append("")
     L += ["## Champion by horizon", "", "| horizon | DEV skill | HOLDOUT skill |", "|---|---|---|"]
     for k in ("1", "3", "7"):
         L.append(f"| {k} day | {_f(champ['dev']['by_horizon'].get(k))} | {_f(champ['holdout']['by_horizon'].get(k))} |")

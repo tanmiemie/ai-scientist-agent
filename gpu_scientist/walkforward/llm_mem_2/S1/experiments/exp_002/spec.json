@@ -1,0 +1,16 @@
+{
+ "_hypothesis": "DEV coverage_in is 0.758 (target 0.80); coverage_above_q90 is 0.151 (should be 0.10), and coverage_below_q10 is 0.08998 (slightly low), so intervals are slightly too tight on the upper end. Prior lesson: enabling calibration with default gamma=0.5, scale=0.01 (exp_001) already significantly improved coverage from 0.4626 to 0.758 and skill. The next step per lesson is more aggressive calibration (higher gamma or scale, but only product matters). Current gamma*scale=0.005. Increasing it may further improve coverage toward target. -> Increasing calibration scale to 0.02 (gamma remains 0.5, gamma*scale=0.01) will further widen intervals, shifting coverage closer to the 0.80 target and reducing q90/q10 miscoverage, without overfitting if gains are real. The largest current coverage gap is above q90 (too high), so widening intervals observed so far brings coverage closer to nominal. Change: calibrate.scale from 0.01 to 0.02 (double interval adjustment step size).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.02
+ }
+}

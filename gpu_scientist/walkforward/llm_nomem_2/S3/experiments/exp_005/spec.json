@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration coverage is 0.8016 (target 0.80), but 0.0904 below q10 and 0.108 above q90: slightly more misses high than low. Some groups (e.g., fastgpu_daily|neocloud_rate_card: 0.545 above q50) are biased high. -> Reducing calibration step size will slightly reduce overcoverage (especially above q90) by making the intervals adapt less aggressively, which might fix the high bias in some groups and improve coverage symmetry. Change: Reduce calibrate.scale from 0.01 to 0.005 (keeping gamma at 0.5, product halves).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "instrument_class"
+ }
+}

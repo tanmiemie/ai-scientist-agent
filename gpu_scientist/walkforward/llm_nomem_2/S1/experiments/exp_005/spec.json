@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "The champion shows notably poor skill (-inf to -0.45) and near-zero coverage in multiple 'neocloud_rate_card' and 'neocloud_spot' series, e.g., fastgpu_daily.neocloud_spot.A100_80GB.spot.median (skill -inf, 0% above_q90/below_q10) and gpurentalprices.neocloud_rate_card.L40S.on_demand.median (skill -51.1, 0% coverage tails). Also, worst performance is concentrated in neocloud_* series, and by group, drift alone produces skill near or below zero on these. The composition model, with mean skill ~0.15-0.18, may help diversify high-miss groups (its k_beta/rho suggest it adapts to reversals and random shocks). -> Adding the composition model and mean-ensembling with drift will help with chronic under-coverage and low skill in 'neocloud_*' groups by giving weight to reversal- and volatility-sensitive signals absent from drift. Change: Add 'composition' model (default params) and set combine.method to 'mean' (equal weighting of drift and composition).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "composition"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

@@ -1,0 +1,197 @@
+{
+ "experiment": "exp_003",
+ "provider": "openai",
+ "model": "gpt-4.1",
+ "n_reviews": 5,
+ "keep_if_votes_at_least": 3,
+ "temperature": 0.1,
+ "kept_flags": [
+  "gain_from_few_series",
+  "interval_widened_not_centred",
+  "other"
+ ],
+ "items": {
+  "leakage_risk": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "gain_from_few_series": {
+   "votes": 3,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "The largest 3 series account for 37.4% of the absolute change in loss, and all three have large negative changes (e.g., -0.319116, -0.237423, -0.186472), suggesting the overall DEV result is heavily influenced by a few series.",
+    "The largest 3 series account for 37.4% of the absolute change in loss, and the total loss reduction is negative (-0.616), indicating that a few series drive the result while most are flat or worse (19 better, 18 worse out of 37).",
+    "The largest 3 series account for 37.4% of the absolute change in loss, and the total loss reduction is negative (-0.616307), indicating that a few series drive the result while most are flat or worse (19 better, 18 worse out of 37)."
+   ]
+  },
+  "interval_widened_not_centred": {
+   "votes": 3,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "Mean log interval width increased on dev (0.09247 vs 0.08949) and holdout (0.11543 vs 0.1112), while coverage_in decreased (dev: 0.752457 vs 0.792998; holdout: 0.734261 vs 0.776673), suggesting intervals widened but did not improve calibration or centering.",
+    "Mean log interval width increased from 0.08949 to 0.09247 (dev) and from 0.1112 to 0.11543 (holdout), while coverage_in decreased (dev: 0.792998 to 0.752457; holdout: 0.776673 to 0.734261), suggesting intervals are wider but not better placed.",
+    "Mean log interval width increased from 0.08949 to 0.09247 (dev) and from 0.1112 to 0.11543 (holdout), while coverage_in decreased (dev: 0.792998 to 0.752457; holdout: 0.776673 to 0.734261), suggesting intervals are wider but not better centered/calibrated."
+   ]
+  },
+  "repeats_rejected_idea": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "other": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "DEV skill_pooled dropped from 0.183275 (champion) to 0.176792 (this), and skill_median_of_series from 0.185248 to 0.163772; holdout skill_pooled is only slightly higher (0.104 vs 0.097039), indicating the new method does not generalize or improve overall performance.",
+    "DEV skill_pooled is lower than the champion (0.1768 vs 0.1833), but holdout skill_pooled is higher (0.104 vs 0.0970), indicating a DEV/HOLDOUT divergence that could suggest overfitting or instability.",
+    "DEV skill_pooled dropped from 0.183 to 0.177, and skill_median_of_series from 0.185 to 0.164; the new method underperforms the champion on DEV and only slightly improves holdout pooled skill (0.104 vs 0.097), raising concerns about overfitting or lack of generalization.",
+    "DEV skill_pooled dropped from 0.1833 (champion) to 0.1768 (this), while holdout skill_pooled improved from 0.0970 to 0.1040; this DEV/HOLDOUT divergence suggests possible overfitting or instability.",
+    "DEV/HOLDOUT divergence: dev skill_pooled dropped (-0.0065 vs champion), but holdout improved (+0.0070), suggesting possible overfitting or instability; also, some series have extremely poor skill (e.g., -inf, -1.85)."
+   ]
+  }
+ },
+ "reviews": [
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future data, holdout leakage, or look-ahead features; all diagnostics and splits appear appropriate.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "19 series improved, 18 worsened; largest 3 series account for 37.4% of absolute change, but overall loss reduction is negative (-0.616), so no gain is carried by a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased on dev (0.09247 vs 0.08949) and holdout (0.11543 vs 0.1112), while coverage_in decreased (dev: 0.752457 vs 0.792998; holdout: 0.734261 vs 0.776673), suggesting intervals widened but did not improve calibration or centering.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No earlier rejection of this hypothesis or mechanism is listed in the ledger.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled dropped from 0.183275 (champion) to 0.176792 (this), and skill_median_of_series from 0.185248 to 0.163772; holdout skill_pooled is only slightly higher (0.104 vs 0.097039), indicating the new method does not generalize or improve overall performance.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future data, holdout leakage, or look-ahead features is present in the experiment description.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 37.4% of the absolute change in loss, and all three have large negative changes (e.g., -0.319116, -0.237423, -0.186472), suggesting the overall DEV result is heavily influenced by a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width increased only slightly (DEV: 0.09247 vs 0.08949; HOLDOUT: 0.11543 vs 0.1112), and coverage_in actually decreased (DEV: 0.752457 vs 0.792998), so improvement is not due to interval widening.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No record of this hypothesis or mechanism being previously rejected in the ledger.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled is lower than the champion (0.1768 vs 0.1833), but holdout skill_pooled is higher (0.104 vs 0.0970), indicating a DEV/HOLDOUT divergence that could suggest overfitting or instability.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; experiment uses only DEV for model selection.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 37.4% of the absolute change in loss, and the total loss reduction is negative (-0.616), indicating that a few series drive the result while most are flat or worse (19 better, 18 worse out of 37).",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.08949 to 0.09247 (dev) and from 0.1112 to 0.11543 (holdout), while coverage_in decreased (dev: 0.792998 to 0.752457; holdout: 0.776673 to 0.734261), suggesting intervals are wider but not better placed.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected ideas; 'rejected_earlier_in_ledger' is empty.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled dropped from 0.183 to 0.177, and skill_median_of_series from 0.185 to 0.164; the new method underperforms the champion on DEV and only slightly improves holdout pooled skill (0.104 vs 0.097), raising concerns about overfitting or lack of generalization.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future data, holdout leakage, or look-ahead features; all diagnostics and splits appear appropriate.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "Of 37 series, 19 improved and 18 worsened; the largest 3 series account for 37.4% of the absolute change, but the overall loss reduction is negative (-0.616), so no gain is carried by a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width increased only slightly (dev: 0.09247 vs 0.08949; holdout: 0.11543 vs 0.1112), and coverage_in actually decreased (dev: 0.752 vs 0.793; holdout: 0.734 vs 0.777), so improvement is not due to interval widening.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No record of this hypothesis or mechanism being previously rejected in the ledger.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled dropped from 0.1833 (champion) to 0.1768 (this), while holdout skill_pooled improved from 0.0970 to 0.1040; this DEV/HOLDOUT divergence suggests possible overfitting or instability.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future data, holdout leakage, or look-ahead features is present in the experiment description or diagnosis.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 37.4% of the absolute change in loss, and the total loss reduction is negative (-0.616307), indicating that a few series drive the result while most are flat or worse (19 better, 18 worse out of 37).",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.08949 to 0.09247 (dev) and from 0.1112 to 0.11543 (holdout), while coverage_in decreased (dev: 0.792998 to 0.752457; holdout: 0.776673 to 0.734261), suggesting intervals are wider but not better centered/calibrated.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected ideas is listed in 'rejected_earlier_in_ledger'.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: dev skill_pooled dropped (-0.0065 vs champion), but holdout improved (+0.0070), suggesting possible overfitting or instability; also, some series have extremely poor skill (e.g., -inf, -1.85).",
+    "severity": 2
+   }
+  }
+ ],
+ "note": "Flags only; the numeric gate's accept/reject decision is unchanged."
+}
