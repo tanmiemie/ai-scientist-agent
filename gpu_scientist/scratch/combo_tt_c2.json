@@ -1,0 +1,34 @@
+{
+ "_hypothesis": "scratch: champion trend_tail + Chronos-2-small grouped ensemble",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0
+   }
+  },
+  {
+   "name": "chronos2",
+   "params": {
+    "model_id": "autogluon/chronos-2-small",
+    "context_days": 90,
+    "median_mode": "last",
+    "group": "gpu_model",
+    "max_peers": 15,
+    "width": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean",
+  "eta": 0.5,
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

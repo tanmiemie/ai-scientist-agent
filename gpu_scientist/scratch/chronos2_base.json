@@ -1,0 +1,23 @@
+{
+ "_hypothesis": "scratch base for Chronos-2 DEV sweeps",
+ "models": [
+  {
+   "name": "chronos2",
+   "params": {
+    "model_id": "autogluon/chronos-2-small",
+    "context_days": 90,
+    "median_mode": "last",
+    "group": "none"
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

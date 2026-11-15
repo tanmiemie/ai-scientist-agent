@@ -36,3 +36,22 @@ It is the only spec that passed the gate, and its coverage is on target (0.80 DE
 3. A class-gated Chronos width model used only for spot/ask series.
 
 These are pre-registered here; each needs its own DEV-justified experiment.
+
+## Model research: newer foundation models (DEV-only scratch, no HOLDOUT used)
+Question: does a 2025–26 pretrained forecaster beat the champion inside this loop? Candidates were picked from the GIFT-Eval / fev-bench leaders with permissive licenses: Chronos-2 (Amazon, Apache-2.0; `models/m_chronos2.py`, optional same-instrument-class peer group via `cross_learning`) and Timestral (Mistral, Modified MIT; `models/m_timestral.py`). TimesFM-3 was skipped because its open checkpoint is non-commercial. All runs below use `scratch/sweep_dev.py`, DEV origins only, median kept at the last value, the same source_class online calibration as exp_000, and are NOT formal experiments.
+
+| variant | DEV pooled | cov |
+|---|---|---|
+| champion exp_000 (trend_tail) | +0.1831 | 0.80 |
+| Chronos-2-small, own series, width 1.0 / 1.5 / 2.0 | +0.066 / −0.314 / −2.308 | 0.81 |
+| Chronos-2-small, gpu_model peer group, width 1.0 / 0.75 / 0.5 / 0.4 / 0.25 | +0.115 / +0.150 / +0.182 / +0.185 / +0.189 | 0.81→0.78 |
+| Chronos-2 (120M), own series, width 1.0 / 1.5 | −0.130 / −3.593 | 0.81 |
+| Timestral-28M, width 1.0 | +0.037 | 0.81 |
+| trend_tail + Chronos-2 group, mean / hedge η=0.5 / η=2 | +0.169 / +0.169 / +0.170 | 0.80 |
+| Chronos-2 group, width 0 (= last value, no model spread) | **+0.1927** | 0.77 |
+| `last_value` + source_class calibration (control) | **+0.1927** | 0.77 |
+
+Findings
+- Every pretrained model, used for interval width, loses to the champion; the skill rises monotonically as its spread is shrunk to zero. At width 0 the model contributes nothing and the result equals the control `last_value` + online calibration exactly.
+- So the newest models do not help on these step-like posted prices; their wide continuous intervals are punished most on high-price series (pooled skill down to −3.6). Benchmark rank on GIFT-Eval does not transfer.
+- Unexpected: the zero-width control beats the champion on DEV by +0.0096 (above the 0.005 noise line), with coverage 0.77 vs 0.80. The online calibration alone learns a better interval than trend_tail's empirical tails. This is a candidate hypothesis, not a result: it has not been run through `run_experiment.py`, and the ledger is past the 3-rejection stop rule.
