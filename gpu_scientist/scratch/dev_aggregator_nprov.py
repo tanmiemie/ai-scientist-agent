@@ -20,7 +20,7 @@ for name, g in (("all", d), ("n_providers unchanged", d[~d.npch]), ("n_providers
 
 sc, cc = data.build(); panel = data.Panel.load(sc, cc); sids = panel.series_ids()
 origins = pd.date_range(C.WARMUP_START, C.DEV_ORIGINS[1])
-spec08 = json.load(open("specs/08_aggregator.json"))
+spec08 = json.load(open("specs/optional/08_aggregator.json"))
 for skip in (0, 1):
     spec = json.loads(json.dumps(spec08)); spec["models"][0]["params"]["skip_provider_change"] = skip
     fc, _, _ = online.run(spec, panel, origins, sids, C.HORIZONS)

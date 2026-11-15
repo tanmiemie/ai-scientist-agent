@@ -6,7 +6,7 @@ sys.path.insert(0, ".")
 import config as C, data, evaluate, online
 from significance import compare, per_series_loss
 
-SPECS = {"07": "specs/07_composition.json", "08": "specs/08_aggregator.json"}
+SPECS = {"07": "specs/07_composition.json", "08": "specs/optional/08_aggregator.json"}
 sc, cc = data.build(); data.build(cutoff="2026-10-15")
 cat_oct = C.WORK / "series_catalog_cut2026-10-15.csv"
 early = sorted(pd.read_csv(cat_oct).query("tier == 'headline'").series_id)
