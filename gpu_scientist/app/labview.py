@@ -163,9 +163,9 @@ def _designer(w, ready: bool):
                 st.error(e, icon=":material/block:")
         else:
             st.success("Valid and new.", icon=":material/check:")
-        can = ready and not errs and bool(hyp.strip())
+        can = ready and not errs and bool(hyp.strip()) and not lab.busy(w)
         if st.button("Run experiment", type="primary", disabled=not can, icon=":material/play_arrow:", key=f"{pfx}_run",
-                     help=None if can else "needs the data pack, a valid new spec and a hypothesis"):
+                     help=None if can else "needs the data pack, a valid new spec, a hypothesis and no running job here"):
             sp = w / "_specs"
             sp.mkdir(exist_ok=True)
             path = sp / f"{pd.Timestamp.now():%Y%m%d_%H%M%S}.json"
@@ -200,8 +200,11 @@ def _autoloop(w, ready: bool):
     missing_key = prop == "llm" and not os.environ.get(key_env)
     if missing_key:
         st.warning(f"{key_env} is not set in the app's environment; restart the app with it to use the LLM proposer.")
+    running = lab.busy(w)
+    if running:
+        st.caption("A job is already running in this workspace; wait for it or stop it below.")
     if st.button("Start autonomous run", type="primary", icon=":material/rocket_launch:", key="al_go",
-                 disabled=not ready or missing_key):
+                 disabled=not ready or missing_key or running):
         args = ["autoresearch.py", "--iters", str(iters), "--max-rejects", str(max_rej), "--proposer", prop,
                 "--seed", str(C.ROOT / "specs" / seed)]
         if prop == "llm":

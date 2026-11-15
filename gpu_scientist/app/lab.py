@@ -51,7 +51,14 @@ def new_workspace(name: str) -> Path:
     return dst
 
 
+def busy(workspace: Path) -> bool:
+    """A workspace's ledger and experiment ids are not safe for concurrent writers."""
+    return any(j["running"] and j.get("workspace") == str(workspace) for j in jobs())
+
+
 def start(kind: str, args: list[str], workspace: Path | None, title: str, extra_env: dict | None = None) -> str:
+    if workspace is not None and busy(workspace):
+        raise RuntimeError(f"a job is already running in {workspace.name}")
     JOBS.mkdir(parents=True, exist_ok=True)
     jid = f"{dt.datetime.now():%Y%m%d-%H%M%S}-{slug(kind)}-{uuid.uuid4().hex[:6]}"
     log = JOBS / f"{jid}.log"
@@ -85,6 +92,8 @@ def _alive(pid: int) -> bool:
 
 def jobs() -> list[dict]:
     out = []
+    if not JOBS.exists():
+        return out
     for m in sorted(JOBS.glob("*.json"), reverse=True):
         meta = json.loads(m.read_text())
         meta["running"] = _alive(meta["pid"]) if "ended" not in meta else False
