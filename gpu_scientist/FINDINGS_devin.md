@@ -21,7 +21,7 @@ Three rejections in a row -> **stopped per the stop rule**; iterations 4-6 were 
 ## What we learned about GPU rental prices
 Posted prices are step processes. The last value is close to the best median (47% of truths above q50; h=1 skill only +0.06), and almost all skill comes from the interval and grows with horizon (h=7 +0.23). Moves are asymmetric: rises cluster and continue, falls partly revert. A rise in provider count during a 7-day fall is followed by a rise 63% of the time (n=127, scratch/dev_provider_eda.py). That looks like a composition effect in the median and is a candidate for iteration 5. Interval width has to follow instrument class (step vs. drift), not GPU model.
 
-## Recommended Sunday champion: exp_000 (unchanged)
+## Recommended Sunday champion: exp_000 (superseded by exp_004, see "After the tie fix")
 It is the only spec that passed the gate, and its coverage is on target (0.80 DEV / 0.79 HOLDOUT). Chronos's holdout score is tempting, but choosing it would mean selecting on HOLDOUT, which the protocol forbids. Its DEV record is also unstable. The submission is byte-for-byte deterministic on re-run and numerically identical to `run_all.sh`'s replay submission.
 
 ## Suspicious / caveats
@@ -54,4 +54,22 @@ Question: does a 2025–26 pretrained forecaster beat the champion inside this l
 Findings
 - Every pretrained model, used for interval width, loses to the champion; the skill rises monotonically as its spread is shrunk to zero. At width 0 the model contributes nothing and the result equals the control `last_value` + online calibration exactly.
 - So the newest models do not help on these step-like posted prices; their wide continuous intervals are punished most on high-price series (pooled skill down to −3.6). Benchmark rank on GIFT-Eval does not transfer.
-- Unexpected: the zero-width control beats the champion on DEV by +0.0096 (above the 0.005 noise line), with coverage 0.77 vs 0.80. The online calibration alone learns a better interval than trend_tail's empirical tails. This is a candidate hypothesis, not a result: it has not been run through `run_experiment.py`, and the ledger is past the 3-rejection stop rule.
+- Before the tie fix, the zero-width control looked +0.0096 better than the champion on DEV. That was mostly the tie artifact: with zero width nearly every truth sits exactly on q10/q90. After the fix (below) the control scores dev +0.1890 vs the new champion exp_004 +0.1871, i.e. +0.0019, under both MIN_DEV_GAIN (0.002) and the ~0.005 noise line. Chronos-2 grouped width 0.5 drops to +0.1644 after the fix. Verdict: no newer model improves this loop; the interval quality comes from the online calibration.
+
+## After the tie fix (commit 9c456b2, `online.py` EDGE_TOL)
+`bash run_all.sh` replayed on the VM twice; the two `replay/submission/forecast_2026-11-06.csv` are byte-identical, and exp_000–005 match the Claude-side table to 4 decimals. The Mac-vs-VM discrepancy above is resolved: it came from exact `y < q10` / `y > q90` comparisons on prices sitting on the edge, not from the data.
+
+| exp | spec | dev pooled | holdout pooled | dev cov | decision |
+|---|---|---|---|---|---|
+| 000 | 00_drift | +0.0714 | +0.0437 | 0.45 | start |
+| 001 | 01_trend_tail | +0.1677 | +0.0903 | 0.64 | accepted |
+| 002 | 02_trend_tail_cal | +0.1833 | +0.0970 | 0.79 | accepted |
+| 003 | 03_ensemble_cal | +0.1768 | +0.1040 | 0.75 | rejected |
+| 004 | 04_momentum | +0.1871 | +0.1002 | 0.78 | accepted → champion |
+| 005 | 05_cal_by_gpu | +0.1909 | +0.0216 | 0.74 | rejected (holdout −0.0786) |
+| 006 | 06_chronos_last_median | +0.1358 | +0.1881 | 0.80 | rejected (dev −0.0513) |
+
+- New champion: exp_004 (momentum). It was rejected before the fix; after it, it passes the gate with dev +0.0039 and holdout +0.0032. Both gains are below the ~0.005 noise line, so it is a marginal champion: practically tied with exp_002.
+- Sunday recommendation: still submit exp_004 (`submission_final/forecast_2026-11-06.csv`), because it is what the pre-registered rule selects and its holdout is not worse. Expect its score to be indistinguishable from exp_002's.
+- Chronos-Bolt (exp_006) keeps the largest dev/holdout divergence (+0.188 holdout); it stays rejected because selection never uses holdout.
+- Official record: `experiments_final/` (ledger with a lesson per row, progress.png) and `submission_final/`. `experiments/` and `experiments_devin/` predate the fix and are kept only for history.
