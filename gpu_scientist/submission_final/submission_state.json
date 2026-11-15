@@ -1,0 +1,70 @@
+{
+ "spec_from": "exp_007",
+ "spec": {
+  "_hypothesis": "EDA.md: 45% of 10%+ moves fall on a day the provider count changed, and such moves are 7x larger. Momentum should react only to repricing, not to a change in who is listed: apply the momentum shift only when the provider count did not change on the day of the last rise. DEV-only sweep (scratch): this alone gives +0.1908 vs +0.1871 for spec 04; adding partial reversion after composition moves (rho 0.2-0.6) lowered DEV in all 18 settings, so rho = 0.",
+  "models": [
+   {
+    "name": "composition",
+    "params": {
+     "window": 60,
+     "floor": 1.0,
+     "k": 1,
+     "beta": 0.25,
+     "rho": 0.0
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "state": {
+  "weights": {},
+  "calibration_up": {
+   "afhubbard|hyperscaler_spot|h1": -0.009000000000000098,
+   "afhubbard|hyperscaler_spot|h3": -8.500145032286355e-17,
+   "afhubbard|hyperscaler_spot|h7": 0.012999999999999927,
+   "gpurentalprices|marketplace_ask|h1": 0.011499999999999984,
+   "gpurentalprices|marketplace_ask|h3": 0.007499999999999986,
+   "gpurentalprices|marketplace_ask|h7": 0.014499999999999978,
+   "gpurentalprices|neocloud_rate_card|h1": 0.012999999999999847,
+   "gpurentalprices|neocloud_rate_card|h3": 0.029999999999999805,
+   "gpurentalprices|neocloud_rate_card|h7": 0.03399999999999992,
+   "fastgpu_daily|hyperscaler_spot|h1": 0.00999999999999998,
+   "fastgpu_daily|hyperscaler_spot|h3": 0.03199999999999998,
+   "fastgpu_daily|hyperscaler_spot|h7": 0.051000000000000004,
+   "fastgpu_daily|neocloud_rate_card|h1": -0.005000000000000117,
+   "fastgpu_daily|neocloud_rate_card|h3": -0.019000000000000135,
+   "fastgpu_daily|neocloud_rate_card|h7": 0.01299999999999997,
+   "fastgpu_daily|neocloud_spot|h1": -0.005000000000000048,
+   "fastgpu_daily|neocloud_spot|h3": -0.003000000000000069,
+   "fastgpu_daily|neocloud_spot|h7": 0.015999999999999986
+  },
+  "calibration_dn": {
+   "afhubbard|hyperscaler_spot|h1": -0.004000000000000046,
+   "afhubbard|hyperscaler_spot|h3": 0.014999999999999913,
+   "afhubbard|hyperscaler_spot|h7": 0.02299999999999995,
+   "gpurentalprices|marketplace_ask|h1": 0.006500000000000001,
+   "gpurentalprices|marketplace_ask|h3": -0.022500000000000023,
+   "gpurentalprices|marketplace_ask|h7": -0.030500000000000027,
+   "gpurentalprices|neocloud_rate_card|h1": 0.027999999999999827,
+   "gpurentalprices|neocloud_rate_card|h3": 0.07999999999999982,
+   "gpurentalprices|neocloud_rate_card|h7": 0.149,
+   "fastgpu_daily|hyperscaler_spot|h1": 0.004999999999999984,
+   "fastgpu_daily|hyperscaler_spot|h3": 0.047,
+   "fastgpu_daily|hyperscaler_spot|h7": 0.08600000000000005,
+   "fastgpu_daily|neocloud_rate_card|h1": -1.231653667943533e-16,
+   "fastgpu_daily|neocloud_rate_card|h3": -0.009000000000000098,
+   "fastgpu_daily|neocloud_rate_card|h7": 0.06799999999999999,
+   "fastgpu_daily|neocloud_spot|h1": -8.153200337090993e-17,
+   "fastgpu_daily|neocloud_spot|h3": -0.07300000000000008,
+   "fastgpu_daily|neocloud_spot|h7": -0.054000000000000076
+  }
+ }
+}

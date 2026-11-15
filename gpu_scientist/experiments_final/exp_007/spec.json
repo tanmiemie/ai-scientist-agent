@@ -1,0 +1,24 @@
+{
+ "_hypothesis": "EDA.md: 45% of 10%+ moves fall on a day the provider count changed, and such moves are 7x larger. Momentum should react only to repricing, not to a change in who is listed: apply the momentum shift only when the provider count did not change on the day of the last rise. DEV-only sweep (scratch): this alone gives +0.1908 vs +0.1871 for spec 04; adding partial reversion after composition moves (rho 0.2-0.6) lowered DEV in all 18 settings, so rho = 0.",
+ "models": [
+  {
+   "name": "composition",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "k": 1,
+    "beta": 0.25,
+    "rho": 0.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}
