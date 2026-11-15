@@ -179,3 +179,13 @@ for name, f in [("open_dir", lambda: os.open(os.getcwd(), os.O_RDONLY)), ("chdir
     p = subprocess.run([sys.executable, "-c", probe, str(tmp_path)], cwd=C.ROOT, capture_output=True, text=True)
     assert p.returncode == 0, p.stderr
     assert p.stdout.split() == ["open_dir:blocked", "chdir:blocked"]
+
+
+
+def test_sandbox_env_carries_code_commit_and_out_dir(monkeypatch, tmp_path):
+    import provenance
+    monkeypatch.delenv("GPU_CODE_COMMIT", raising=False)
+    env = coder._env()
+    assert env["GPU_CODE_COMMIT"] == (provenance.code_commit() or "")
+    monkeypatch.setenv("GPU_CODE_COMMIT", "abc123+dirty")
+    assert provenance.code_commit() == "abc123+dirty"

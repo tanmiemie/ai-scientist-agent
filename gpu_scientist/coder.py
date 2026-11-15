@@ -200,6 +200,8 @@ def _env(extra: dict | None = None) -> dict:
     env.update({"TMPDIR": str(tmp), "MPLCONFIGDIR": str(tmp)})
     env.update({"GPU_LOAD_GENERATED": "1", "GPU_EXPERIMENTS": str(C.EXPERIMENTS), "PYTHONDONTWRITEBYTECODE": "1",
                 "GPU_DEV": ",".join(C.DEV_ORIGINS), "GPU_HOLDOUT": ",".join(C.HOLDOUT_ORIGINS)})
+    import provenance
+    env["GPU_CODE_COMMIT"] = provenance.code_commit() or ""
     env.update(extra or {})
     return env
 
