@@ -1,0 +1,16 @@
+{
+ "_hypothesis": "Overall coverage on dev is 0.4626 (well below target 0.80), with truth above q90 in 0.414 and below q10 in 0.123 (both too high); this strongly indicates undercoverage. Champion calibration is disabled. -> Enabling calibration (with default gamma=0.5, scale=0.01) will widen intervals and correct the obvious undercoverage, increasing overall coverage closer to (but likely still below) target 0.80, particularly reducing the rate above q90 and below q10. Change: Enable calibrate with default gamma and scale.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01
+ }
+}

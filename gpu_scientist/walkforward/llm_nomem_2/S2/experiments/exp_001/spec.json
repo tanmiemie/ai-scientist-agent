@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "coverage_in is 0.454958 (well below target 0.80), above_q90 0.420515 and below_q10 0.124527 (both too high\u2014should be ~0.10); intervals are too narrow everywhere. -> Enabling interval calibration should widen the forecast intervals, raising both overall coverage and interval coverage across all groups, especially improving the horizon splits (where coverage_in is ~0.32 at 1-day and only ~0.60 at 7-day). Change: Enable calibration with gamma=0.5, scale=0.01, group_by=instrument_class (default/calibration-on).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

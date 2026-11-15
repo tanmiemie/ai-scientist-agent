@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage for the fastgpu_daily|hyperscaler_spot group is too high: above_q90=0.262 and below_q10=0.31 (should be ~0.10 for each). This suggests that the intervals are much too wide, likely due to calibration at the source_class level not addressing overdispersed series within this group. -> Changing calibrate.group_by from source_class to gpu_model may better target groups with miscalibrated and overdispersed intervals, such as fastgpu_daily|hyperscaler_spot, because GPU-specific noise and trends may not be captured at coarser source_class aggregation. This could reduce interval width (improving coverage on that group) while keeping skill_pooled stable. Change: Set calibrate.group_by to gpu_model (keeping all other settings as in the champion).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "gpu_model"
+ }
+}

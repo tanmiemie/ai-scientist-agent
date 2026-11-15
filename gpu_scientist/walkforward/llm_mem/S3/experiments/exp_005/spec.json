@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "skill on fastgpu_daily|neocloud_spot and fastgpu_daily|hyperscaler_spot is dramatically worse vs other groups (0.239 and 0.182 vs 0.049 elsewhere); drift base skill in these groups is especially poor (0.008 and 0.001), yet leader signals in the diagnosis table have lagged correlations >0.9 for multiple series. -> Adding the leader model (which uses lagged leading indicators from other data sources at high correlation) to the ensemble will yield a substantial improvement in skill for fastgpu_daily|neocloud_spot and fastgpu_daily|hyperscaler_spot, with potential improvement in overall skill, especially at longer horizons, while maintaining coverage near target. Change: Add leader model to the model list and average (mean) with drift; keep calibration settings unchanged.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

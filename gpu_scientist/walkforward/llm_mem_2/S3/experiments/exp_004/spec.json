@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "Coverage is slightly high on q10 (below_q10 0.0909; target 0.10) and slightly low on q90 (above_q90 0.1051; target 0.10), but pooled in-interval is well calibrated (0.804). The pool skill is highest in afhubbard|hyperscaler_spot (skill 0.024) and lowest in fastgpu_daily|neocloud_spot (skill 0.235), with worst individual series all showing negative skill (e.g., fastgpu_daily.neocloud_spot.A100_80GB.spot.median = -inf, gpurentalprices.neocloud_rate_card.L4.on_demand.median = -1.04). All worst series are in the neocloud groups, and in all these groups leader has higher skill than drift (e.g. in fastgpu_daily|neocloud_spot: drift 0.008 vs leader 0.25). Mean ensemble does not specialize model weights by group. Historical use of a hedge ensemble by instrument_class (exp_003) with eta=2.0 performed worse (skill_pooled -0.0092 vs champion) and coverage dropped below 0.80. This suggests that the higher variance of hedge outweighed its adaptivity at this grouping/learning rate, but that other forms of adaptivity (on a different grouping, or with a lower eta) might help, or that calibration might not need to be grouped as granularly. -> Calibrating pooled rather than per-instrument_class will reduce noise in calibration and avoid overfitting for small groups, potentially improving overall and group skill without harming interval coverage. Coverage in current champion is already near target, and most skill in problematic groups (worst series) comes from the leader model, so this should avoid degrading performance of strong groups, while reducing variance in underrepresented groups (e.g., gpurentalprices|marketplace_ask, fastgpu_daily|neocloud_spot). Change: Set calibrate.group_by from 'instrument_class' to 'all', leaving models and combine method unchanged.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "all"
+ }
+}

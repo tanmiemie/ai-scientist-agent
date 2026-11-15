@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "Coverage is low across the board (overall 0.758, above_q90 0.1516, below_q10 0.09), especially in fastgpu_daily groups (high above_q90 and below_q10). Calibration uses gamma=0.5, scale=0.01, group_by=instrument_class. No modeling change was ever tried (drift only, all single). -> Adding a volatility-aware interval expansion model (vol_tail) may improve interval calibration and coverage, especially for groups with extreme above_q90/below_q10 rates and longer horizons. Change: Add vol_tail with default params and combine by mean (equal weights) with drift.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

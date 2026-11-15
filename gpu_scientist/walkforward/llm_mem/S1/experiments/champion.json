@@ -1,0 +1,52 @@
+{
+ "id": "exp_004",
+ "spec": {
+  "_hypothesis": "DEV group fastgpu_daily|neocloud_spot shows below_q10 = 0.163 and above_q90 = 0.228, both much higher than ideal 0.10; overall coverage is 0.758. Increasing calibrate.scale from 0.01 to 0.012 (exp_003) helped coverage only by 0.005, but dropped skill. The group most overdispersed is fastgpu_daily|neocloud_spot. -> Default calibration applied to instrument_class systematically over- or under-adjusts for some groups. Targeted calibration by source_class may better control coverage for outlier groups like fastgpu_daily|neocloud_spot, improving their interval coverage toward 0.8 without harming overall skill or causing overfitting. Change: Set calibrate.group_by from instrument_class (champion) to source_class. All other settings unchanged.",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.19798,
+  "skill_median_of_series": 0.142165,
+  "skill_geomean": -0.041305,
+  "coverage_in": 0.718599,
+  "coverage_above_q90": 0.184179,
+  "coverage_below_q10": 0.097222,
+  "share_series_positive": 0.694444,
+  "by_horizon": {
+   "1": 0.075422,
+   "3": 0.100023,
+   "7": 0.253657
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.148669,
+  "skill_median_of_series": 0.116546,
+  "skill_geomean": 0.030399,
+  "coverage_in": 0.838742,
+  "coverage_above_q90": 0.072008,
+  "coverage_below_q10": 0.089249,
+  "share_series_positive": 0.666667,
+  "by_horizon": {
+   "1": 0.061132,
+   "3": 0.120741,
+   "7": 0.196969
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "The champion is strongest on afhubbard|hyperscaler_spot (skill 0.053) but weakest (negative or near zero skill) on fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot (skill -0.03 and -0, respectively). Coverage in these weak groups is also off: e.g., fastgpu_daily|neocloud_spot has above_q90 of 16.1% and below_q10 of 12.4%, over-dispersed relative to ideal 10%. -> The 'drift' model is too slow to adapt to recent shocks in some groups, leading to over-dispersed intervals. Adding 'momentum' (which reacts faster to trend changes) in a mean ensemble should help reduce pinball loss and bring coverage closer to target, especially for fastgpu_daily|neocloud_spot and fastgpu_daily|hyperscaler_spot. Change: Add 'momentum' model (default params) and combine by mean.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

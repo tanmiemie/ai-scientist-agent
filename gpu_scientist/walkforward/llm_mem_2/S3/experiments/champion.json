@@ -1,0 +1,60 @@
+{
+ "id": "exp_002",
+ "spec": {
+  "_hypothesis": "Skill and coverage are much lower in fastgpu_daily|hyperscaler_spot (skill 0.182; coverage below_q10 0.228, above_q90 0.111), versus afhubbard|hyperscaler_spot (skill 0.049; below_q10 0.049, above_q90 0.06). All use 'drift' only, but some series show lead-lag correlation (e.g., fastgpu_daily.neocloud_rate_card.RTX_A6000 has gpurentalprices.neocloud_rate_card.RTX_A6000 as a leader at lag 3, corr -0.924), and 'leader' is not yet tried. -> Adding the leader model as a second base (with default window=60, floor=1.0, beta=1.0) and combining by mean will improve skill and calibration. Strong cross-source lead signals (e.g., -0.924 at lag 3) should reduce error and over-uncertainty, especially for series with high correlations noted. Change: Add leader as a second model; switch combine.method from single to mean (equal weights, no eta/group_by).",
+  "models": [
+   {
+    "name": "drift"
+   },
+   {
+    "name": "leader",
+    "params": {
+     "window": 60,
+     "floor": 1.0,
+     "beta": 1.0
+    }
+   }
+  ],
+  "combine": {
+   "method": "mean"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.183879,
+  "skill_median_of_series": 0.177484,
+  "skill_geomean": 0.090595,
+  "coverage_in": 0.803951,
+  "coverage_above_q90": 0.105058,
+  "coverage_below_q10": 0.090991,
+  "share_series_positive": 0.75,
+  "by_horizon": {
+   "1": 0.076552,
+   "3": 0.173559,
+   "7": 0.211593
+  },
+  "n_cells": 3341,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.128731,
+  "skill_median_of_series": 0.209763,
+  "skill_geomean": 0.171733,
+  "coverage_in": 0.756795,
+  "coverage_above_q90": 0.09299,
+  "coverage_below_q10": 0.150215,
+  "share_series_positive": 0.757576,
+  "by_horizon": {
+   "1": 0.086918,
+   "3": 0.045374,
+   "7": 0.176766
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

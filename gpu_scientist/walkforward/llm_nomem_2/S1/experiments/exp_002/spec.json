@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Overall skill 0.1778, coverage_in 0.758454 (target 0.80), skill for afhubbard|hyperscaler_spot is only 0.066 but base drift model achieves 0.186 for this group. -> Changing calibration group_by from instrument_class to all will allow global interval adjustment factors to borrow strength across instrument classes, helping underperforming small groups like afhubbard|hyperscaler_spot whose interval coverage is very low (above_q90 and below_q10 sum to 12%, well below target 20%) and average skill is much worse than single base model skill. This global pooling should improve coverage on small groups without major skill loss. Change: Set calibrate.group_by from instrument_class to all.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "all"
+ }
+}

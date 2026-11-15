@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "calibration coverage 0.7896 (target 0.80), calibration gamma=0.5, scale=0.01, group_by=instrument_class. Small remaining undercoverage especially at q10 for some groups. Lowering gamma will slow calibration steps and may get intervals closer to desired coverage without further widening. -> Reducing calibration gamma from 0.5 to 0.3 (keeping scale constant so step size drops from 0.005 to 0.003) will allow finer, less volatile adjustments to interval width, reducing overshoot and helping coverage nudge closer to the 0.80 target, while retaining prior gains. Change: calibrate.gamma from 0.5 to 0.3 (scale remains 0.01, so smaller update step per miss hit).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.3,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "_hypothesis": "By series group: fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot have high above_q90 (0.214; 0.228) and below_q10 (0.179; 0.163), and have among the worst skill per-group (0.184; 0.156), but leader models show very high lagged correlation between alternative collectors (e.g., leader corr=0.87 for RTX_6000_Ada). Yet, the champion only uses drift. Past lesson: switching calibration step size directly was too aggressive and overfitted. All combine weights are 1 (single model). -> Adding the leader model (default params) via mean ensemble with drift may help particularly in series with strong cross-collector lagged correlation (e.g., neocloud_rate_card, fastgpu_daily); this should reduce error in series with known leader/lag correlations and could improve coverage if leader forecasts are more timely. Change: Add leader model (default) and combine with drift by mean.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader"
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01
+ }
+}

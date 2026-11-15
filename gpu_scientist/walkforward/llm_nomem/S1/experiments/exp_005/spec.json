@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "DEV skill is especially poor for gpurentalprices|neocloud_rate_card (0.056 drift skill, 0.303 overall skill), and overall coverage is low at 0.72. Calibration is currently by instrument_class. Given that mean_log_err_q50 is slightly positive (0.008 for 'same' provider count, 0.017 for gpurentalprices|neocloud_rate_card), it may help to calibrate at finer granularity. -> Calibrating by source_id instead of instrument_class will reduce mean_log_err_q50 for gpurentalprices|neocloud_rate_card and improve skill/coverage in that group, by correcting small source-specific biases in interval location. Change: Set calibrate.group_by to source_id",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "source_id"
+ }
+}

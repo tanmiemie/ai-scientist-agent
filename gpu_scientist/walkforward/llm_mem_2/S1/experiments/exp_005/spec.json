@@ -1,0 +1,16 @@
+{
+ "_hypothesis": "Coverage in champion is 0.733 (target 0.80); above_q90 (0.18 overall) is high, especially in fastgpu_daily|hyperscaler_spot (0.262) and fastgpu_daily|neocloud_spot (0.255), while below_q10 (0.09) is slightly low. Prior experiments show calibration scale 0.01 is safe, scale 0.02 overfits, and that decreasing gamma from 0.5 to 0.3 (at scale 0.01) tightened intervals but dropped coverage. -> Increasing calibration gamma to 0.4 (from 0.3, keeping scale at 0.01) will slightly widen intervals, recovering some coverage toward 0.80 overall without substantial overfitting or skill loss. This should reduce above_q90 counts (especially in fastgpu_daily|hyperscaler_spot and neocloud_spot) and increase coverage_in, while maintaining pinball skill gains seen in exp_004. Change: Increase calibrate.gamma from 0.3 to 0.4 (keep scale 0.01).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.4,
+  "scale": 0.01
+ }
+}

@@ -1,0 +1,80 @@
+{
+ "weights": {
+  "hyperscaler_spot|h1": {
+   "drift": 0.999997004841661,
+   "leader": 2.9951583389265757e-06
+  },
+  "hyperscaler_spot|h3": {
+   "drift": 2.7764992391147943e-33,
+   "leader": 1.0
+  },
+  "hyperscaler_spot|h7": {
+   "drift": 1.194213928419263e-29,
+   "leader": 1.0
+  },
+  "marketplace_ask|h1": {
+   "drift": 1.58806412517217e-07,
+   "leader": 0.9999998411935875
+  },
+  "marketplace_ask|h3": {
+   "drift": 0.9999986341949403,
+   "leader": 1.365805059720652e-06
+  },
+  "marketplace_ask|h7": {
+   "drift": 1.6220507118656269e-34,
+   "leader": 1.0
+  },
+  "neocloud_rate_card|h1": {
+   "drift": 1.3254003060246396e-25,
+   "leader": 1.0
+  },
+  "neocloud_rate_card|h3": {
+   "drift": 2.0450742581987206e-70,
+   "leader": 1.0
+  },
+  "neocloud_rate_card|h7": {
+   "drift": 1.3115206168411326e-125,
+   "leader": 1.0
+  },
+  "neocloud_spot|h1": {
+   "drift": 2.5434716436697264e-09,
+   "leader": 0.9999999974565283
+  },
+  "neocloud_spot|h3": {
+   "drift": 4.410134176818714e-25,
+   "leader": 1.0
+  },
+  "neocloud_spot|h7": {
+   "drift": 2.2316845466298554e-46,
+   "leader": 1.0
+  }
+ },
+ "calibration_up": {
+  "hyperscaler_spot|h1": 0.01299999999999996,
+  "hyperscaler_spot|h3": 0.003999999999999929,
+  "hyperscaler_spot|h7": -0.014000000000000075,
+  "marketplace_ask|h1": 0.0069999999999999785,
+  "marketplace_ask|h3": 0.002999999999999986,
+  "marketplace_ask|h7": 0.009999999999999983,
+  "neocloud_rate_card|h1": 0.020999999999999817,
+  "neocloud_rate_card|h3": -0.006000000000000167,
+  "neocloud_rate_card|h7": -1.0755285551056204e-16,
+  "neocloud_spot|h1": 0.008999999999999965,
+  "neocloud_spot|h3": 0.01599999999999996,
+  "neocloud_spot|h7": 0.07000000000000003
+ },
+ "calibration_dn": {
+  "hyperscaler_spot|h1": 0.047999999999999945,
+  "hyperscaler_spot|h3": 0.04399999999999993,
+  "hyperscaler_spot|h7": 0.06100000000000001,
+  "marketplace_ask|h1": -0.003000000000000001,
+  "marketplace_ask|h3": -0.02700000000000002,
+  "marketplace_ask|h7": -0.030000000000000023,
+  "neocloud_rate_card|h1": -0.07400000000000016,
+  "neocloud_rate_card|h3": 0.06899999999999976,
+  "neocloud_rate_card|h7": 0.02499999999999981,
+  "neocloud_spot|h1": -0.09100000000000008,
+  "neocloud_spot|h3": -0.08400000000000009,
+  "neocloud_spot|h7": -0.06000000000000008
+ }
+}

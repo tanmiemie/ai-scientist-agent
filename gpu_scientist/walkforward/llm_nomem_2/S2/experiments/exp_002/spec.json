@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "By group, 'fastgpu_daily|neocloud_rate_card' (n=759) has skill 0.169, but 'drift' alone provides only 0.023 here. Skill is much higher in the champion with calibration by 'instrument_class', likely compensating for highly grouped over/underprediction in this group (see mean_log_err_q50 = 0.004). Calibrating on a finer group may correct residual local bias. -> Calibrating by 'series_id' instead of 'instrument_class' will better correct group-local bias, especially in groups like 'fastgpu_daily|neocloud_rate_card' and 'gpurentalprices|neocloud_rate_card' where 'drift' alone is weak and the mean_log_err_q50 is slightly positive, indicating a tendency to slightly underpredict. Finer grouping should improve coverage/skill in these groups without reducing coverage overall. Change: Set calibrate.group_by to 'series_id' instead of 'instrument_class'.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

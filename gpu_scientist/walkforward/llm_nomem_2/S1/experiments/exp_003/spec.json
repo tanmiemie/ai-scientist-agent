@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "coverage_in is only 0.758, below the 0.80 target, with above_q90 at 0.151 and below_q10 at 0.090. Calibration uses gamma=0.5 and scale=0.01 grouped by instrument_class. Raising scale may broaden intervals and increase coverage without much risk of overshoot due to the small step. -> Increasing calibrate.scale to 0.02 (doubling step size) while keeping gamma=0.5 will increase coverage closer to 0.80 by more aggressively correcting undercoverage, especially for groups with low below_q10 shares, and should improve or maintain skill if not excessive. Change: Increase calibrate.scale from 0.01 to 0.02.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.02,
+  "group_by": "instrument_class"
+ }
+}

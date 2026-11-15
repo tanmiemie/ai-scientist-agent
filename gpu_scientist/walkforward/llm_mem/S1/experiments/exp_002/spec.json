@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration coverage is still low at 0.758, especially for 'fastgpu_daily|neocloud_rate_card' and 'gpurentalprices|neocloud_rate_card' (0.071-0.076 below q10, 0.119-0.163 above q90) and 'fastgpu_daily|neocloud_spot' (0.163 below q10). The 0.01 scale is conservative (1% each step). -> Increasing calibrate.scale from 0.01 to 0.02 (keeping gamma fixed) will allow the calibration to adapt intervals more quickly, improving coverage, especially in 'neocloud_rate_card' and 'neocloud_spot' series where intervals remain too tight. Skill should not drop if the effect is not overfitting. Change: calibrate.scale from 0.01 to 0.02",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.02,
+  "group_by": "instrument_class"
+ }
+}

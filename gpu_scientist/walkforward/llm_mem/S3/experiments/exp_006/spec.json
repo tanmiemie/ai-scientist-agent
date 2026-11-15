@@ -1,0 +1,22 @@
+{
+ "_hypothesis": "Skill is especially poor in fastgpu_daily|neocloud_spot (0.235) and fastgpu_daily|hyperscaler_spot (0.179), where leader (0.25/0.105) strongly outperforms drift (0.008/0.001), but mean weights are fixed at 0.5:0.5. By contrast, in afhubbard|hyperscaler_spot, drift excels (0.174) and leader is much worse (0.115). The coverage and quantile calibration are currently near target (0.804). Mean-weight is not leveraging differences between these base models by group. -> Switching to a hedge ensemble with group_by=instrument_class and eta=2.0 will allow the ensemble to upweight leader or drift where it performs best (e.g., leader in neocloud_spot/rate_card, drift in afhubbard hyperscaler_spot), improving pooled skill by at least 0.005 without harming coverage (~0.80). Change: Change combine.method to hedge, add eta=2.0 and group_by=instrument_class (default).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader"
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "instrument_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

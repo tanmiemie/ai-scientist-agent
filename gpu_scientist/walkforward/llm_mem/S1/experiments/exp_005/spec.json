@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "In the champion, fastgpu_daily|hyperscaler_spot group has skill 0.09 and very high overcoverage (above_q90 = 0.262, below_q10 = 0.31). This group exhibits much wider than needed intervals, suggesting miscalibration. -> Calibrating by the more granular group_by='series_id' (instead of 'source_class') will better adapt to per-series error characteristics, especially for outlier series and groups like fastgpu_daily|hyperscaler_spot that are overdispersed at group level but may have series with tighter true intervals. This could tighten coverage toward target and improve skill, especially in overcovered groups. Change: Change calibrate.group_by from 'source_class' to 'series_id'",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

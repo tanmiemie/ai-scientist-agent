@@ -1,0 +1,52 @@
+{
+ "id": "exp_001",
+ "spec": {
+  "_hypothesis": "Overall coverage is only 0.455; skill is 0.0474. Coverage above q90 is 0.42 (vs. 0.10 target), below q10 is 0.12 (target 0.10). Coverage by group and horizon shows substantial undercoverage. -> Calibrating the intervals should increase coverage much closer to the target of 0.8 without substantially degrading skill. The largest current failure is dramatic undercoverage (q90: 0.42 vs 0.10; q10: 0.12 vs 0.10). Change: Enable calibration with default gamma=0.5 and scale=0.01, grouping by instrument_class.",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.16315,
+  "skill_median_of_series": 0.11176,
+  "skill_geomean": 0.066227,
+  "coverage_in": 0.789553,
+  "coverage_above_q90": 0.118849,
+  "coverage_below_q10": 0.091597,
+  "share_series_positive": 0.722222,
+  "by_horizon": {
+   "1": 0.057227,
+   "3": 0.0512,
+   "7": 0.240616
+  },
+  "n_cells": 2642,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.230443,
+  "skill_median_of_series": 0.239894,
+  "skill_geomean": 0.064013,
+  "coverage_in": 0.846924,
+  "coverage_above_q90": 0.067239,
+  "coverage_below_q10": 0.085837,
+  "share_series_positive": 0.727273,
+  "by_horizon": {
+   "1": 0.158942,
+   "3": 0.27372,
+   "7": 0.2236
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

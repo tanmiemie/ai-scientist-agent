@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "The champion uses calibration group_by=instrument_class, with overall skill 0.1631, coverage_in 0.7896; worst skill is in gpurentalprices|neocloud_rate_card (-0.877 to 0.073). -> Calibrating separately by gpu_model could improve interval coverage and reduce negative-skill series, especially for hardware-specific rate-card series. Change: Change calibrate.group_by from instrument_class to gpu_model.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "gpu_model"
+ }
+}
