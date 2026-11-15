@@ -1,0 +1,201 @@
+{
+ "experiment": "exp_002",
+ "provider": "openai",
+ "model": "gpt-4.1",
+ "n_reviews": 5,
+ "keep_if_votes_at_least": 3,
+ "temperature": 0.1,
+ "kept_flags": [
+  "gain_from_few_series",
+  "interval_widened_not_centred",
+  "other"
+ ],
+ "items": {
+  "leakage_risk": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "gain_from_few_series": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801), and only 19/37 series improved.",
+    "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801 out of 1.476791 total loss reduction), and only 19/37 series improved.",
+    "The largest 3 series account for 40.3% of the absolute skill change (1.2385, -1.1627, 0.7328), and only 19/37 series improved.",
+    "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801), and only 19 of 37 series improved while 18 worsened.",
+    "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801), and only 19 of 37 series improved while 18 worsened."
+   ]
+  },
+  "interval_widened_not_centred": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "Mean log interval width q90/q10 increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev), suggesting improvement is largely from wider intervals.",
+    "Mean log interval width increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev), suggesting improvement is mainly from wider intervals.",
+    "Mean log interval width increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.6437 to 0.7930 (dev) and 0.7150 to 0.7767 (holdout), suggesting wider intervals drove much of the improvement.",
+    "Mean log interval width increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev) and 0.715043 to 0.776673 (holdout), suggesting improvement is largely from wider intervals.",
+    "Mean log interval width q90/q10 increased from 0.04567 to 0.08949 (dev) and from 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev) and 0.715043 to 0.776673 (holdout), suggesting the improvement is largely due to wider intervals."
+   ]
+  },
+  "repeats_rejected_idea": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "other": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "DEV/HOLDOUT divergence: skill_pooled drops from 0.183275 (dev) to 0.097039 (holdout), and skill_geomean from 0.118615 to 0.054054, indicating possible overfitting or instability.",
+    "DEV/holdout skill_pooled diverges (0.1833 vs 0.0970), and geomean drops sharply on holdout (0.1186 to 0.0541), suggesting possible overfitting or instability.",
+    "DEV skill_pooled gain (+0.0155) is much larger than holdout (+0.0068); holdout geomean skill dropped from 0.1420 (champion) to 0.0541 (this), and some series/groups regressed (e.g., afhubbard.hyperscaler_spot: 0.1129 to 0.0361).",
+    "DEV skill_pooled gain (+0.0155) is much larger than holdout (+0.0068), and holdout geomean skill dropped from 0.142009 (champion) to 0.054054 (this), indicating possible overfitting or generalization issues.",
+    "DEV skill_pooled gain (+0.0155) is much larger than HOLDOUT (+0.0068), and holdout geomean skill dropped from 0.142009 (champion) to 0.054054 (this), indicating possible overfitting or generalization issues."
+   ]
+  }
+ },
+ "reviews": [
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; calibration is online and per group.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801), and only 19/37 series improved.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width q90/q10 increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev), suggesting improvement is largely from wider intervals.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No similar or overlapping hypothesis was previously rejected (rejected_earlier_in_ledger: []).",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: skill_pooled drops from 0.183275 (dev) to 0.097039 (holdout), and skill_geomean from 0.118615 to 0.054054, indicating possible overfitting or instability.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout misuse, or look-ahead features; calibration is online and per group.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801 out of 1.476791 total loss reduction), and only 19/37 series improved.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev), suggesting improvement is mainly from wider intervals.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No similar or overlapping hypothesis was previously rejected (rejected_earlier_in_ledger is empty).",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/holdout skill_pooled diverges (0.1833 vs 0.0970), and geomean drops sharply on holdout (0.1186 to 0.0541), suggesting possible overfitting or instability.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; calibration is online and per group.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 40.3% of the absolute skill change (1.2385, -1.1627, 0.7328), and only 19/37 series improved.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.6437 to 0.7930 (dev) and 0.7150 to 0.7767 (holdout), suggesting wider intervals drove much of the improvement.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No similar or overlapping hypothesis was previously rejected (rejected_earlier_in_ledger is empty).",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled gain (+0.0155) is much larger than holdout (+0.0068); holdout geomean skill dropped from 0.1420 (champion) to 0.0541 (this), and some series/groups regressed (e.g., afhubbard.hyperscaler_spot: 0.1129 to 0.0361).",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout misuse, or look-ahead in features is present in the provided data.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801), and only 19 of 37 series improved while 18 worsened.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.04567 to 0.08949 (dev) and 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev) and 0.715043 to 0.776673 (holdout), suggesting improvement is largely from wider intervals.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected ideas is listed in 'rejected_earlier_in_ledger'.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled gain (+0.0155) is much larger than holdout (+0.0068), and holdout geomean skill dropped from 0.142009 (champion) to 0.054054 (this), indicating possible overfitting or generalization issues.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead in features is present in the experiment description.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 40.3% of the absolute skill change (1.238512, -1.162656, 0.732801), and only 19 of 37 series improved while 18 worsened.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width q90/q10 increased from 0.04567 to 0.08949 (dev) and from 0.06735 to 0.1112 (holdout), while coverage_in rose from 0.643735 to 0.792998 (dev) and 0.715043 to 0.776673 (holdout), suggesting the improvement is largely due to wider intervals.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No similar or overlapping hypothesis is listed in the rejected_earlier_in_ledger array.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled gain (+0.0155) is much larger than HOLDOUT (+0.0068), and holdout geomean skill dropped from 0.142009 (champion) to 0.054054 (this), indicating possible overfitting or generalization issues.",
+    "severity": 2
+   }
+  }
+ ],
+ "note": "Flags only; the numeric gate's accept/reject decision is unchanged."
+}
