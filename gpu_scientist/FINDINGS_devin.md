@@ -189,3 +189,20 @@ Per-series Wilcoxon, exp_008 vs exp_007 (one-sided, per-series log loss ratio, `
 HOLDOUT by collector (pooled skill): afhubbard (4 series) +0.2386 → +0.2525, fastgpu_daily (20) +0.0936 → +0.0948, gpurentalprices (13) +0.0970 → +0.0967. On the 17 series that could have been chosen with data up to 10-15 (honest_eval early set): HOLDOUT pooled +0.1116 → +0.1128. Report: `experiments_aggregator/exp_008/aggregator_report.json` (`scratch/aggregator_report.py`).
 
 **Verdict: weak, non-significant positive.** The hypothesis as stated (the series moves toward the aggregator) is rejected on DEV: putting it into the median always lost. A weaker form, using the aggregator gap to decide which interval edge to widen, passes the pre-registered gate, but the HOLDOUT gain is +0.0011 (the 0.0 tolerance is easy to clear when every edge shift is ≤1%), the HOLDOUT Wilcoxon is not significant, gpurentalprices is flat, and the DEV gain is the best of 64 settings, so it is optimistic. Not adopted for `submission_final/` (not asked; a change of this size is within noise). Caveat: GetDeploying's upstream panel includes venues our collectors also track (e.g. RunPod), so the signal is not fully independent of our own series. The provider-churn split points the same way: with a fixed provider set the aggregator does not lead our series on DEV, so what exp_008 picks up is mostly composition change in the aggregator (new or departing providers at a different price level), and the file's single 2026-11-07 vintage may overstate even that.
+
+## Exa in the research loop (`DEVIN_NEXT.md` task 0, `walkforward/llm_exa/`)
+
+`python walkforward.py --proposer llm --provider openai --iters 6 --exa --run llm_exa` (gpt-4.1; 18/18 iterations, no Exa errors). Compared with `llm_openai_v2` (same slices, same seed, no Exa); table from `scratch/exa_compare.py`.
+
+| slice | v2 (no Exa) seed → final | v2 gain | Exa final | Exa gain | Exa accepted |
+|---|---|---|---|---|---|
+| S1 | 0.1452 → 0.2023 | +0.0571 | 0.2237 | +0.0788 | 3/6 |
+| S2 | 0.0216 → 0.0875 | +0.0660 | 0.0347 | +0.0130 | 2/6 |
+| S3 | 0.0774 → 0.0789 | +0.0015 | 0.0357 | −0.0417 | 2/6 |
+| mean | | +0.0415 (3/3) | | +0.0167 (2/3) | |
+
+- **No measurable gain from Exa in one run.** S3's loss is the last acceptance (`exp_006`, calibration `group_by` instrument_class → source_class: DEV +0.005, gate +0.027, TEST 0.0747 → 0.0357), the same small-acceptance overfit seen in the wide walk-forward. LLM runs vary by about this much between repeats (memory ablation), so this is not evidence that Exa hurts.
+- **Citations:** 2 of 18 proposals set `source_url`, both to the same undated method paper (arXiv 2207.14219, adaptive conformal multi-step forecasting): S2 `exp_003` rejected, S3 `exp_001` accepted (online conformal calibration, which every slice also accepted first without a citation). No proposal cited market news.
+- **Evidence found:** 5 method papers per slice (mostly online/adaptive conformal); market articles dated on or before each cutoff: S1 1, S2 3, S3 4 (FastGPU October report 10-11, TokenWatt 16-provider snapshot 10-19, dreaming.press 10-23, Lindstead EU index).
+- **Issues (not fixed):** (1) `exa_scout.queries()` maps the diagnosis to one of 4 fixed issue strings and the market query depends only on the cutoff month, so every iteration in a slice sent the same two queries and the evidence memory stopped growing after iteration 1. (2) Lindstead's "EU GPU Price Index, October 2026" carries Exa `publishedDate` 2026-09-27 although the title covers October: a living page edited after its date, which a `publishedDate` filter cannot catch. (3) Method pages without a date pass the filter by design; the arXiv `v9` link is a later revision than the original.
+- The S1 seed TEST is 0.1449 here vs 0.1452 in v2 (same seed spec); probably code merged since v2, not verified.
