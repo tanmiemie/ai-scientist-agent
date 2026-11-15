@@ -15,3 +15,7 @@ gpu_scientist/experiments_app/
 gpu_scientist/walkforward/app_*/
 gpu_scientist/demo_run/
 !gpu_scientist/experiments*/**/forecast_all.csv.gz
+
+# Data pack (download with gpu_scientist/get_pack.sh)
+gpu-price-pack-v0.1.1-handover/
+gpu-price-pack-v0.1.1-handover_pack-only.zip
