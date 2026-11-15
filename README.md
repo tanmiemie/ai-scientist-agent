@@ -58,6 +58,10 @@ Each research round runs on its own:
 
 **Live app: https://ai-scientist-agent-7tr2gdce25ju7s2y4awdbj.streamlit.app/**
 
+[![GPU Value AI Scientist: 2-minute demo](docs/demo-preview.gif)](https://github.com/tanmiemie/ai-scientist-agent/releases/download/demo-video-v1/gpu-value-ai-scientist-demo-en.mp4)
+
+**2-minute narrated demo:** [English](https://github.com/tanmiemie/ai-scientist-agent/releases/download/demo-video-v1/gpu-value-ai-scientist-demo-en.mp4) · [中文](https://github.com/tanmiemie/ai-scientist-agent/releases/download/demo-video-v1/gpu-value-ai-scientist-demo-zh.mp4)
+
 A web app on top of the research ledger: the self-improvement path (Overview), every experiment and its lesson (Research ledger), where forecasts miss (Diagnosis), truth against the forecast band for any series (Forecast explorer), unseen-week tests (Walk-forward), what the LLM proposed and which Exa sources it cited (Proposer log), and a **Lab** to start an autonomous research run live in its own workspace, without touching the official ledger.
 
 Or run it locally (about 1 minute):
