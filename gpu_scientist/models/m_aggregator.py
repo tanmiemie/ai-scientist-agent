@@ -46,9 +46,9 @@ def _table() -> pd.DataFrame:
 
 @lru_cache(maxsize=None)
 def agg_series(gpu: str, mode: str, col: str = "median_usd_per_gpu_hour", lag: int = 0) -> pd.Series:
-    """Weekly values indexed by the first day they may be used (week_start + 7 + lag days)."""
+    """Weekly values indexed by the first day they may be used (week_start + 7 + lag days, lag >= 0)."""
     g = _table().loc[(gpu, mode)].sort_values("week_start")
-    s = g.set_index(g.week_start + pd.Timedelta(days=7 + lag))[col].dropna()
+    s = g.set_index(g.week_start + pd.Timedelta(days=7 + max(int(lag), 0)))[col].dropna()
     return s[s > 0]
 
 
