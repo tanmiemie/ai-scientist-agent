@@ -1,0 +1,258 @@
+{
+  "anchor": "2026-11",
+  "rental_usd_per_gpu_hour": {
+    "H100": {
+      "low": {
+        "2026-11": 3.0,
+        "2027-11": 1.95,
+        "2028-11": 1.27,
+        "2029-11": 0.82
+      },
+      "base": {
+        "2026-11": 3.0,
+        "2027-11": 2.64,
+        "2028-11": 2.32,
+        "2029-11": 2.04
+      },
+      "high": {
+        "2026-11": 3.0,
+        "2027-11": 3.09,
+        "2028-11": 3.18,
+        "2029-11": 3.28
+      }
+    },
+    "A100": {
+      "low": {
+        "2026-11": 1.65,
+        "2027-11": 0.99,
+        "2028-11": 0.59,
+        "2029-11": 0.36
+      },
+      "base": {
+        "2026-11": 1.65,
+        "2027-11": 1.4,
+        "2028-11": 1.19,
+        "2029-11": 1.01
+      },
+      "high": {
+        "2026-11": 1.65,
+        "2027-11": 1.65,
+        "2028-11": 1.65,
+        "2029-11": 1.65
+      }
+    }
+  },
+  "resale_usd_per_module": {
+    "H100": {
+      "low": {
+        "2026-11": 14200,
+        "2027-11": 7100,
+        "2028-11": 3600,
+        "2029-11": 1800
+      },
+      "base": {
+        "2026-11": 14200,
+        "2027-11": 10700,
+        "2028-11": 8000,
+        "2029-11": 6000
+      },
+      "high": {
+        "2026-11": 14200,
+        "2027-11": 13100,
+        "2028-11": 12100,
+        "2029-11": 11100
+      }
+    },
+    "A100": {
+      "low": {
+        "2026-11": 5400,
+        "2027-11": 2400,
+        "2028-11": 1100,
+        "2029-11": 500
+      },
+      "base": {
+        "2026-11": 5400,
+        "2027-11": 3800,
+        "2028-11": 2600,
+        "2029-11": 1900
+      },
+      "high": {
+        "2026-11": 5400,
+        "2027-11": 4900,
+        "2028-11": 4400,
+        "2029-11": 3900
+      }
+    }
+  },
+  "cross_checks": {
+    "usd_per_capability_unit_res1m": {
+      "A100": 1.696,
+      "H100": 1.363,
+      "H200": 1.456,
+      "B200": 1.022
+    },
+    "resale_vs_rent": {
+      "H100": {
+        "net_cash_per_gpu_year": 15300,
+        "node_resale_per_gpu": 24400,
+        "years_of_net_cash": 1.59,
+        "base_2028_years_of_net_cash": 1.23
+      },
+      "A100": {
+        "net_cash_per_gpu_year": 7900,
+        "node_resale_per_gpu": 11900,
+        "years_of_net_cash": 1.5,
+        "base_2028_years_of_net_cash": 1.12
+      }
+    }
+  },
+  "market_forward_2029": {
+    "H100": 2.63,
+    "A100": 1.24
+  },
+  "parity_a100_over_h100": {
+    "compute_mlperf": 0.41,
+    "memory_bandwidth": 0.61
+  },
+  "pack_tests": {
+    "on_demand": {
+      "cross_section_change_per_year_of_age": -0.264,
+      "cohort_change_over_year": {
+        "A100": 0.225,
+        "H100": 0.33
+      },
+      "a100_over_h100": [
+        0.51,
+        0.47
+      ],
+      "n_providers_last_week": {
+        "A100": 39,
+        "H100": 46
+      }
+    },
+    "reserved_1m": {
+      "cross_section_change_per_year_of_age": -0.261,
+      "cohort_change_over_year": {
+        "A100": -0.236,
+        "H100": -0.155
+      },
+      "a100_over_h100": [
+        0.59,
+        0.54
+      ],
+      "n_providers_last_week": {
+        "A100": 6,
+        "H100": 10
+      }
+    },
+    "reserved_12m": {
+      "cross_section_change_per_year_of_age": -0.247,
+      "cohort_change_over_year": {
+        "A100": -0.316,
+        "H100": 0.02
+      },
+      "a100_over_h100": [
+        0.82,
+        0.55
+      ],
+      "n_providers_last_week": {
+        "A100": 10,
+        "H100": 14
+      }
+    },
+    "spot": {
+      "cross_section_change_per_year_of_age": -0.249,
+      "cohort_change_over_year": {
+        "A100": 0.143,
+        "H100": 0.082
+      },
+      "a100_over_h100": [
+        0.51,
+        0.54
+      ],
+      "n_providers_last_week": {
+        "A100": 8,
+        "H100": 12
+      }
+    }
+  },
+  "ccir_check": {
+    "H100": {
+      "anchor": 3.0,
+      "between_marketplace_and_neocloud": true
+    },
+    "A100": {
+      "anchor": 1.65,
+      "between_marketplace_and_neocloud": true
+    },
+    "a100_over_h100_by_tier": {
+      "hyperscaler": 0.4,
+      "neocloud": 0.63,
+      "marketplace": 0.42,
+      "neocloud_interruptible": 0.56
+    }
+  },
+  "electricity_sensitivity": {
+    "H100": {
+      "electricity_usd_per_hr": 0.073,
+      "share_of_floor": 0.21,
+      "floor_after_3y_at_+5pct": 0.361,
+      "floor_if_power_doubles": 0.423
+    },
+    "A100": {
+      "electricity_usd_per_hr": 0.042,
+      "share_of_floor": 0.17,
+      "floor_after_3y_at_+5pct": 0.257,
+      "floor_if_power_doubles": 0.292
+    }
+  },
+  "dcf": {
+    "assumptions": {
+      "util": 0.7,
+      "rate": 0.15,
+      "end_value": 0.0,
+      "life_end_year": {
+        "H100": 2030.9,
+        "A100": 2029.9
+      }
+    },
+    "values": {
+      "H100": {
+        "node_resale_per_gpu_now": 24400,
+        "model_value_now": {
+          "low": 17900,
+          "base": 33200,
+          "high": 46700
+        },
+        "model_value_2028": {
+          "low": 3500,
+          "base": 15500,
+          "high": 27700
+        },
+        "base_now_util_65_85": [
+          30200,
+          42200
+        ],
+        "implied_rate_base": 0.34
+      },
+      "A100": {
+        "node_resale_per_gpu_now": 11900,
+        "model_value_now": {
+          "low": 7200,
+          "base": 13500,
+          "high": 18100
+        },
+        "model_value_2028": {
+          "low": 500,
+          "base": 4000,
+          "high": 6900
+        },
+        "base_now_util_65_85": [
+          12200,
+          17500
+        ],
+        "implied_rate_base": 0.24
+      }
+    }
+  }
+}

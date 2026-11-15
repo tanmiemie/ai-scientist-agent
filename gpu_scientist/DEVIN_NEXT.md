@@ -14,9 +14,41 @@ within 7 days, and vice versa.
 2. If DEV shows a signal, implement `models/m_aggregator.py` (new file, data up to the origin only; read
    the CSV once and cache it), choose parameters on DEV in a scratch sweep, then run ONE experiment through
    `run_experiment.py` in a copy of `experiments_final` (GPU_EXPERIMENTS), parent exp_007.
+   Data rules for this file (added): weeks are Monday-dated and each value is the median of that week's
+   daily captures, so a week is usable only at origins on or after week_start + 7 days. The whole file
+   was retrieved on 2026-11-07, so past weeks may be a later vintage than what was public at the origin:
+   say so in the report. Never interpolate weekly values to daily. The median counts every listing, so
+   it moves when providers join or leave (`n_providers`, `n_offerings`): test the signal both with and
+   without weeks where `n_providers` changed.
 3. Report DEV and HOLDOUT, per-series Wilcoxon vs exp_007 (see significance.py), and the per-collector
    HOLDOUT split (see honest_eval.py). Do not change experiments_final/ or submission_final/.
 A clear negative result is fine.
+
+## C. Memory ablation  (branch `devin/memory-ablation`, after A or in parallel)
+Question: does the ledger of past hypotheses and lessons make the LLM research loop better, at the same
+budget? `autoresearch.py` and `walkforward.py` now take `--no-memory` (the proposer then sees only the
+champion and its diagnosis; exact duplicate specs are still refused).
+1. Run the 3-slice walk-forward twice with the LLM proposer, same model, seed and `--iters 6`:
+   `python walkforward.py --proposer llm --provider openai --iters 6 --run llm_mem`
+   `python walkforward.py --proposer llm --provider openai --iters 6 --run llm_nomem --no-memory`
+   If the budget allows, repeat each once more (LLM runs are not deterministic) and report both.
+2. Report per slice: TEST skill of the final champion, number of accepted / rejected / refused
+   iterations, and how many proposals repeated an idea already rejected in that slice (judge from the
+   hypotheses; list them). Write `walkforward/MEMORY_ABLATION.md`. A null result is fine; say so plainly.
+   Do not change experiments_final/ or submission_final/.
+
+## D. Reviewer ensemble  (branch `devin/reviewer`, after C)
+Borrowed from Sakana's AI Scientist (perform_review: 5 reviewers, reflection, low temperature), but
+the reviewer FLAGS and never overrules the numeric gate.
+1. New `review.py`: for one experiment, give an LLM the hypothesis, spec diff, DEV/HOLDOUT reports,
+   per-horizon and per-group skill, coverage, and the diagnosis. Ask for JSON on a fixed checklist:
+   leakage risk, gain carried by a few large series, interval widened rather than better centred,
+   overlap with an idea already rejected in the ledger, other. Each item: yes/no, evidence, severity 1–3.
+2. Ask 5 times at temperature 0.1 (API key from the environment only) and keep an item if at least 3
+   of 5 flag it. Write `<exp>/review.json`; `report.py` should print the kept flags if the file exists.
+3. Run it on experiments_final exp_001 to exp_007 in a COPY of the folder and report whether the flags
+   agree with what we know (exp_005 overfit per-GPU calibration; exp_006 Chronos lost on DEV).
+   Do not change experiments_final/ or submission_final/.
 
 ## B. Long-horizon value view: CANCELLED, Claude is writing LONG_HORIZON.md. Skip this task.
 
