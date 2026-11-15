@@ -54,8 +54,10 @@ def _workspace() -> "store.Path | None":
                               key="lab_ws_pick", placeholder="create one →") if names else None
         with c2.popover("New workspace", icon=":material/add:"):
             name = st.text_input("Name", key="lab_new_name", placeholder="e.g. llm-run-2")
-            src = st.selectbox("Start from", ["fresh (seed spec runs first)"] + list(store.ledgers()), key="lab_new_src",
-                               help="Forking copies the ledger, champion and diagnoses, so the scientist continues from there.")
+            forkable = [k for k in store.ledgers() if not k.startswith("walk-forward")]
+            src = st.selectbox("Start from", ["fresh (seed spec runs first)"] + forkable, key="lab_new_src",
+                               help="Forking copies the ledger, champion and diagnoses, so the scientist continues from there. "
+                                    "Walk-forward ledgers are scored on other DEV/GATE windows, so they cannot be forked.")
             if st.button("Create", type="primary", disabled=not name, key="lab_new_btn"):
                 try:
                     w = lab.new_workspace(name) if src.startswith("fresh") else lab.fork(store.ledgers()[src], name)
