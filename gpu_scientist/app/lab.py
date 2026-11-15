@@ -56,9 +56,18 @@ def busy(workspace: Path) -> bool:
     return any(j["running"] and j.get("workspace") == str(workspace) for j in jobs())
 
 
+MAX_RUNNING = int(os.environ.get("GPU_LAB_MAX_JOBS", "0"))   # 0 = no limit; set on shared hosts
+
+
+def at_capacity() -> bool:
+    return MAX_RUNNING > 0 and sum(j["running"] for j in jobs()) >= MAX_RUNNING
+
+
 def start(kind: str, args: list[str], workspace: Path | None, title: str, extra_env: dict | None = None) -> str:
     if workspace is not None and busy(workspace):
         raise RuntimeError(f"a job is already running in {workspace.name}")
+    if at_capacity():
+        raise RuntimeError(f"{MAX_RUNNING} jobs are already running on this server; try again when one finishes")
     JOBS.mkdir(parents=True, exist_ok=True)
     jid = f"{dt.datetime.now():%Y%m%d-%H%M%S}-{slug(kind)}-{uuid.uuid4().hex[:6]}"
     log = JOBS / f"{jid}.log"
