@@ -1,0 +1,90 @@
+{
+ "dev": {
+  "champion_skill": 0.191,
+  "ci95_by_series": [
+   0.13,
+   0.233
+  ],
+  "ci95_by_origin_day": [
+   0.155,
+   0.219
+  ],
+  "gain_vs_drift": 0.119,
+  "gain_vs_drift_ci95_by_series": [
+   0.069,
+   0.156
+  ],
+  "by_horizon": {
+   "1": {
+    "skill": 0.039,
+    "ci95_by_series": [
+     -0.018,
+     0.083
+    ],
+    "coverage": 0.775
+   },
+   "3": {
+    "skill": 0.152,
+    "ci95_by_series": [
+     0.107,
+     0.19
+    ],
+    "coverage": 0.802
+   },
+   "7": {
+    "skill": 0.243,
+    "ci95_by_series": [
+     0.168,
+     0.301
+    ],
+    "coverage": 0.785
+   }
+  },
+  "n_cells": 3256,
+  "n_series": 37
+ },
+ "holdout": {
+  "champion_skill": 0.101,
+  "ci95_by_series": [
+   0.015,
+   0.17
+  ],
+  "ci95_by_origin_day": [
+   0.061,
+   0.133
+  ],
+  "gain_vs_drift": 0.057,
+  "gain_vs_drift_ci95_by_series": [
+   -0.052,
+   0.127
+  ],
+  "by_horizon": {
+   "1": {
+    "skill": 0.066,
+    "ci95_by_series": [
+     -0.036,
+     0.14
+    ],
+    "coverage": 0.779
+   },
+   "3": {
+    "skill": 0.096,
+    "ci95_by_series": [
+     -0.005,
+     0.186
+    ],
+    "coverage": 0.771
+   },
+   "7": {
+    "skill": 0.111,
+    "ci95_by_series": [
+     0.022,
+     0.181
+    ],
+    "coverage": 0.732
+   }
+  },
+  "n_cells": 1509,
+  "n_series": 37
+ }
+}
