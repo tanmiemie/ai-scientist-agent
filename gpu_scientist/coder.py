@@ -210,7 +210,7 @@ def sandbox(job: dict, timeout: int = RUN_TIMEOUT_S, extra_env: dict | None = No
     """Run one job of sandbox_child.py with no network; return its JSON result or {"error": ...}."""
     try:
         cmd = _prefix() + [sys.executable, "-B", str(ROOT / "sandbox_child.py")]
-        out = {"GPU_SANDBOX_OUT": str(Path(job["out_dir"]).resolve())} if job.get("out_dir") else {}
+        out = {"GPU_SANDBOX_OUT": os.path.realpath(job["out_dir"])} if job.get("out_dir") else {}
         p = subprocess.run(cmd, input=json.dumps(job), capture_output=True, text=True, timeout=timeout,
                            cwd=ROOT, env=_env({**out, **(extra_env or {})}))
     except subprocess.TimeoutExpired:
