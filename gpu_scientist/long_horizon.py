@@ -104,6 +104,38 @@ def pack_tests() -> dict | None:
     return out
 
 
+# ---------- CCIR daily print 2026-11-14, posted asks, guaranteed on-demand, US & Europe, panel median ----------
+CCIR = {"A100": {"hyperscaler": 4.45, "neocloud": 2.12, "marketplace": 1.08, "neocloud_interruptible": 1.20},
+        "H100": {"hyperscaler": 11.25, "neocloud": 3.37, "marketplace": 2.60, "neocloud_interruptible": 2.15}}
+
+# ---------- Electricity (BLS CPI electricity index, +4.4% in the 12 months to Sep 2026,
+# +5.1% in the 12 months to Sep 2025). Household index; data centres buy at commercial or industrial rates.
+POWER = {"kw": {"H100": 0.70, "A100": 0.40}, "pue": 1.3, "usd_per_kwh": 0.08}
+
+
+def electricity_sensitivity() -> dict:
+    """How much of the cash floor is electricity, and what 3 years of +5%/yr or a doubling would add."""
+    out = {}
+    for g in ("H100", "A100"):
+        e = POWER["kw"][g] * POWER["pue"] * POWER["usd_per_kwh"]
+        out[g] = {"electricity_usd_per_hr": round(e, 3),
+                  "share_of_floor": round(e / CASH_FLOOR[g], 2),
+                  "floor_after_3y_at_+5pct": round(CASH_FLOOR[g] + e * (1.05 ** 3 - 1), 3),
+                  "floor_if_power_doubles": round(CASH_FLOOR[g] + e, 3)}
+    return out
+
+
+def ccir_check() -> dict:
+    """Where our posted-price anchor sits among CCIR's provider tiers, and A100/H100 by tier."""
+    out = {}
+    for g in ("H100", "A100"):
+        t = CCIR[g]
+        out[g] = {"anchor": RENTAL_ANCHOR[g],
+                  "between_marketplace_and_neocloud": t["marketplace"] <= RENTAL_ANCHOR[g] <= t["neocloud"]}
+    out["a100_over_h100_by_tier"] = {k: round(CCIR["A100"][k] / CCIR["H100"][k], 2) for k in CCIR["A100"]}
+    return out
+
+
 def path(anchor: float, rate: float, floor: float | None = None) -> dict:
     out = {ANCHOR: round(anchor, 2)}
     for label, n in YEARS.items():
@@ -143,6 +175,8 @@ def build() -> dict:
     res["market_forward_2029"] = {g: round(RENTAL_ANCHOR[g] * (1 + FORWARD_36M[g]), 2) for g in FORWARD_36M}
     res["parity_a100_over_h100"] = PARITY_A100_H100
     res["pack_tests"] = pack_tests()
+    res["ccir_check"] = ccir_check()
+    res["electricity_sensitivity"] = electricity_sensitivity()
     return res
 
 
