@@ -58,11 +58,15 @@ def _api_key(provider: str) -> str | None:
     return os.environ.get(env) or st.session_state.get(f"user_key_{provider}") or None
 
 
-def _key_input(provider: str, where):
-    if os.environ.get(KEY_ENV[provider]):
+def _key_inputs():
+    missing = [p for p in KEY_ENV if not os.environ.get(KEY_ENV[p])]
+    if not missing:
         return
-    where.text_input(f"Your {provider.capitalize()} API key", type="password", key=f"user_key_{provider}",
-                     help="Used only for the runs you start, passed to that process and never written to disk.")
+    with st.popover("Use your own API key", icon=":material/key:"):
+        st.caption("For the LLM proposer. Kept in your browser session only, passed to the runs you start and never "
+                   "written to disk.")
+        for p in missing:
+            st.text_input(f"{p.capitalize()} API key", type="password", key=f"user_key_{p}")
 
 
 def _status_bar():
@@ -77,6 +81,7 @@ def _status_bar():
             src = "server" if os.environ.get(KEY_ENV[provider]) else "yours" if _api_key(provider) else None
             st.badge(f"{provider.capitalize()} key {'set (' + src + ')' if src else 'not set'}",
                      color="green" if src else "gray", icon=":material/key:")
+        _key_inputs()
     if not ready:
         st.warning(f"Runs need the data pack at `{C.PACK}` (or set `GPU_PACK`). You can still browse and design specs.")
         if pack.downloadable() and st.button("Download the data pack (285 MB)", icon=":material/download:"):
@@ -251,11 +256,10 @@ def _autoloop(w, ready: bool):
     seed = c6.selectbox("Seed spec", specs, index=specs.index(AR.SEED_SPEC.name) if AR.SEED_SPEC.name in specs else 0,
                         key="al_seed", disabled=has_champ, help="Only used when the workspace has no champion yet.")
     heavy = st.checkbox("Let the proposer use heavy pretrained models", key="al_heavy")
-    key = None
-    if prop == "llm":
-        _key_input(provider, st)
-        key = _api_key(provider)
+    key = _api_key(provider) if prop == "llm" else None
     missing_key = prop == "llm" and not key
+    if missing_key:
+        st.warning(f"No {provider.capitalize()} key: add yours with **Use your own API key** at the top of the page.")
     running = lab.busy(w)
     if running:
         st.caption("A job is already running in this workspace; wait for it or stop it below.")
@@ -280,11 +284,10 @@ def _walkforward(ready: bool):
     name = c3.text_input("Run name", value=f"{prop}_{pd.Timestamp.now():%m%d_%H%M}", key=f"wf_name_{prop}",
                          help="Saved as walkforward/app_<name>/ (git-ignored).")
     run = "app_" + lab.slug(name).replace("-", "_").removeprefix("app_")
-    key = None
-    if prop == "llm":
-        _key_input("openai", st)
-        key = _api_key("openai")
+    key = _api_key("openai") if prop == "llm" else None
     missing_key = prop == "llm" and not key
+    if missing_key:
+        st.warning("No OpenAI key: add yours with **Use your own API key** at the top of the page.")
     exists = (C.ROOT / "walkforward" / run).exists()
     if exists:
         st.error("A run with this name already exists.")
