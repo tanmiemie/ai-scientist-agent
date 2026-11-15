@@ -37,6 +37,36 @@ bash run_all.sh                      # rebuild everything from the pack and writ
 python3 ledger.py show               # what has been tried
 ```
 
+## Autonomous loop (no human in it)
+
+`autoresearch.py` closes the research loop. Each iteration it reads the ledger (with lessons) and the
+champion's diagnosis, a proposer writes one hypothesis plus the spec that tests it, the spec is
+validated (registered models and parameters only, never a repeat), `run_experiment.run()` scores it
+with the official scorer and applies the fixed accept rule, and the proposer writes the lesson.
+
+```
+python3 autoresearch.py --iters 6 --proposer heuristic                    # offline, rule-based scientist
+OPENAI_API_KEY=... python3 autoresearch.py --iters 6 --proposer llm --provider openai
+ANTHROPIC_API_KEY=... python3 autoresearch.py --iters 6 --proposer llm --provider anthropic
+```
+Set `GPU_EXPERIMENTS` to keep an autonomous run in its own ledger. Prompts and replies are logged in
+`autoresearch_log.jsonl`. The proposer recombines and retunes registered models; it does not write code.
+
+`walkforward.py` checks that the improvement is real. Three slices each pretend to be an earlier date:
+the loop starts from the starter drift and iterates on DEV and GATE origins up to that date, and every
+champion it produces is scored on the following TEST week, which no decision saw.
+
+Heuristic proposer, 6 iterations per slice (`walkforward/heuristic_demo/`):
+
+| slice | test week | seed (drift) TEST | final champion TEST | gain |
+|---|---|---|---|---|
+| S1 | Oct 10-16 | +0.145 | +0.194 | +0.049 |
+| S2 | Oct 17-23 | +0.022 | +0.107 | +0.086 |
+| S3 | Oct 24-30 | +0.077 | +0.044 | -0.034 |
+
+Mean +0.034, 2 of 3 slices improved. In S3 the loop's first accepted change (online calibration)
+helped on DEV and GATE but not in the following week; that is reported as is.
+
 ## Changelog
 
 - **Calibration tie fix (`online.py`, EDGE_TOL).** Posted prices often equal the last value, which is

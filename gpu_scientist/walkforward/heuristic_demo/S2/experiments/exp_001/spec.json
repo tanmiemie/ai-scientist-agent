@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "no calibration; truth above q90 in 42% and below q10 in 12% of dev cells (10% each if calibrated), coverage 0.46 -> Learning an upper and lower offset per collector x class from realised misses should bring coverage to 0.80 and cut pinball loss. Change: enable online calibration (source_class)",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

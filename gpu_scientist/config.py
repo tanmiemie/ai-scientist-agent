@@ -16,8 +16,9 @@ TIER = "headline"                    # which catalog tier the dev/holdout scores
 # Daily origins. The research loop may look at DEV results as often as it likes.
 # HOLDOUT is only ever scored by run_experiment.py and is the gate for accepting a change.
 WARMUP_START = "2026-08-15"          # online loop starts here so calibration/weights have feedback
-DEV_ORIGINS = ("2026-09-15", "2026-10-15")
-HOLDOUT_ORIGINS = ("2026-10-16", "2026-10-30")   # 10-30 + 7 days = 11-06, the last day with truth
+# Both can be overridden (e.g. by walkforward.py) with GPU_DEV / GPU_HOLDOUT="start,end".
+DEV_ORIGINS = tuple(os.environ.get("GPU_DEV", "2026-09-15,2026-10-15").split(","))
+HOLDOUT_ORIGINS = tuple(os.environ.get("GPU_HOLDOUT", "2026-10-16,2026-10-30").split(","))  # 10-30 + 7 days = 11-06
 
 # Accept rule (see RESEARCH_PROTOCOL.md)
 PRIMARY_METRIC = "skill_pooled"

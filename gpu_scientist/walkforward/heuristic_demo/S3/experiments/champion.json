@@ -1,0 +1,53 @@
+{
+ "id": "exp_002",
+ "spec": {
+  "_hypothesis": "champion model drift has dev skill 0.182, coverage 0.78 -> Replacing drift by trend_tail (recent-window, step-aware) should fit posted prices better. Change: primary model drift -> trend_tail",
+  "models": [
+   {
+    "name": "trend_tail",
+    "params": {}
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.184431,
+  "skill_median_of_series": 0.187631,
+  "skill_geomean": 0.120139,
+  "coverage_in": 0.794972,
+  "coverage_above_q90": 0.117031,
+  "coverage_below_q10": 0.087998,
+  "share_series_positive": 0.805556,
+  "by_horizon": {
+   "1": 0.067455,
+   "3": 0.132058,
+   "7": 0.235544
+  },
+  "n_cells": 3341,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.123572,
+  "skill_median_of_series": 0.190398,
+  "skill_geomean": 0.112295,
+  "coverage_in": 0.745351,
+  "coverage_above_q90": 0.09299,
+  "coverage_below_q10": 0.16166,
+  "share_series_positive": 0.757576,
+  "by_horizon": {
+   "1": 0.073763,
+   "3": 0.127884,
+   "7": 0.131097
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

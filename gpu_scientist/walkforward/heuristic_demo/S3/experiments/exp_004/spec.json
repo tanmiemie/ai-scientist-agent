@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "champion model trend_tail has dev skill 0.184, coverage 0.79 -> Replacing trend_tail by step_hazard (recent-window, step-aware) should fit posted prices better. Change: primary model trend_tail -> step_hazard",
+ "models": [
+  {
+   "name": "step_hazard",
+   "params": {}
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}
