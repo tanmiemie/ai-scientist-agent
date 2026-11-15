@@ -10,6 +10,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import threading
 import uuid
 from pathlib import Path
 
@@ -57,6 +58,7 @@ def busy(workspace: Path) -> bool:
 
 
 MAX_RUNNING = int(os.environ.get("GPU_LAB_MAX_JOBS", "0"))   # 0 = no limit; set on shared hosts
+_START_LOCK = threading.Lock()   # sessions share this process: check-then-register must be atomic
 
 
 def at_capacity() -> bool:
@@ -64,6 +66,11 @@ def at_capacity() -> bool:
 
 
 def start(kind: str, args: list[str], workspace: Path | None, title: str, extra_env: dict | None = None) -> str:
+    with _START_LOCK:
+        return _start(kind, args, workspace, title, extra_env)
+
+
+def _start(kind: str, args: list[str], workspace: Path | None, title: str, extra_env: dict | None) -> str:
     if workspace is not None and busy(workspace):
         raise RuntimeError(f"a job is already running in {workspace.name}")
     if at_capacity():
