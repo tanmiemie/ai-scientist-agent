@@ -107,6 +107,9 @@ In the base case an H100 still rents for about **$2.30/hr in late 2028** and abo
 
 ## 12. Demo
 
+[![GPU Value AI Scientist: 2-minute demo](docs/demo-preview.gif)](https://github.com/tanmiemie/ai-scientist-agent/releases/download/demo-video-v1/gpu-value-ai-scientist-demo-en.mp4)
+
+- **2-minute narrated demo:** [English](https://github.com/tanmiemie/ai-scientist-agent/releases/download/demo-video-v1/gpu-value-ai-scientist-demo-en.mp4) · [中文](https://github.com/tanmiemie/ai-scientist-agent/releases/download/demo-video-v1/gpu-value-ai-scientist-demo-zh.mp4)
 - **Live app:** https://ai-scientist-agent-7tr2gdce25ju7s2y4awdbj.streamlit.app/ with Overview, Research ledger, Diagnosis, Forecast explorer, Walk-forward, Proposer log (with Exa sources), Submission, and a **Lab** to start an autonomous research run live.
 
 ![App overview](docs/img/app_overview.png)
