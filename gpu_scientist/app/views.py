@@ -351,6 +351,7 @@ def walkforward():
         return
     st.dataframe(pd.DataFrame([{"slice": s["name"], "DEV origins": " → ".join(s["dev"]), "GATE origins": " → ".join(s["gate"]),
                                 "TEST origins (unseen)": " → ".join(s["test"])} for s in WF.SLICES]), hide_index=True, width="stretch")
+    st.caption("S1–S3 come from walkforward.py; the W1–W6 slices of `*_wide` runs come from walkforward_wide.py.")
     pick = st.multiselect("Runs", list(runs), default=list(runs), key="wf_runs",
                           help="heuristic = rule-based proposer (no API); llm_* = gpt-4.1 proposer")
     if not pick:
@@ -378,7 +379,8 @@ def walkforward():
     st.subheader("Every iteration")
     c1, c2 = st.columns(2)
     rn = c1.selectbox("Run", pick, key="wf_run")
-    sl = c2.segmented_control("Slice", sorted(w.slice.unique()), default="S1", key="wf_slice") or "S1"
+    slices = sorted(w[w.run == rn].slice.unique())
+    sl = c2.segmented_control("Slice", slices, default=slices[0], key=f"wf_slice_{rn}") or slices[0]
     x = w[(w.run == rn) & (w.slice == sl)][["iteration", "exp", "outcome", "champion", "dev", "gate", "test", "test_coverage", "hypothesis", "lesson"]]
     st.dataframe(x, hide_index=True, width="stretch",
                  column_config={c: st.column_config.NumberColumn(c, format="%+.4f") for c in ("dev", "gate", "test")}
