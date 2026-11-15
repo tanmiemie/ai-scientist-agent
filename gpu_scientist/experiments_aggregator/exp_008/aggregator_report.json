@@ -1,0 +1,110 @@
+{
+ "wilcoxon_08_vs_07": {
+  "dev": {
+   "n_series": 37,
+   "better": 24,
+   "worse": 13,
+   "ties": 0,
+   "median_loss_ratio": 0.9958,
+   "geomean_loss_ratio": 0.9903,
+   "wilcoxon_p_one_sided": 0.04868
+  },
+  "holdout": {
+   "n_series": 37,
+   "better": 20,
+   "worse": 17,
+   "ties": 0,
+   "median_loss_ratio": 0.9953,
+   "geomean_loss_ratio": 0.9961,
+   "wilcoxon_p_one_sided": 0.14049
+  },
+  "both": {
+   "n_series": 37,
+   "better": 23,
+   "worse": 14,
+   "ties": 0,
+   "median_loss_ratio": 0.996,
+   "geomean_loss_ratio": 0.9947,
+   "wilcoxon_p_one_sided": 0.05353
+  }
+ },
+ "by_collector_holdout": [
+  {
+   "spec": "07",
+   "collector": "afhubbard",
+   "n_series": 4,
+   "pooled": 0.2386
+  },
+  {
+   "spec": "07",
+   "collector": "fastgpu_daily",
+   "n_series": 20,
+   "pooled": 0.0936
+  },
+  {
+   "spec": "07",
+   "collector": "gpurentalprices",
+   "n_series": 13,
+   "pooled": 0.097
+  },
+  {
+   "spec": "08",
+   "collector": "afhubbard",
+   "n_series": 4,
+   "pooled": 0.2525
+  },
+  {
+   "spec": "08",
+   "collector": "fastgpu_daily",
+   "n_series": 20,
+   "pooled": 0.0948
+  },
+  {
+   "spec": "08",
+   "collector": "gpurentalprices",
+   "n_series": 13,
+   "pooled": 0.0967
+  }
+ ],
+ "early_set_holdout": {
+  "07": {
+   "skill_pooled": 0.1116,
+   "skill_median_of_series": 0.156402,
+   "skill_geomean": 0.117676,
+   "coverage_in": 0.702791
+  },
+  "08": {
+   "skill_pooled": 0.112753,
+   "skill_median_of_series": 0.163438,
+   "skill_geomean": 0.122447,
+   "coverage_in": 0.706076
+  }
+ },
+ "metrics": {
+  "07_dev": {
+   "skill_pooled": 0.190759,
+   "skill_median_of_series": 0.179281,
+   "skill_geomean": 0.125583,
+   "coverage_in": 0.787469
+  },
+  "07_holdout": {
+   "skill_pooled": 0.100984,
+   "skill_median_of_series": 0.165771,
+   "skill_geomean": 0.060587,
+   "coverage_in": 0.760106
+  },
+  "08_dev": {
+   "skill_pooled": 0.196402,
+   "skill_median_of_series": 0.185642,
+   "skill_geomean": 0.131984,
+   "coverage_in": 0.79269
+  },
+  "08_holdout": {
+   "skill_pooled": 0.102129,
+   "skill_median_of_series": 0.18033,
+   "skill_geomean": 0.065395,
+   "coverage_in": 0.762094
+  }
+ },
+ "early_set_size": 17
+}

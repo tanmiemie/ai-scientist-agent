@@ -142,3 +142,38 @@ Mean gain +0.0533. 5 of 6 slices improved. Exact one-sided sign test p = 7/64 = 
 - PR #6 (run requested before task 2): LLM proposer v2 walk-forward after PR #4. Mean TEST gain +0.0415, 3/3 slices improved, no invalid proposals, 38 API calls. New no-op class: only `gamma*scale` matters.
 - PR #7 (task 6): `demo.sh`, the 2-iteration live demo. Clean clone runs in 23 s with the heuristic proposer and 31 s with `--llm`; it checks the Python prerequisites first.
 - This PR (task 2): `walkforward_wide.py` over 6 TEST weeks. Mean gain +0.0533, 5/6 slices improved, sign test p = 0.109 (overlapping weeks).
+
+## GetDeploying weekly-median signal (`DEVIN_NEXT.md` task A)
+Hypothesis: when the GetDeploying weekly median for the same GPU and pricing mode sits above our last value, our series tends to move up within 7 days, and vice versa. Model: `models/m_aggregator.py` (composition from exp_007 plus the signal). Experiment: `experiments_aggregator/exp_008` (a copy of `experiments_final`, run with `GPU_EXPERIMENTS`; only the ledger, `champion.json` and `exp_008/` are committed, exp_000–007 are byte copies). `experiments_final/` and `submission_final/` are unchanged.
+
+**Mapping, 37/37 headline series matched.** Same GPU and our `pricing_tier` = GetDeploying `pricing_mode` (`on_demand` ↔ `on_demand`; `neocloud_spot`, `hyperscaler_spot` and the `marketplace_ask` spot series ↔ `spot`). GetDeploying has one line per GPU family, so all A100 variants map to `NVIDIA A100`, all H100 variants to `NVIDIA H100`, and `RTX A6000` to `NVIDIA A6000`; every other GPU maps to `NVIDIA <gpu_model>`. The aggregator is used only as a signal, never chained into our series (it is a separate `aggregator_median` instrument).
+
+**Date semantics and lag.** `week_start` is a Monday; the row is the median of that week's daily captures and is provisional until Sunday (DATA.md). Assumed usable from the next Monday (`week_start + 7` days), so at an origin the latest usable week is the last full week that ended before it. A `lag` parameter adds extra days; with 7 extra days the DEV correlations barely change (below). The CSV is read once (`lru_cache`) and every lookup is cut at the origin.
+
+**DEV EDA** (`scratch/dev_aggregator_eda.py`, 3,350 series×origin×horizon cells, DEV origins only). Signal = log(aggregator / our last value).
+- Spearman with the future log move +0.10, with the exp_007 median residual +0.11; at h=7 +0.16 / +0.17. With 7 more days of lag +0.09 / +0.09; with the provider-count median +0.11 / +0.12.
+- As a direction rule it fails: DEV prices mostly rose or stayed flat, so when the aggregator was below us the series still went up more often (43%) than down (15%); the hit rate on non-zero moves was 0.45. The information is asymmetric: P(up within 7 days) 0.68 when the aggregator was above vs 0.54 when below.
+- By class: neocloud spot +0.11 (residual), the single marketplace_ask series +0.55, rate cards +0.01, hyperscaler spot +0.04.
+
+**DEV sweep** (`scratch/dev_sweep_aggregator.py`, `scratch/dev_sweep_aggregator_tail.py`, 64 settings, DEV only).
+- Shifting all three quantiles by `beta_agg * clip(gap, ±cap)` lowered DEV in all 40 settings, down to −0.40 (even β=0.05 cost −0.07). Most cells do not move, and the last-value baseline is exact on them, so any move of q50 off the last value costs more than the direction is worth. Normalising the gap by its own 56-day median (`dgap`) or acting only on large gaps hurt less but still lost.
+- Moving only the interval edge on the gap's side (q90 up when the aggregator is above, q10 down when below) raised DEV. Chosen: `apply=tail, signal=gap, beta_agg=0.1, cap=0.1` (an edge shift of at most 1%), the best setting that raises all three DEV metrics. The DEV-pooled argmax (β=0.5, cap=0.1: +0.1986) lowers DEV geomean and sits next to a setting that loses 0.04, so it was not used. This rule was written after seeing the DEV sweep (still DEV-only).
+
+**Official result: exp_008 accepted by the gate** (parent exp_007).
+
+| | DEV pooled | DEV median | DEV geomean | DEV cov | HOLDOUT pooled | HOLDOUT median | HOLDOUT geomean | HOLDOUT cov |
+|---|---|---|---|---|---|---|---|---|
+| exp_007 | +0.1908 | +0.1793 | +0.1256 | 0.79 | +0.1010 | +0.1658 | +0.0606 | 0.76 |
+| exp_008 | **+0.1964** | +0.1856 | +0.1320 | 0.79 | **+0.1021** | +0.1803 | +0.0654 | 0.76 |
+
+Per-series Wilcoxon, exp_008 vs exp_007 (one-sided, per-series log loss ratio, `significance.compare`):
+
+| window | better / worse | median loss ratio | p |
+|---|---|---|---|
+| DEV | 24 / 13 | 0.9958 | 0.049 |
+| HOLDOUT | 20 / 17 | 0.9953 | 0.140 |
+| both | 23 / 14 | 0.9960 | 0.054 |
+
+HOLDOUT by collector (pooled skill): afhubbard (4 series) +0.2386 → +0.2525, fastgpu_daily (20) +0.0936 → +0.0948, gpurentalprices (13) +0.0970 → +0.0967. On the 17 series that could have been chosen with data up to 10-15 (honest_eval early set): HOLDOUT pooled +0.1116 → +0.1128. Report: `experiments_aggregator/exp_008/aggregator_report.json` (`scratch/aggregator_report.py`).
+
+**Verdict: weak, non-significant positive.** The hypothesis as stated (the series moves toward the aggregator) is rejected on DEV: putting it into the median always lost. A weaker form, using the aggregator gap to decide which interval edge to widen, passes the pre-registered gate, but the HOLDOUT gain is +0.0011 (the 0.0 tolerance is easy to clear when every edge shift is ≤1%), the HOLDOUT Wilcoxon is not significant, gpurentalprices is flat, and the DEV gain is the best of 64 settings, so it is optimistic. Not adopted for `submission_final/` (not asked; a change of this size is within noise). Caveat: GetDeploying's upstream panel includes venues our collectors also track (e.g. RunPod), so the signal is not fully independent of our own series.
