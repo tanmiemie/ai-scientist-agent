@@ -56,6 +56,8 @@ def main():
     ap.add_argument("--run", default=None)
     ap.add_argument("--no-memory", action="store_true", help="ablation: proposer sees no past lessons")
     ap.add_argument("--exa", action="store_true", help="outside evidence from Exa each iteration")
+    ap.add_argument("--ideas", choices=["single", "batch"], default="single",
+                    help="llm proposer: one idea per turn, or a scored batch of 5 (idea_batch.py)")
     a = ap.parse_args()
 
     run = a.run or f"{a.proposer}_{dt.datetime.now():%Y%m%d_%H%M}"
@@ -76,6 +78,8 @@ def main():
             cmd += ["--no-memory"]
         if a.exa:
             cmd += ["--exa"]
+        if a.ideas != "single":
+            cmd += ["--ideas", a.ideas]
         print(f"\n### {sl['name']}: dev {sl['dev']} gate {sl['gate']} test {sl['test']}")
         subprocess.run(cmd, check=True, env=env, cwd=C.ROOT)
         cache = {}
@@ -97,7 +101,7 @@ def main():
     last = df.groupby("slice").last()
     summ = pd.DataFrame({"seed TEST": first.test, "final TEST": last.test, "gain": last.test - first.test,
                          "final champion": last.champion, "iterations": df.groupby("slice").size()})
-    md = [f"# Walk-forward check ({a.proposer}, {a.iters} iterations per slice, seed {os.path.basename(a.seed)})", "",
+    md = [f"# Walk-forward check ({a.proposer}{', ' + a.ideas + ' ideas' if a.ideas != 'single' else ''}, {a.iters} iterations per slice, seed {os.path.basename(a.seed)})", "",
           "Every TEST week lies after all the data its slice's decisions used.", "", summ.round(4).to_markdown(), "",
           f"Mean TEST gain seed -> final champion: {summ.gain.mean():+.4f} ({(summ.gain > 0).sum()}/{len(summ)} slices improved)",
           "", "## Every iteration", "",

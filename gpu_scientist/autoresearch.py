@@ -464,12 +464,18 @@ def main():
                     help="each iteration, search the web with Exa (EXA_API_KEY) for methods and dated market news")
     ap.add_argument("--no-memory", action="store_true",
                     help="ablation: hide past hypotheses and lessons from the proposer")
+    ap.add_argument("--ideas", choices=["single", "batch"], default="single",
+                    help="llm proposer: one idea per turn, or 5 scored ideas + one reflection, run the top one")
     a = ap.parse_args()
     global NO_MEMORY, USE_EXA
     NO_MEMORY = a.no_memory
     USE_EXA = a.exa
-    prop = (LLMProposer(a.provider, a.model, a.allow_heavy) if a.proposer == "llm"
-            else HeuristicProposer(a.allow_heavy))
+    if a.proposer == "llm" and a.ideas == "batch":
+        from idea_batch import BatchProposer
+        prop = BatchProposer(a.provider, a.model, a.allow_heavy)
+    else:
+        prop = (LLMProposer(a.provider, a.model, a.allow_heavy) if a.proposer == "llm"
+                else HeuristicProposer(a.allow_heavy))
     loop(prop, a.iters, a.max_rejects, a.seed, a.allow_heavy)
 
 
