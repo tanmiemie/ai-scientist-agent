@@ -49,7 +49,7 @@ class Panel:
             s = g.set_index("date")["value"]
             p.daily[sid] = s.reindex(pd.date_range(s.index.min(), s.index.max())).ffill()
         p._raw_by = {sid: g.set_index("date") for sid, g in raw.groupby("series_id")}
-        p._meta = cat.set_index("series_id").to_dict("index")
+        p._meta = {sid: {**m, "series_id": sid} for sid, m in cat.set_index("series_id").to_dict("index").items()}
         return p
 
     def series_ids(self, tier: str | None = C.TIER) -> list[str]:

@@ -85,8 +85,31 @@ def clean(spec: dict) -> dict:
     return {k: v for k, v in spec.items() if not k.startswith("_")}
 
 
+COMBINE_DEFAULTS = {"method": "single", "eta": 2.0, "group_by": "instrument_class"}
+CAL_DEFAULTS = {"enabled": False, "gamma": 0.5, "scale": 0.01, "group_by": "instrument_class"}
+
+
+def normalize(spec: dict) -> dict:
+    """The spec as the pipeline actually runs it: defaults filled in, settings that have no effect
+    dropped (eta/group_by unless hedge, models after the first under single, calibration settings
+    when calibration is off). Two specs with the same normal form are the same experiment."""
+    s = clean(spec)
+    comb = {**COMBINE_DEFAULTS, **s.get("combine", {})}
+    if comb["method"] != "hedge":
+        comb = {"method": comb["method"]}
+    ms = s.get("models", [])[:1] if comb["method"] == "single" else s.get("models", [])
+    models = []
+    for m in ms:
+        d = dict(M.REGISTRY[m["name"]].defaults) if m.get("name") in M.REGISTRY else {}
+        models.append({"name": m.get("name"), "params": {**d, **(m.get("params") or {})}})
+    cal = {**CAL_DEFAULTS, **s.get("calibrate", {})}
+    if not cal["enabled"]:
+        cal = {"enabled": False}
+    return {"models": models, "combine": comb, "calibrate": cal}
+
+
 def spec_hash(spec: dict) -> str:
-    return hashlib.sha1(json.dumps(clean(spec), sort_keys=True).encode()).hexdigest()[:10]
+    return hashlib.sha1(json.dumps(normalize(spec), sort_keys=True, default=str).encode()).hexdigest()[:10]
 
 
 # ---------------------------------------------------------------- context the proposer sees
@@ -123,7 +146,14 @@ Spec format:
 {"models": [{"name": <model>, "params": {...}}, ...],
  "combine": {"method": "single"|"mean"|"hedge", "eta": <float>, "group_by": <group>},
  "calibrate": {"enabled": true|false, "gamma": <float>, "scale": <float>, "group_by": <group>}}
-"single" uses only the first model. Groups: """ + ", ".join(GROUPS) + """.
+"single" uses only the first model; "mean" weights equally; only "hedge" uses eta and group_by.
+Ranges and defaults (a value outside a range is refused):
+  combine.eta in (0, 10], default 2.0 (hedge only: how fast weights follow recent loss)
+  calibrate.gamma in (0, 3], default 0.5 (step size of the online interval correction)
+  calibrate.scale in (0, 0.05], default 0.01 (log-price units per step; 0.01 is about 1%)
+  calibrate.group_by / combine.group_by: one of """ + ", ".join(GROUPS) + """ (default instrument_class)
+Settings that have no effect (eta or group_by without hedge, calibration settings with enabled
+false, extra models under single) make the spec identical to the champion and are refused.
 
 Reply with JSON only:
 {"observation": "<the number(s) you act on>", "hypothesis": "<what you expect and why>",
@@ -286,26 +316,36 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
     rejects = 0
     for i in range(iters):
         ctx = context()
-        prop, feedback = {}, None
+        prop, feedback, refused = {}, None, []
         for _ in range(3):
             prop = proposer.propose(ctx, feedback) or {}
             spec = prop.get("spec") or {}
             errs = validate(spec, heavy) if spec else ["no spec returned"]
             if not errs and spec_hash(spec) in ctx["tried"]:
-                errs = ["this exact spec was already tried"]
+                errs = ["this spec runs exactly like one already tried (settings without effect count as unchanged)"]
             if not errs:
                 break
             feedback = "; ".join(errs)
+            refused.append({"proposal": prop, "errors": errs})
         else:
-            print(f"[iter {i + 1}] no valid new proposal ({feedback}); stopping")
-            break
+            # no valid proposal this iteration: record it, count it as a rejection, keep going
+            with open(log, "a") as f:
+                f.write(json.dumps({"id": None, "iteration": i + 1, "refused": refused,
+                                    "llm_calls": getattr(proposer, "calls", [])}, default=str) + "\n")
+            proposer.calls = []
+            rejects += 1
+            print(f"[iter {i + 1}] no valid new proposal after 3 tries ({feedback}); counted as a rejection")
+            if rejects >= max_rejects:
+                print(f"stopping: {rejects} rejections in a row")
+                break
+            continue
         hyp = f"{prop.get('observation', '')} -> {prop.get('hypothesis', '')} Change: {prop.get('change', '')}".strip()
         spec = {"_hypothesis": hyp, **clean(spec)}
         rec = run_experiment.run(spec, hyp, parent=ctx["champion"]["id"], verbose=False)
         lesson = proposer.lesson(rec, ctx)
         ledger.lesson(rec["id"], lesson)
         with open(log, "a") as f:
-            f.write(json.dumps({"id": rec["id"], "proposal": prop, "accepted": rec["accepted"],
+            f.write(json.dumps({"id": rec["id"], "proposal": prop, "refused_before": refused, "accepted": rec["accepted"],
                                 "lesson": lesson, "llm_calls": getattr(proposer, "calls", [])}, default=str) + "\n")
         proposer.calls = []
         k = C.PRIMARY_METRIC

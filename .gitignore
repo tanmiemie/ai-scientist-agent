@@ -4,3 +4,9 @@ gpu_scientist/work/
 gpu_scientist/replay/
 gpu_scientist/walkforward/**/*.csv
 gpu_scientist/walkforward/**/*.csv.gz
+# Raw per-cell outputs: rebuilt by run_all.sh / walkforward.py; keep PRs small enough to review.
+# Ledgers, summaries, diagnoses, specs and plots stay tracked.
+gpu_scientist/experiments*/**/*.csv
+gpu_scientist/experiments*/**/*.csv.gz
+gpu_scientist/walkforward/**/report_*.json
+gpu_scientist/replay/
