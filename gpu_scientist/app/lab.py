@@ -78,7 +78,8 @@ def _alive(pid: int) -> bool:
         os.kill(pid, 0)
     except ProcessLookupError:
         return False
-    return Path(f"/proc/{pid}").exists() and "zombie" not in Path(f"/proc/{pid}/status").read_text().lower()
+    status = Path(f"/proc/{pid}/status")
+    return not status.exists() or "zombie" not in status.read_text().lower()
 
 
 def jobs() -> list[dict]:
