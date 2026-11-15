@@ -22,7 +22,7 @@ import sysconfig
 _WRITE_FLAGS = os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_APPEND | os.O_TRUNC
 _BLOCK = ("socket.", "urllib.", "http.", "ftplib.", "smtplib.", "subprocess.", "os.system", "os.exec",
           "os.spawn", "os.posix_spawn", "os.fork", "os.forkpty", "os.kill", "os.killpg", "pty.", "ctypes.",
-          "webbrowser.", "sqlite3.connect")
+          "webbrowser.", "sqlite3.connect", "os.chdir")
 _FILE_CHANGE = {"os.remove": 0, "os.unlink": 0, "os.rmdir": 0, "os.rename": (0, 1), "os.replace": (0, 1),
                 "os.truncate": 0, "os.chmod": 0, "os.chown": 0, "os.link": (0, 1), "os.symlink": (0, 1),
                 "shutil.rmtree": 0, "shutil.move": (0, 1), "shutil.copyfile": 1, "os.mkdir": 0}
@@ -90,6 +90,8 @@ def install(write_dirs=(), read_dirs=()):
             p = _norm(path)
             if p is None:
                 return
+            if os.path.isdir(p):   # no directory descriptors, so no dir_fd-relative paths
+                raise SandboxViolation(f"opening the directory {p} is not allowed for generated models")
             writing = (isinstance(mode, str) and any(c in mode for c in "wax+")) or \
                       (isinstance(flags, int) and flags & _WRITE_FLAGS)
             if writing and not _under(p, writes):

@@ -159,3 +159,23 @@ except PermissionError:
     p = subprocess.run([sys.executable, "-c", probe, str(tmp_path)], cwd=C.ROOT, capture_output=True, text=True)
     assert p.returncode == 0, p.stderr
     assert p.stdout.split() == ["other_executable:blocked", "cwd:blocked", "env:blocked", "changed_env:blocked"]
+
+
+
+def test_guard_blocks_directory_descriptors_and_chdir(tmp_path):
+    import subprocess
+    import sys
+    probe = r"""
+import os, sys
+sys.path.insert(0, os.getcwd())
+import sandbox_guard
+sandbox_guard.install(write_dirs=[sys.argv[1]])
+for name, f in [("open_dir", lambda: os.open(os.getcwd(), os.O_RDONLY)), ("chdir", lambda: os.chdir(sys.argv[1]))]:
+    try:
+        f(); print(name + ":allowed")
+    except PermissionError:
+        print(name + ":blocked")
+"""
+    p = subprocess.run([sys.executable, "-c", probe, str(tmp_path)], cwd=C.ROOT, capture_output=True, text=True)
+    assert p.returncode == 0, p.stderr
+    assert p.stdout.split() == ["open_dir:blocked", "chdir:blocked"]
