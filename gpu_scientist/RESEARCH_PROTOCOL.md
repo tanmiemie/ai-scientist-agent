@@ -35,7 +35,7 @@ tested hypothesis at a time, and to leave a clear record of what you learned.
 - **Do not edit** `config.py`, `evaluate.py`, `run_experiment.py`, `ledger.py`, the dev/holdout
   windows or the accept rule, and never edit the data pack or the starter kit.
 - **Small, attributable changes.** One idea per experiment, so the ledger explains which change
-  helped. If you sweep a parameter, sweep on DEV in a scratch script, then submit only the chosen
+  helped. If you sweep a parameter, sweep on DEV (autoresearch.py now does this itself when a proposal includes "sweep"; by hand, use a scratch script), then submit only the chosen
   value as one experiment and say how you chose it.
 - **Instrument classes are different things** (list prices, rate cards, spot, marketplace asks).
   Never chain them into one curve; cross-series features must name the exact series used.
