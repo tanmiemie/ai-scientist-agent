@@ -1,0 +1,406 @@
+{
+ "missing_by_source": [
+  {
+   "source": "afhubbard",
+   "series": "4",
+   "first": "2026-01-12",
+   "median_days": "234.0",
+   "missing_days_total": "260",
+   "longest_gap": "58",
+   "missing_last_60d": "4"
+  },
+  {
+   "source": "fastgpu_daily",
+   "series": "20",
+   "first": "2026-09-08",
+   "median_days": "60.0",
+   "missing_days_total": "0",
+   "longest_gap": "0",
+   "missing_last_60d": "0"
+  },
+  {
+   "source": "gpurentalprices",
+   "series": "13",
+   "first": "2026-08-04",
+   "median_days": "89.0",
+   "missing_days_total": "78",
+   "longest_gap": "2",
+   "missing_last_60d": "78"
+  }
+ ],
+ "missing_dates_gpurentalprices_last60d": [
+  "2026-10-14",
+  "2026-10-17",
+  "2026-10-23",
+  "2026-10-24",
+  "2026-10-30",
+  "2026-11-01"
+ ],
+ "price_changes": {
+  "days_with_a_change": 1011,
+  "share_of_days_with_a_change": 0.311,
+  "abs_change_p50": 0.0072,
+  "abs_change_p90": 0.0636,
+  "abs_change_p99": 0.305,
+  "moves_10pct_or_more": 55,
+  "of_which_reversed_half_within_7d": 17,
+  "largest_moves": [
+   {
+    "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+    "date": "2026-10-28",
+    "pct": 1.372,
+    "n_providers": 3,
+    "dprov": 2.0
+   },
+   {
+    "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+    "date": "2026-10-27",
+    "pct": -0.505,
+    "n_providers": 1,
+    "dprov": -2.0
+   },
+   {
+    "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+    "date": "2026-08-13",
+    "pct": -0.391,
+    "n_providers": 3,
+    "dprov": 0.0
+   },
+   {
+    "series_id": "gpurentalprices.neocloud_rate_card.A100_40GB.on_demand.median",
+    "date": "2026-10-03",
+    "pct": 0.538,
+    "n_providers": 3,
+    "dprov": 0.0
+   },
+   {
+    "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+    "date": "2026-11-03",
+    "pct": -0.345,
+    "n_providers": 2,
+    "dprov": 0.0
+   },
+   {
+    "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+    "date": "2026-08-05",
+    "pct": -0.333,
+    "n_providers": 3,
+    "dprov": 0.0
+   },
+   {
+    "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+    "date": "2026-08-06",
+    "pct": 0.438,
+    "n_providers": 3,
+    "dprov": 0.0
+   },
+   {
+    "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+    "date": "2026-10-16",
+    "pct": 0.401,
+    "n_providers": 3,
+    "dprov": 1.0
+   }
+  ]
+ },
+ "providers": {
+  "series_median_providers_le3": 14,
+  "series_median_providers_le5": 23,
+  "series_min_providers_1": 1,
+  "n_series": 37,
+  "share_of_changes_on_a_provider_count_change": 0.119,
+  "share_of_10pct_moves_on_a_provider_count_change": 0.455,
+  "median_abs_change_when_providers_change": 0.0372,
+  "median_abs_change_when_providers_same": 0.0054
+ },
+ "dropped_rows": {
+  "by_reason": {
+   "quality_not_ok:cpu_only": 4573702,
+   "filter_rule:runpod": 61893,
+   "filter_rule:vastai": 55803,
+   "filter_rule:vast:on-demand": 2181,
+   "filter_rule:runpod:community": 1652,
+   "filter_rule:runpod:on-demand": 1520,
+   "filter_rule:runpod:reserved": 1492,
+   "filter_rule:runpod:spot": 901,
+   "publisher_errata_exclude:aws": 660,
+   "filter_rule:runpod_cheapest_day_replaced_by_recomputed_non_runpod_cheapest": 404,
+   "filter_rule:runpod_cheapest_day_no_snapshot_to_recompute(gap)": 399
+  },
+  "by_source": {
+   "afhubbard": 4686494,
+   "fastgpu_daily": 7746,
+   "gpurentalprices": 5564,
+   "gpurentalprices_cheapest": 803
+  },
+  "max_day": [
+   {
+    "source_id": "afhubbard",
+    "dt": "2026-06-16",
+    "rows": 84989
+   },
+   {
+    "source_id": "afhubbard",
+    "dt": "2026-06-21",
+    "rows": 43203
+   },
+   {
+    "source_id": "afhubbard",
+    "dt": "2026-06-20",
+    "rows": 43183
+   },
+   {
+    "source_id": "afhubbard",
+    "dt": "2026-06-13",
+    "rows": 43159
+   },
+   {
+    "source_id": "afhubbard",
+    "dt": "2026-06-28",
+    "rows": 43110
+   }
+  ]
+ },
+ "staleness": {
+  "series_not_observed_on_cutoff": [],
+  "days_since_last_change_at_cutoff": {
+   "count": 37.0,
+   "mean": 5.6,
+   "std": 8.3,
+   "min": 0.0,
+   "25%": 0.0,
+   "50%": 1.0,
+   "75%": 8.0,
+   "max": 34.0
+  },
+  "series_unchanged_30d_plus": 1
+ },
+ "levels_at_cutoff": [
+  {
+   "gpu": "A100 40GB",
+   "instrument_class": "hyperscaler_spot",
+   "source_id": "afhubbard",
+   "price": 1.989
+  },
+  {
+   "gpu": "A100 40GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 1.816
+  },
+  {
+   "gpu": "A100 40GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 1.99
+  },
+  {
+   "gpu": "A100 80GB",
+   "instrument_class": "hyperscaler_spot",
+   "source_id": "fastgpu_daily",
+   "price": 1.757
+  },
+  {
+   "gpu": "A100 80GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 2.293
+  },
+  {
+   "gpu": "A100 80GB",
+   "instrument_class": "neocloud_spot",
+   "source_id": "fastgpu_daily",
+   "price": 1.147
+  },
+  {
+   "gpu": "A100 SXM 80GB",
+   "instrument_class": "hyperscaler_spot",
+   "source_id": "afhubbard",
+   "price": 1.882
+  },
+  {
+   "gpu": "A100 SXM 80GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 1.95
+  },
+  {
+   "gpu": "B200",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 6.3
+  },
+  {
+   "gpu": "B200",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 7.89
+  },
+  {
+   "gpu": "B200",
+   "instrument_class": "neocloud_spot",
+   "source_id": "fastgpu_daily",
+   "price": 4.177
+  },
+  {
+   "gpu": "B300",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 8.49
+  },
+  {
+   "gpu": "B300",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 9.745
+  },
+  {
+   "gpu": "B300",
+   "instrument_class": "neocloud_spot",
+   "source_id": "fastgpu_daily",
+   "price": 4.735
+  },
+  {
+   "gpu": "H100 80GB",
+   "instrument_class": "marketplace_ask",
+   "source_id": "gpurentalprices",
+   "price": 1.875
+  },
+  {
+   "gpu": "H100 80GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 3.885
+  },
+  {
+   "gpu": "H100 PCIe 80GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 2.79
+  },
+  {
+   "gpu": "H100 SXM 80GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 3.949
+  },
+  {
+   "gpu": "H100 SXM 80GB",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 3.554
+  },
+  {
+   "gpu": "H100 SXM 80GB",
+   "instrument_class": "neocloud_spot",
+   "source_id": "fastgpu_daily",
+   "price": 2.285
+  },
+  {
+   "gpu": "H200",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 4.54
+  },
+  {
+   "gpu": "H200",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 4.59
+  },
+  {
+   "gpu": "H200",
+   "instrument_class": "neocloud_spot",
+   "source_id": "fastgpu_daily",
+   "price": 2.8
+  },
+  {
+   "gpu": "L4",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 0.884
+  },
+  {
+   "gpu": "L40S",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 1.736
+  },
+  {
+   "gpu": "L40S",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 1.61
+  },
+  {
+   "gpu": "L40S",
+   "instrument_class": "neocloud_spot",
+   "source_id": "fastgpu_daily",
+   "price": 0.97
+  },
+  {
+   "gpu": "RTX 6000 Ada",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 1.528
+  },
+  {
+   "gpu": "RTX 6000 Ada",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 1.252
+  },
+  {
+   "gpu": "RTX A6000",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 0.5
+  },
+  {
+   "gpu": "RTX A6000",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 0.711
+  },
+  {
+   "gpu": "RTX PRO 6000",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "fastgpu_daily",
+   "price": 2.162
+  },
+  {
+   "gpu": "RTX PRO 6000",
+   "instrument_class": "neocloud_rate_card",
+   "source_id": "gpurentalprices",
+   "price": 2.3
+  },
+  {
+   "gpu": "RTX PRO 6000",
+   "instrument_class": "neocloud_spot",
+   "source_id": "fastgpu_daily",
+   "price": 1.414
+  },
+  {
+   "gpu": "T4",
+   "instrument_class": "hyperscaler_spot",
+   "source_id": "afhubbard",
+   "price": 0.305
+  },
+  {
+   "gpu": "T4",
+   "instrument_class": "hyperscaler_spot",
+   "source_id": "fastgpu_daily",
+   "price": 0.089
+  },
+  {
+   "gpu": "V100",
+   "instrument_class": "hyperscaler_spot",
+   "source_id": "afhubbard",
+   "price": 1.475
+  }
+ ],
+ "price_range_usd_per_gpu_hour": [
+  0.089,
+  9.745
+ ]
+}
