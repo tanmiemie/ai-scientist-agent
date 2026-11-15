@@ -1,0 +1,26 @@
+{
+ "_hypothesis": "champion overall skill 0.1703; groups fastgpu_daily|neocloud_rate_card and gpurentalprices|neocloud_rate_card show much worse tail calibration (above_q90 0.123/0.149, below_q10 0.11/0.067) and champion includes only drift model, despite high inter-series correlations (see candidate leaders table: e.g., fastgpu_daily.neocloud_rate_card.RTX_A6000 correl ~ -0.92 with gpurentalprices.neocloud_rate_card.RTX_A6000 lagged 3d). -> Adding a leader feature (with window=60, default params) to the drift base should improve quantile skill and calibration for neocloud_rate_card series, especially those with strong leader correlations over a 2-4 day lag, by using timely signals from related series. This should help not only overall skill but also coverage of extreme events for these target groups, with no overfitting since the leader's added signal is grounded in observed lagged correlations. Change: Add a leader model (window=60, floor=1.0, beta=1.0) to the model list; blend with drift via mean ensemble (combine.method='mean', group_by='all', eta N/A). Keep calibration identical to champion.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean",
+  "group_by": "all"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

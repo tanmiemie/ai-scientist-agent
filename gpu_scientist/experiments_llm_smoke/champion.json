@@ -1,0 +1,58 @@
+{
+ "id": "exp_000",
+ "spec": {
+  "_hypothesis": "Iter 1 (momentum). exp_000 diagnosis: cells with last change 0-1 days ago have truth above q50 in 63% (n=1685); DEV EDA: after a recent RISE 68.5% end above the last value (n=1281), after a recent fall only 31% end below. Shift median and upper edge up by beta typical daily moves after a rise in the last day. beta=0.25 chosen by a DEV-only sweep over {0,0.25,0.5,0.75,1} (dev pooled +0.1831/+0.1858/+0.1847/+0.1812/+0.1747).",
+  "models": [
+   {
+    "name": "momentum",
+    "params": {
+     "window": 60,
+     "floor": 1.0,
+     "k": 1,
+     "beta": 0.25
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.187127,
+  "skill_median_of_series": 0.179346,
+  "skill_geomean": 0.119143,
+  "coverage_in": 0.781941,
+  "coverage_above_q90": 0.1164,
+  "coverage_below_q10": 0.101658,
+  "share_series_positive": 0.805556,
+  "by_horizon": {
+   "1": 0.035195,
+   "3": 0.144798,
+   "7": 0.241519
+  },
+  "n_cells": 3256,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.100215,
+  "skill_median_of_series": 0.169562,
+  "skill_geomean": 0.060283,
+  "coverage_in": 0.761431,
+  "coverage_above_q90": 0.092114,
+  "coverage_below_q10": 0.146455,
+  "share_series_positive": 0.764706,
+  "by_horizon": {
+   "1": 0.058379,
+   "3": 0.095611,
+   "7": 0.111838
+  },
+  "n_cells": 1509,
+  "n_problems": 0
+ }
+}

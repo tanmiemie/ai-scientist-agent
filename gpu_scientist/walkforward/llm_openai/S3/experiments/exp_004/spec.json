@@ -1,0 +1,26 @@
+{
+ "_hypothesis": "By group skill: leader improves dev skill notably over drift in fastgpu_daily|neocloud_spot (+0.242) and fastgpu_daily|hyperscaler_spot (+0.104), but is inferior to drift in afhubbard|hyperscaler_spot (leader: 0.115, drift: 0.174). Champion currently averages these (mean ensemble, group_by=all), possibly harming skill on afhubbard|hyperscaler_spot. -> If the ensemble is grouped by source_class, it can weight leader/drift better per group, improving group skill without harming pooled pinball loss. Drift should dominate in afhubbard|hyperscaler_spot while ensembles elsewhere. Change: Change combine.group_by from 'all' to 'source_class', keeping remaining champion parameters.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean",
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

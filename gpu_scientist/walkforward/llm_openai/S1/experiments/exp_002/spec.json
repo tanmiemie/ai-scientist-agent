@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "dev coverage_in is 0.7506 vs target 0.80; skill_median_of_series is much lower (0.073) than pooled (0.205), series like fastgpu_daily.neocloud_spot and afhubbard|hyperscaler_spot have very low skill (0.01, -0.00), and worst-series list is dominated by neocloud_rate_card and neocloud_spot series with -inf or strongly negative skill. Per diagnosis, coverage is particularly low at horizon=7 (q10 0.058, q90 0.197) and neocloud groups. -> Groups such as neocloud_rate_card and neocloud_spot show undercoverage and lowest skill, suggesting that a grouped recalibration will widen intervals more sufficiently for hard-to-predict series. Setting calibrate.group_by=series_id may raise coverage toward the 0.80 target on these tails and improve series-level skill, especially among undercovered, miscalibrated series. Change: Change calibrate.group_by from 'all' to 'series_id'.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "series_id"
+ }
+}

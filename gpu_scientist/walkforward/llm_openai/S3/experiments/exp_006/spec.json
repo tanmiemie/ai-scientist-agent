@@ -1,0 +1,26 @@
+{
+ "_hypothesis": "Skill by group for fastgpu_daily|neocloud_spot (drift: 0.008, leader: 0.25) and fastgpu_daily|hyperscaler_spot (drift: 0.001, leader: 0.105) shows leader heavily outperforms drift for these, but the champion's ensemble is forced to 0.5/0.5. Across all groups, weight is always 0.5. -> Allowing the mean ensemble to weight by 'source_id' (rather than 'all') should improve pooled skill, especially for sources/series where the leader is clearly superior (e.g., fastgpu_daily|neocloud_spot, fastgpu_daily|hyperscaler_spot). This will shift ensemble weight closer to 1.0 on leader for these, improving pinball loss, while underperforming groups remain mixed. Change: Set combine.group_by to 'source_id' (was 'all').",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean",
+  "group_by": "source_id"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

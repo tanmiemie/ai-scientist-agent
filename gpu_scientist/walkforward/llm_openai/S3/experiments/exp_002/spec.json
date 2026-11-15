@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "calibration gamma=0.05 yields coverage_in=0.78689 (target=0.8), but q90 and q10 coverages are 0.1098 and 0.1033. The main skill gain in exp_001 came from enabling calibration versus exp_000. Champion still somewhat undercovers, particularly above q90 on some subgroups. Coverage by group suggests room for further small increases in interval width; e.g., 1d horizon above_q90=0.123 and below_q10=0.106 (target=0.1). -> Raising calibration gamma from 0.05 to 0.075 will slightly widen the forecast intervals, pushing coverage_in closer to or just above the 0.8 target\u2014without substantial overcoverage on q10/q90. Since skill is much improved by the first calibration step, another small gamma increase should give marginal gains or at least help hold skill while meeting the interval target. Change: Increase calibration gamma from 0.05 to 0.075 (scale unchanged).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.075,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

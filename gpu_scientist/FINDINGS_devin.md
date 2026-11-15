@@ -73,3 +73,32 @@ Findings
 - Sunday recommendation: still submit exp_004 (`submission_final/forecast_2026-11-06.csv`), because it is what the pre-registered rule selects and its holdout is not worse. Expect its score to be indistinguishable from exp_002's.
 - Chronos-Bolt (exp_006) keeps the largest dev/holdout divergence (+0.188 holdout); it stays rejected because selection never uses holdout.
 - Official record: `experiments_final/` (ledger with a lesson per row, progress.png) and `submission_final/`. `experiments/` and `experiments_devin/` predate the fix and are kept only for history.
+
+## LLM vs heuristic proposer (walk-forward, `DEVIN_LLM_RUN.md`)
+Same `walkforward.py` check as `walkforward/heuristic_demo/`: seed = starter drift, 6 iterations per slice, decisions on DEV + GATE only, every champion scored afterwards on the following TEST week. TEST is used here only to compare the two proposers, never to pick a spec. LLM: OpenAI `gpt-4.1` (the default model name was accepted, so `GPU_LLM_MODEL` was not set). Run: `walkforward/llm_openai/`; smoke test: `experiments_llm_smoke/`.
+
+| slice | test week | seed TEST | heuristic final TEST | heuristic gain | LLM final TEST | LLM gain |
+|---|---|---|---|---|---|---|
+| S1 | Oct 10-16 | +0.1452 | +0.1938 | +0.0486 | +0.2305 | **+0.0853** |
+| S2 | Oct 17-23 | +0.0216 | +0.1072 | **+0.0857** | +0.0216 | 0 (no valid proposal, see below) |
+| S3 | Oct 24-30 | +0.0774 | +0.0437 | −0.0336 | +0.1059 | **+0.0286** |
+| mean | | | | +0.0335 (2/3) | | +0.0380 (2/3) |
+
+What each proposer tried
+- Heuristic: per-collector calibration (`source_class`, gamma 0.5 / scale 0.01), then swapping the base model (trend_tail, momentum, step_hazard, vol_tail), then a calibration-step tweak. Accepted: calibration in all slices, momentum in S1, trend_tail in S3.
+- LLM: global calibration (`group_by=all`, gamma 0.05, scale 0.05) first in S1 and S3, then calibration tweaks (gamma 0.10 / 0.075, `group_by=series_id`), then ensembles: drift + last_value (mean, accepted in S1), drift + leader (mean, accepted in S3), hedge instead of mean (rejected in both), adding leader as a third model (rejected). It never swapped the base model to the step-aware models the heuristic favoured.
+- The LLM's S3 champion (drift + leader, mean, global calibration) improved on TEST where the heuristic's (trend_tail + source_class calibration) got worse than the seed. The S1/S3 advantage is three slices of one run of a non-deterministic proposer; treat it as suggestive, not significant.
+
+Representative LLM hypotheses (observation quoted from the log)
+1. S1 exp_001, accepted: "dev coverage_in is very low at 0.46256 (should target 0.80); overestimation of q10 and q90 is evident (q90: 0.414251, q10: 0.123188)" → enable calibration. DEV +0.046 → +0.205, TEST +0.145 → +0.185.
+2. S1 exp_004, accepted: "Increasing calibrate.gamma to 0.10 caused overfitting and a sharp skill decline … All failures thus far have involved calibration, not the base predictive model" → add last_value to drift in a mean ensemble. DEV +0.205 → +0.249, GATE +0.116 → +0.183, TEST → +0.2305 (best TEST of either proposer).
+3. S3 exp_003, accepted: "groups fastgpu_daily|neocloud_rate_card and gpurentalprices|neocloud_rate_card show much worse tail calibration (above_q90 0.123/0.149 …) … candidate leaders table: e.g. fastgpu_daily.neocloud_rate_card.RTX_A6000 correl ~ -0.92 …" → drift + leader mean ensemble. DEV +0.170 → +0.176, GATE +0.110 → +0.138.
+4. S1 exp_005, rejected: "the leader model's signals … are highly correlated with targets, particularly for neocloud_rate_card series (e.g., corr 0.87 for RTX_6000_Ada at lag 1)" → add leader as a third model. DEV −0.033, coverage 0.74.
+5. S3 exp_005, rejected: "Leader … outperforms drift notably in fastgpu_daily|neocloud_spot (leader: 0.25, drift: 0.008) … Mean ensemble (fixed 0.5/0.5) may underweight leader" → hedge η=2. DEV −0.038.
+
+Refused and wasted proposals
+- Validation refused 8 proposals, all for the same reason: `calibrate.scale must be in (0, 0.05]` (S1 ×4, S3 ×1, S2 ×3). The system prompt lists the calibrate keys but not their ranges or defaults, and the LLM kept proposing larger scales; it also described "default gamma = 0.05, scale = 0.05" when the code defaults are 0.5 / 0.01. In S2 all three attempts of iteration 1 were refused, so the loop stopped at the seed and S2 has no LLM iterations (TEST gain 0). These 3 calls are not in `autoresearch_log.jsonl` because the loop logs only iterations that ran.
+- No exact repeats were proposed (the repeat check never fired).
+- 3 accepted-by-validation specs were no-ops (identical DEV and GATE to 4 decimals): S1 exp_002 `calibrate.group_by=series_id` (the catalog meta has no `series_id` key, so `online.group_key` maps every series to `"None"`, i.e. one global group) and S3 exp_004 / exp_006 `combine.group_by` = source_class / source_id with `method=mean` (mean weights do not depend on the group). Suggested follow-ups, not done here (core files): put the parameter ranges/defaults in the prompt, make `series_id` a real group key, and reject `combine.group_by` changes under `mean`.
+
+API calls: 32 in the walk-forward (S1 16, S2 3, S3 13; each iteration = 1 proposal + 1 lesson, plus 1 per refused proposal) and 2 in the smoke test, 34 in total. The smoke test (1 iteration from the exp_004 champion) proposed `calibrate.group_by` source_class → gpu_model, citing "afhubbard|hyperscaler_spot (n=372), skill is only 0.008"; it was rejected (DEV +0.0015, holdout −0.0711), the same overfit as exp_005. `submission_final/` is unchanged.

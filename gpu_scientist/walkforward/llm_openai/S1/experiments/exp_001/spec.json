@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "dev coverage_in is very low at 0.46256 (should target 0.80); overestimation of q10 and q90 is evident (q90: 0.414251, q10: 0.123188). -> Enabling a simple contiguous recalibration will expand the quantile intervals, improving coverage from ~0.46 toward the target 0.80, potentially with a small skill drop but within noise, as no recalibration was previously used. Change: Enable calibration with calibrate.enabled = true (default gamma = 0.05, scale = 0.05, group_by = all)",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}
