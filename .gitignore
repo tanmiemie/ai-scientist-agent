@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+gpu_scientist/work/
+gpu_scientist/replay/

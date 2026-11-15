@@ -1,0 +1,20 @@
+{
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

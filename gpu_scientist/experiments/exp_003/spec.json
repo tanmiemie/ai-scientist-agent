@@ -1,0 +1,36 @@
+{
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0
+   }
+  },
+  {
+   "name": "step_hazard",
+   "params": {
+    "window": 60
+   }
+  },
+  {
+   "name": "drift",
+   "params": {
+    "window": 30,
+    "min_changes": 5
+   },
+   "label": "drift_30"
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 0.5,
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

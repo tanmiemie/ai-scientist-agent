@@ -1,0 +1,21 @@
+{
+ "_hypothesis": "Iter 2 (volatility-aware calibration). exp_000 diagnosis: calibration groups by collector x class, so quiet and volatile GPUs share one additive offset; geomean skill +0.115 vs pooled +0.183, and by-group skill ranges +0.033 (afhubbard spot) to +0.200. Volatility tracks the GPU (B200/H100 vs older cards) more than the collector, so learn the offsets per gpu_model. Chosen by a DEV-only scratch comparison of calibration keys (source_class +0.1831, gpu_model +0.1960, instrument_class +0.1443, source_id +0.1441, pricing_tier +0.1243, series_id/all +0.0090) and of a per-series self-rescaling model vol_tail (m=5/10/30: +0.150/+0.149/+0.152, discarded). Offsets only widen/narrow intervals; no price curve is chained across classes.",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "gpu_model"
+ }
+}

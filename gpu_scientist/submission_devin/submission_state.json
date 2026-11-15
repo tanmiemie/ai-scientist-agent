@@ -1,0 +1,67 @@
+{
+ "spec_from": "exp_000",
+ "spec": {
+  "_hypothesis": "exp_001 still has 25% of truths above q90, unevenly by group. Learn an upper/lower offset per collector x class online from realised misses (adaptive calibration, target 10% each side).",
+  "models": [
+   {
+    "name": "trend_tail",
+    "params": {
+     "window": 60,
+     "floor": 1.0
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "state": {
+  "weights": {},
+  "calibration_up": {
+   "afhubbard|hyperscaler_spot|h1": -0.009000000000000084,
+   "afhubbard|hyperscaler_spot|h3": -0.0050000000000000825,
+   "afhubbard|hyperscaler_spot|h7": 0.017999999999999926,
+   "gpurentalprices|marketplace_ask|h1": 0.016499999999999976,
+   "gpurentalprices|marketplace_ask|h3": 0.007499999999999986,
+   "gpurentalprices|marketplace_ask|h7": 0.014499999999999978,
+   "gpurentalprices|neocloud_rate_card|h1": 0.017999999999999763,
+   "gpurentalprices|neocloud_rate_card|h3": 0.03499999999999981,
+   "gpurentalprices|neocloud_rate_card|h7": 0.05399999999999994,
+   "fastgpu_daily|hyperscaler_spot|h1": 0.014999999999999979,
+   "fastgpu_daily|hyperscaler_spot|h3": 0.03199999999999998,
+   "fastgpu_daily|hyperscaler_spot|h7": 0.051000000000000004,
+   "fastgpu_daily|neocloud_rate_card|h1": 0.004999999999999902,
+   "fastgpu_daily|neocloud_rate_card|h3": -0.019000000000000104,
+   "fastgpu_daily|neocloud_rate_card|h7": 0.017999999999999988,
+   "fastgpu_daily|neocloud_spot|h1": 0.004999999999999952,
+   "fastgpu_daily|neocloud_spot|h3": -0.0030000000000000673,
+   "fastgpu_daily|neocloud_spot|h7": 0.02099999999999999
+  },
+  "calibration_dn": {
+   "afhubbard|hyperscaler_spot|h1": -0.004000000000000052,
+   "afhubbard|hyperscaler_spot|h3": 0.019999999999999924,
+   "afhubbard|hyperscaler_spot|h7": 0.02299999999999995,
+   "gpurentalprices|marketplace_ask|h1": 0.006500000000000001,
+   "gpurentalprices|marketplace_ask|h3": -0.022500000000000023,
+   "gpurentalprices|marketplace_ask|h7": -0.030500000000000027,
+   "gpurentalprices|neocloud_rate_card|h1": 0.02799999999999987,
+   "gpurentalprices|neocloud_rate_card|h3": 0.07499999999999984,
+   "gpurentalprices|neocloud_rate_card|h7": 0.154,
+   "fastgpu_daily|hyperscaler_spot|h1": 0.00499999999999998,
+   "fastgpu_daily|hyperscaler_spot|h3": 0.047,
+   "fastgpu_daily|hyperscaler_spot|h7": 0.08600000000000005,
+   "fastgpu_daily|neocloud_rate_card|h1": -0.055000000000000104,
+   "fastgpu_daily|neocloud_rate_card|h3": -0.009000000000000102,
+   "fastgpu_daily|neocloud_rate_card|h7": 0.06799999999999999,
+   "fastgpu_daily|neocloud_spot|h1": -0.10500000000000008,
+   "fastgpu_daily|neocloud_spot|h3": -0.0830000000000001,
+   "fastgpu_daily|neocloud_spot|h7": -0.0640000000000001
+  }
+ }
+}

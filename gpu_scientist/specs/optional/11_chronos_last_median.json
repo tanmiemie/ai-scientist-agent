@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "If 10 loses mainly through its median, keep the last value as the median and use Chronos only for the interval width. Isolates whether Chronos' uncertainty is useful even when its point forecast is not.",
+ "models": [
+  {
+   "name": "chronos",
+   "params": {
+    "median_mode": "last"
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

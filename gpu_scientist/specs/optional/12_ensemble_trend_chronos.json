@@ -1,0 +1,29 @@
+{
+ "_hypothesis": "Let per-group weights choose between trend_tail and Chronos-Bolt from recent pinball loss; expect Chronos to earn weight only where the per-model table shows it winning.",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0
+   }
+  },
+  {
+   "name": "chronos",
+   "params": {
+    "median_mode": "model"
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 0.5,
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

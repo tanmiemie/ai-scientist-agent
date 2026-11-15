@@ -1,0 +1,56 @@
+{
+ "id": "exp_000",
+ "spec": {
+  "_hypothesis": "exp_001 still has 25% of truths above q90, unevenly by group. Learn an upper/lower offset per collector x class online from realised misses (adaptive calibration, target 10% each side).",
+  "models": [
+   {
+    "name": "trend_tail",
+    "params": {
+     "window": 60,
+     "floor": 1.0
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.183114,
+  "skill_median_of_series": 0.18615,
+  "skill_geomean": 0.115058,
+  "coverage_in": 0.796376,
+  "coverage_above_q90": 0.116093,
+  "coverage_below_q10": 0.087531,
+  "share_series_positive": 0.833333,
+  "by_horizon": {
+   "1": 0.063421,
+   "3": 0.134234,
+   "7": 0.233997
+  },
+  "n_cells": 3256,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.103864,
+  "skill_median_of_series": 0.169759,
+  "skill_geomean": 0.062063,
+  "coverage_in": 0.791252,
+  "coverage_above_q90": 0.093439,
+  "coverage_below_q10": 0.115308,
+  "share_series_positive": 0.764706,
+  "by_horizon": {
+   "1": 0.062333,
+   "3": 0.121331,
+   "7": 0.104753
+  },
+  "n_cells": 1509,
+  "n_problems": 0
+ }
+}

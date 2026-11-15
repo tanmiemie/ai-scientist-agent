@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "Foundation-model check: Chronos-Bolt zero-shot (log prices, 90-day context) with the same online calibration as the champion. Expect it to match trend_tail on volatile groups (marketplace asks, spot) but lose on step-like rate cards, because it smooths the median.",
+ "models": [
+  {
+   "name": "chronos",
+   "params": {
+    "median_mode": "model"
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

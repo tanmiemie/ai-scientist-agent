@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "exp_000 diagnosis: truth above q90 in 41% of dev cells, so the upper edge is far too narrow while prices creep up. Use only the last 60 days of changes and keep at least one typical daily move of room above the last value.",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

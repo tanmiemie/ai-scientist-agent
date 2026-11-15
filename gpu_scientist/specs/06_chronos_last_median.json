@@ -1,0 +1,23 @@
+{
+ "_hypothesis": "Iter 3 (Chronos-Bolt, time-boxed). exp_000 diagnosis: 47% of truths above q50 and +0.063 skill at h=1 show the median is near-optimal at the last value, so the open question is the interval: does a pretrained foundation model give better q10/q90 widths than trend_tail? Chronos-Bolt-small zero-shot on 90 days of log prices, median kept at the last value, same source_class calibration. Variant chosen by a DEV-only scratch run: median_mode=model +0.0337, median_mode=last +0.1430 (champion +0.1831), so only the stronger variant is submitted; expected to be rejected.",
+ "models": [
+  {
+   "name": "chronos",
+   "params": {
+    "model_id": "amazon/chronos-bolt-small",
+    "context_days": 90,
+    "median_mode": "last",
+    "log_input": true
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}
