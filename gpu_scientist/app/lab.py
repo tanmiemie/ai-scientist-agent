@@ -10,6 +10,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 from store import LAB, ROOT
@@ -52,7 +53,7 @@ def new_workspace(name: str) -> Path:
 
 def start(kind: str, args: list[str], workspace: Path | None, title: str, extra_env: dict | None = None) -> str:
     JOBS.mkdir(parents=True, exist_ok=True)
-    jid = f"{dt.datetime.now():%Y%m%d-%H%M%S}-{slug(kind)}"
+    jid = f"{dt.datetime.now():%Y%m%d-%H%M%S}-{slug(kind)}-{uuid.uuid4().hex[:6]}"
     log = JOBS / f"{jid}.log"
     env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PYTHONUNBUFFERED": "1", **(extra_env or {})}
     if workspace is not None:
