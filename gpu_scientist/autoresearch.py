@@ -115,6 +115,9 @@ def spec_hash(spec: dict) -> str:
 
 
 # ---------------------------------------------------------------- context the proposer sees
+NO_MEMORY = False  # set by --no-memory: the proposer sees no past hypotheses or lessons (ablation)
+
+
 def context(n_recent: int = 15) -> dict:
     champ = json.loads((C.EXPERIMENTS / "champion.json").read_text())
     diag_path = C.EXPERIMENTS / champ["id"] / "diagnosis.md"
@@ -124,6 +127,8 @@ def context(n_recent: int = 15) -> dict:
              "holdout_gate_passed": r["accepted"], "coverage_dev": round(r["dev"]["coverage_in"], 3),
              "hypothesis": r["hypothesis"][:300], "lesson": (r.get("lesson") or "")[:300],
              "spec": clean(r["spec"])} for r in recs[-n_recent:]]
+    if NO_MEMORY:
+        hist = []  # ablation: champion + diagnosis only; exact-duplicate specs are still refused below
     return {"champion": {"id": champ["id"], "spec": clean(champ["spec"]),
                          "dev": {k: champ["dev"][k] for k in ("skill_pooled", "skill_median_of_series",
                                                                "skill_geomean", "coverage_in",
@@ -370,7 +375,11 @@ def main():
     ap.add_argument("--model", default=None)
     ap.add_argument("--seed", default=None, help=f"spec used if the ledger has no champion (default {SEED_SPEC.name})")
     ap.add_argument("--allow-heavy", action="store_true", help="let the proposer use chronos/chronos2/timestral")
+    ap.add_argument("--no-memory", action="store_true",
+                    help="ablation: hide past hypotheses and lessons from the proposer")
     a = ap.parse_args()
+    global NO_MEMORY
+    NO_MEMORY = a.no_memory
     prop = (LLMProposer(a.provider, a.model, a.allow_heavy) if a.proposer == "llm"
             else HeuristicProposer(a.allow_heavy))
     loop(prop, a.iters, a.max_rejects, a.seed, a.allow_heavy)
