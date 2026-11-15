@@ -35,9 +35,13 @@ def main():
     ap.add_argument("--parent", default=None, help="experiment this one builds on")
     ap.add_argument("--id", default=None)
     a = ap.parse_args()
+    run(json.loads(open(a.spec).read()), a.hypothesis, a.parent, a.id)
 
-    spec = json.loads(open(a.spec).read())
-    eid = a.id or next_id()
+
+def run(spec: dict, hypothesis: str, parent: str | None = None, eid: str | None = None, verbose: bool = True) -> dict:
+    """Run one experiment end to end and return its ledger record (also used by autoresearch.py)."""
+    a = argparse.Namespace(hypothesis=hypothesis, parent=parent)
+    eid = eid or next_id()
     out = C.EXPERIMENTS / eid
     out.mkdir(parents=True, exist_ok=True)
     (out / "spec.json").write_text(json.dumps(spec, indent=1))
@@ -79,6 +83,9 @@ def main():
     if accepted:
         champ_path.write_text(json.dumps({"id": eid, "spec": spec, "dev": dev, "holdout": hold}, indent=1))
 
+    if not verbose:
+        return rec
+
     def line(name, m):
         return (f"{name:8s} pooled {m['skill_pooled']:+.4f}  median {m['skill_median_of_series']:+.4f}  "
                 f"geomean {m['skill_geomean']:+.4f}  in[q10,q90] {m['coverage_in']:.2f}  above_q90 {m['coverage_above_q90']:.2f}")
@@ -87,6 +94,7 @@ def main():
     print(line("holdout", hold))
     print(f"diagnosis: {out / 'diagnosis.md'}")
     print(f"next: python ledger.py lesson {eid} \"what this taught us\"")
+    return rec
 
 
 if __name__ == "__main__":

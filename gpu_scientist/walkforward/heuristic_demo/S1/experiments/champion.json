@@ -1,0 +1,53 @@
+{
+ "id": "exp_003",
+ "spec": {
+  "_hypothesis": "champion model drift has dev skill 0.198, coverage 0.72 -> Replacing drift by momentum (recent-window, step-aware) should fit posted prices better. Change: primary model drift -> momentum",
+  "models": [
+   {
+    "name": "momentum",
+    "params": {}
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.202728,
+  "skill_median_of_series": 0.130339,
+  "skill_geomean": -0.017231,
+  "coverage_in": 0.714372,
+  "coverage_above_q90": 0.164251,
+  "coverage_below_q10": 0.121377,
+  "share_series_positive": 0.75,
+  "by_horizon": {
+   "1": -0.120933,
+   "3": 0.1186,
+   "7": 0.27499
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.152559,
+  "skill_median_of_series": 0.135082,
+  "skill_geomean": 0.011289,
+  "coverage_in": 0.855984,
+  "coverage_above_q90": 0.063895,
+  "coverage_below_q10": 0.080122,
+  "share_series_positive": 0.694444,
+  "by_horizon": {
+   "1": 0.060078,
+   "3": 0.091884,
+   "7": 0.222847
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}
