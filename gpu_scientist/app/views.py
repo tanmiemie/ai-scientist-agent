@@ -119,7 +119,7 @@ def timeline():
     elif show == "rejected":
         rows = rows[~rows.accepted]
     if q:
-        m = rows.hypothesis.str.contains(q, case=False) | rows.lesson.str.contains(q, case=False)
+        m = rows.hypothesis.str.contains(q, case=False, regex=False) | rows.lesson.str.contains(q, case=False, regex=False)
         rows = rows[m]
     by_id = df.set_index("id")
     for r in (rows.iloc[::-1] if newest else rows).itertuples():
