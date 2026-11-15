@@ -72,4 +72,4 @@ Column definitions:
   - On S1, the no-memory arm is slightly ahead (0.221 vs 0.209 mean final TEST).
   - Six iterations per slice is probably too short a budget for the lost iterations to show up in TEST skill.
 
-API calls: about 37–41 per run (6 iterations x 3 slices, plus retries); keys were read from the environment only. `experiments_final/` and `submission_final/` are unchanged.
+API calls: 38, 39 (memory) and 42, 43 (no memory) per run, counted from `autoresearch_log.jsonl`; the no-memory runs needed more retries; keys were read from the environment only. `experiments_final/` and `submission_final/` are unchanged.
