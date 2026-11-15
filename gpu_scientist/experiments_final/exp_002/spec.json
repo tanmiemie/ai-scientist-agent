@@ -1,0 +1,21 @@
+{
+ "_hypothesis": "exp_001 still has 25% of truths above q90, unevenly by group. Learn an upper/lower offset per collector x class online from realised misses (adaptive calibration, target 10% each side).",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

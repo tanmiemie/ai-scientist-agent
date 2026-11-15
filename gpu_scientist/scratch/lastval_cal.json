@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "scratch: last value point forecast + online source_class calibration only",
+ "models": [
+  {
+   "name": "last_value",
+   "params": {}
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}
