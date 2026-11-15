@@ -26,7 +26,7 @@ def _exp_picker(df: pd.DataFrame, exp_dir, key: str, label: str = "Experiment", 
              for r in df.itertuples()}
     default = default or champ or ids[-1]
     return st.selectbox(label, ids, index=ids.index(default) if default in ids else len(ids) - 1,
-                        format_func=names.get, key=key)
+                        format_func=names.get, key=f"{key}:{exp_dir}")
 
 
 # ---------------------------------------------------------------- overview
