@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "pooled 0.098 vs geomean -0.032: quiet series score much worse -> One calibration offset per group over-widens low-volatility series; a smaller step per update should help quiet series without losing coverage. Change: calibrate.scale 0.01 -> 0.005",
+ "models": [
+  {
+   "name": "drift",
+   "params": {
+    "window": 30
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "source_class"
+ }
+}

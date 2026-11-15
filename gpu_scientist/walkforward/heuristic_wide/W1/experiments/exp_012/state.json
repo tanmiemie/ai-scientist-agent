@@ -1,0 +1,78 @@
+{
+ "weights": {
+  "afhubbard|hyperscaler_spot|h1": {
+   "trend_tail": 0.0073362587479278065,
+   "step_hazard": 0.9926637412520722
+  },
+  "afhubbard|hyperscaler_spot|h3": {
+   "trend_tail": 0.994969845363365,
+   "step_hazard": 0.00503015463663495
+  },
+  "afhubbard|hyperscaler_spot|h7": {
+   "trend_tail": 0.9742761985126474,
+   "step_hazard": 0.02572380148735275
+  },
+  "gpurentalprices|marketplace_ask|h1": {
+   "trend_tail": 0.5533258645359427,
+   "step_hazard": 0.44667413546405726
+  },
+  "gpurentalprices|marketplace_ask|h3": {
+   "trend_tail": 0.9111602164272891,
+   "step_hazard": 0.08883978357271093
+  },
+  "gpurentalprices|marketplace_ask|h7": {
+   "trend_tail": 0.8954139099662374,
+   "step_hazard": 0.10458609003376247
+  },
+  "gpurentalprices|neocloud_rate_card|h1": {
+   "trend_tail": 0.7525185973917007,
+   "step_hazard": 0.24748140260829923
+  },
+  "gpurentalprices|neocloud_rate_card|h3": {
+   "trend_tail": 0.9702205864211594,
+   "step_hazard": 0.029779413578840654
+  },
+  "gpurentalprices|neocloud_rate_card|h7": {
+   "trend_tail": 0.9975736553960046,
+   "step_hazard": 0.0024263446039953633
+  },
+  "fastgpu_daily|hyperscaler_spot|h1": {
+   "trend_tail": 0.4165814974319691,
+   "step_hazard": 0.583418502568031
+  },
+  "fastgpu_daily|hyperscaler_spot|h3": {
+   "trend_tail": 0.9532476106046551,
+   "step_hazard": 0.04675238939534488
+  },
+  "fastgpu_daily|hyperscaler_spot|h7": {
+   "trend_tail": 0.7714297387967992,
+   "step_hazard": 0.2285702612032008
+  },
+  "fastgpu_daily|neocloud_rate_card|h1": {
+   "trend_tail": 0.6581303727287372,
+   "step_hazard": 0.3418696272712628
+  },
+  "fastgpu_daily|neocloud_rate_card|h3": {
+   "trend_tail": 0.9317664371994706,
+   "step_hazard": 0.06823356280052936
+  },
+  "fastgpu_daily|neocloud_rate_card|h7": {
+   "trend_tail": 0.8529204753371715,
+   "step_hazard": 0.14707952466282848
+  },
+  "fastgpu_daily|neocloud_spot|h1": {
+   "trend_tail": 0.5495045553554618,
+   "step_hazard": 0.45049544464453817
+  },
+  "fastgpu_daily|neocloud_spot|h3": {
+   "trend_tail": 0.539927274008531,
+   "step_hazard": 0.460072725991469
+  },
+  "fastgpu_daily|neocloud_spot|h7": {
+   "trend_tail": 0.5,
+   "step_hazard": 0.5
+  }
+ },
+ "calibration_up": {},
+ "calibration_dn": {}
+}

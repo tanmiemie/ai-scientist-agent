@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "champion model drift has dev skill 0.199, coverage 0.73 -> Replacing drift by step_hazard (recent-window, step-aware) should fit posted prices better. Change: primary model drift -> step_hazard",
+ "models": [
+  {
+   "name": "step_hazard",
+   "params": {}
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "source_class"
+ }
+}

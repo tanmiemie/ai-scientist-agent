@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Overall coverage is 0.46 (should be ~0.80), with above_q90 at 0.41 and below_q10 at 0.12; all quantiles are sharply underdispersed. mean_log_err_q50 is near zero, indicating well-centered but too-narrow intervals. -> The drift baseline's intervals are much too narrow and uncalibrated. Enabling calibration with moderate gamma/scale will stretch intervals toward correct coverage. This should boost coverage\u2014especially overall, above_q90, and below_q10\u2014without hurting sharpness too much, and is needed for any reasonable scoring. Change: Enable calibrate, with gamma=0.5 (default), scale=0.01 (default), and group_by=instrument_class (default)",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "_hypothesis": "champion model drift has dev skill 0.099, coverage 0.52 -> Replacing drift by trend_tail (recent-window, step-aware) should fit posted prices better. Change: primary model drift -> trend_tail",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {}
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

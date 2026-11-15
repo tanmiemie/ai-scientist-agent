@@ -1,0 +1,82 @@
+# Diagnosis (dev origins only)
+
+Cells: 657. Overall skill 0.1464; truth above q50 in 40% of cells (50% if unbiased); above q90 18% and below q10 6% (10% each if calibrated).
+
+## By series group
+| group                              |   n |   skill |   y_above_q50 |   above_q90 |   below_q10 |   mean_log_err_q50 |
+|:-----------------------------------|----:|--------:|--------------:|------------:|------------:|-------------------:|
+| afhubbard|hyperscaler_spot         |  84 |   0.08  |         0.262 |       0.107 |       0.024 |              0.002 |
+| fastgpu_daily|hyperscaler_spot     |  30 |   0.384 |         0.3   |       0.3   |       0.333 |             -0.03  |
+| fastgpu_daily|neocloud_rate_card   | 165 |   0.155 |         0.515 |       0.218 |       0.036 |              0.006 |
+| fastgpu_daily|neocloud_spot        | 105 |  -0     |         0.152 |       0.152 |       0.143 |              0.002 |
+| gpurentalprices|marketplace_ask    |  21 |   0.296 |         0.476 |       0.095 |       0.048 |              0.016 |
+| gpurentalprices|neocloud_rate_card | 252 |   0.052 |         0.488 |       0.194 |       0.02  |              0.007 |
+
+## By horizon
+|   horizon_days |   n |   skill |   y_above_q50 |   above_q90 |   below_q10 |   mean_log_err_q50 |
+|---------------:|----:|--------:|--------------:|------------:|------------:|-------------------:|
+|              1 | 219 |   0.146 |         0.215 |       0.146 |       0.078 |              0.001 |
+|              3 | 219 |   0.204 |         0.425 |       0.11  |       0.046 |              0.002 |
+|              7 | 219 |   0.115 |         0.571 |       0.297 |       0.055 |              0.009 |
+
+## By days since the last price change at the origin
+| dsc_bucket   |   n |   skill |   y_above_q50 |   above_q90 |   below_q10 |   mean_log_err_q50 |
+|:-------------|----:|--------:|--------------:|------------:|------------:|-------------------:|
+| 0-1          | 261 |   0.146 |         0.533 |       0.188 |       0.061 |              0.004 |
+| 2-3          |  90 |   0.197 |         0.644 |       0.244 |       0.011 |              0.01  |
+| 4-7          |  63 |   0.326 |         0.429 |       0.254 |       0.095 |             -0.003 |
+| 8-30         | 180 |  -0.004 |         0.194 |       0.189 |       0.089 |              0.004 |
+| >30          |  63 |  -0.61  |         0.095 |       0     |       0     |              0.002 |
+
+## By change in provider count over the 7 days before the origin
+| prov_bucket   |   n |   skill |   y_above_q50 |   above_q90 |   below_q10 |   mean_log_err_q50 |
+|:--------------|----:|--------:|--------------:|------------:|------------:|-------------------:|
+| fewer         |   6 |  -0.053 |         0     |       0     |       0.833 |             -0.005 |
+| more          |   3 |  -0.443 |         1     |       1     |       0     |              0.008 |
+| same          | 648 |   0.15  |         0.404 |       0.182 |       0.052 |              0.004 |
+
+## Worst series
+| series_id                                                        |   n |    skill |   y_above_q50 |   above_q90 |   below_q10 |   mean_log_err_q50 |
+|:-----------------------------------------------------------------|----:|---------:|--------------:|------------:|------------:|-------------------:|
+| afhubbard.hyperscaler_spot.A100_40GB.spot.median                 |  21 | -inf     |         0     |       0     |       0     |              0     |
+| fastgpu_daily.neocloud_rate_card.A100_80GB.on_demand.median      |  15 | -inf     |         0     |       0     |       0     |              0     |
+| fastgpu_daily.neocloud_rate_card.L40S.on_demand.median           |  15 | -inf     |         0     |       0     |       0     |              0     |
+| fastgpu_daily.neocloud_rate_card.H100_PCIe_80GB.on_demand.median |  15 | -inf     |         0     |       0     |       0     |              0     |
+| gpurentalprices.neocloud_rate_card.L40S.on_demand.median         |  21 | -inf     |         0     |       0     |       0     |              0     |
+| fastgpu_daily.neocloud_spot.B200.spot.median                     |  15 | -inf     |         0     |       0     |       1     |             -0     |
+| gpurentalprices.neocloud_rate_card.RTX_A6000.on_demand.median    |  21 | -inf     |         0     |       0     |       0     |              0     |
+| gpurentalprices.neocloud_rate_card.L4.on_demand.median           |  21 |   -0.405 |         0.143 |       0.048 |       0.048 |             -0.004 |
+
+## Each base model alone: skill by group
+| group                              |   trend_tail |
+|:-----------------------------------|-------------:|
+| afhubbard|hyperscaler_spot         |        0.239 |
+| fastgpu_daily|hyperscaler_spot     |        0.393 |
+| fastgpu_daily|neocloud_rate_card   |        0.174 |
+| fastgpu_daily|neocloud_spot        |       -0     |
+| gpurentalprices|marketplace_ask    |        0.296 |
+| gpurentalprices|neocloud_rate_card |        0.259 |
+
+## Mean ensemble weight by group
+| group                              |   trend_tail |
+|:-----------------------------------|-------------:|
+| afhubbard|hyperscaler_spot         |            1 |
+| fastgpu_daily|hyperscaler_spot     |            1 |
+| fastgpu_daily|neocloud_rate_card   |            1 |
+| fastgpu_daily|neocloud_spot        |            1 |
+| gpurentalprices|marketplace_ask    |            1 |
+| gpurentalprices|neocloud_rate_card |            1 |
+
+## Candidate leading signals (same GPU, other collector, moves `lag_days` earlier)
+| series                                                            | leader                                                         |   lag_days |   corr |
+|:------------------------------------------------------------------|:---------------------------------------------------------------|-----------:|-------:|
+| gpurentalprices.neocloud_rate_card.RTX_6000_Ada.on_demand.median  | afhubbard.neocloud_rate_card.RTX_6000_Ada.on_demand.median     |          1 |  0.872 |
+| gpurentalprices.neocloud_rate_card.H100_SXM_80GB.on_demand.median | afhubbard.hyperscaler_spot.H100_SXM_80GB.spot.median           |          1 | -0.586 |
+| gpurentalprices.neocloud_rate_card.B200.on_demand.median          | afhubbard.hyperscaler_spot.B200.spot.median                    |          5 | -0.519 |
+| gpurentalprices.marketplace_ask.H100_80GB.spot.median             | gpurentalprices.neocloud_rate_card.H100_80GB.serverless.median |          1 | -0.517 |
+| gpurentalprices.neocloud_rate_card.A100_SXM_80GB.on_demand.median | gpurentalprices.hyperscaler_spot.A100_SXM_80GB.spot.median     |          5 |  0.451 |
+| gpurentalprices.neocloud_rate_card.H200.on_demand.median          | gpurentalprices.hyperscaler_spot.H200.spot.median              |          5 |  0.41  |
+| gpurentalprices.neocloud_rate_card.H200.on_demand.median          | afhubbard.neocloud_rate_card.H200.on_demand.median             |          4 |  0.342 |
+| gpurentalprices.neocloud_rate_card.A100_40GB.on_demand.median     | gpurentalprices.hyperscaler_spot.A100_40GB.spot.median         |          5 |  0.332 |
+| gpurentalprices.marketplace_ask.H100_80GB.spot.median             | gpurentalprices.neocloud_spot.H100_80GB.spot.median            |          3 | -0.308 |
+| gpurentalprices.neocloud_rate_card.H100_80GB.on_demand.median     | gpurentalprices.marketplace_ask.H100_80GB.spot.median          |          1 |  0.307 |

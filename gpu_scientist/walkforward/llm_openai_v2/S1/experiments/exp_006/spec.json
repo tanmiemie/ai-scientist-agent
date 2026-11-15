@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "champion has coverage_in 0.719 (target 0.80), above_q90 0.184 (target 0.10), below_q10 0.097 (target 0.10), all using calibrate.group_by=source_class. Historically, group_by=instrument_class gave higher coverage (0.758) but lower skill than source_class. Attempts with fine-grained (gpu_model/series_id) groupings decreased both skill and coverage. -> Coverage on DEV (source_class) is below target; using 'mean' ensemble (of drift + momentum) with the same calibration should help with underdispersed intervals (since monotonic/mean combos generally produce wider, more robust intervals), thus increasing coverage, especially in undercovered subgroups (afhubbard|hyperscaler_spot, 0.078 above_q90; overall 0.184). Change: Add a second base model (momentum, default params) and combine.method=mean, with calibration unchanged.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "params": {
+    "window": 60,
+    "k_up": 1.0,
+    "k_dn": 1.0,
+    "floor": 1.0,
+    "k": 1,
+    "beta": 0.5
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

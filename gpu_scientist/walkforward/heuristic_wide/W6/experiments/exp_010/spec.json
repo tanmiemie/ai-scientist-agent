@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "pooled 0.187 vs geomean 0.126: quiet series score much worse -> One calibration offset per group over-widens low-volatility series; a smaller step per update should help quiet series without losing coverage. Change: calibrate.scale 0.01 -> 0.005",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 90
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "source_class"
+ }
+}

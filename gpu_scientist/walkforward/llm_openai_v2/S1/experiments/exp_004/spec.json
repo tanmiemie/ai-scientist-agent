@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "champion coverage_in is 0.7186 (below target 0.80); 'instrument_class' grouping gave higher coverage (0.758) in exp_001 than the champion's 'source_class' (0.719), but skill was higher for 'source_class'. The lesson of exp_003 calls out possible further gains from hybrid groupings. Both 'instrument_class' and 'source_class' give moderate performance; trying 'gpu_model' as calibrate.group_by could improve coverage for groups like 'afhubbard|hyperscaler_spot' which currently have low coverage (above_q90=0.078, below_q10=0.042). -> Calibrating intervals by 'gpu_model' will improve coverage from 0.719 towards the 0.80 target, especially for hardware where behavior is distinct and current intervals are miscalibrated. Series with poor coverage (e.g., afhubbard|hyperscaler_spot, where both q10 and q90 coverage are under-target) may see the largest benefit as price dynamics are hardware-driven. Change: Set calibrate.group_by to 'gpu_model' (from 'source_class'), holding other parameters (gamma=0.5, scale=0.01) and model (drift) constant.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "gpu_model"
+ }
+}

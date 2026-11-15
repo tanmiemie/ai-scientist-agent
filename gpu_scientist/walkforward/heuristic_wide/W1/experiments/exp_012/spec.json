@@ -1,0 +1,23 @@
+{
+ "_hypothesis": "groups behave differently (step-like rate cards vs drifting spot/asks) -> Letting per-group weights choose between trend_tail and step_hazard from recent pinball loss should help where one model dominates. Change: hedge ensemble trend_tail + step_hazard",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {}
+  },
+  {
+   "name": "step_hazard",
+   "params": {
+    "window": 60
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 0.5,
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

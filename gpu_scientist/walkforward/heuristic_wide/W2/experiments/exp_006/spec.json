@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "dev coverage 0.72 (above q90 0.20, below q10 0.08; target 0.80 / 0.10 / 0.10) -> Calibration reacts too slowly to misses; a larger step should pull coverage to target. Change: calibrate.gamma 0.5 -> 0.8",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.8,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

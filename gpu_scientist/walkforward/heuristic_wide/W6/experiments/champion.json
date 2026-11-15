@@ -1,0 +1,55 @@
+{
+ "id": "exp_009",
+ "spec": {
+  "_hypothesis": "champion uses a 60-day window -> A 90-day window trades reactivity for stability of the change distribution. Change: trend_tail.window -> 90",
+  "models": [
+   {
+    "name": "trend_tail",
+    "params": {
+     "window": 90
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.186718,
+  "skill_median_of_series": 0.188055,
+  "skill_geomean": 0.125865,
+  "coverage_in": 0.796767,
+  "coverage_above_q90": 0.115235,
+  "coverage_below_q10": 0.087998,
+  "share_series_positive": 0.805556,
+  "by_horizon": {
+   "1": 0.064528,
+   "3": 0.133616,
+   "7": 0.239293
+  },
+  "n_cells": 3341,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.137511,
+  "skill_median_of_series": 0.192915,
+  "skill_geomean": 0.130417,
+  "coverage_in": 0.755365,
+  "coverage_above_q90": 0.082976,
+  "coverage_below_q10": 0.16166,
+  "share_series_positive": 0.757576,
+  "by_horizon": {
+   "1": 0.077964,
+   "3": 0.127817,
+   "7": 0.153629
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

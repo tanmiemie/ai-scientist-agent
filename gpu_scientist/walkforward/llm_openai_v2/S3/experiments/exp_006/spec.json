@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "The calibration group fastgpu_daily|neocloud_spot still shows relatively poor skill (0.239), persistent undercoverage (y_above_q50=0.425, ideal 0.5), and above-q90 frequency (0.135 > 0.10 target); most recent experiments show that changing calibration scale or gamma alone leads to overfitting and drops coverage or hurts holdout skill. There is a strong negative correlation (-0.924 lag 3d) between fastgpu_daily.neocloud_rate_card.RTX_A6000.on_demand.median and the lead signal from gpurentalprices.neocloud_rate_card.RTX_A6000.on_demand.median\u2014this hints that a model with access to a leading indicator could help correct bias in those deviant groups. -> Incorporating the 'leader' model (window=60, floor=1.0, beta=1.0) in a two-model mean ensemble (with drift) will improve forecast skill for fastgpu_daily|neocloud_rate_card and neocloud_spot, as it can incorporate leading indicator signals that pure drift misses. Previous single-model calibration cannot utilize cross-series information. Using mean (not hedge) is a safe first step to test for incremental benefit. Change: Use combine.method: 'mean' (equal weights), with models: drift and leader. Leave calibration settings as champion (enabled with group_by instrument_class, gamma 0.5, scale 0.01).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}
