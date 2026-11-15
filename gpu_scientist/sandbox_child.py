@@ -88,8 +88,19 @@ def test_score(job):
     return evaluate.score(fc, tuple(job["test"]), Path(job["out_dir"]), job["label"], series_csv, catalog_csv)
 
 
+def forecast(job):
+    import pandas as pd
+    import config as C
+    import data
+    import online
+    panel = data.Panel.load(*data.build(cutoff=job["cutoff"]))
+    fc, _, state = online.run(job["spec"], panel, pd.date_range(C.WARMUP_START, job["cutoff"]), job["sids"],
+                              C.HORIZONS)
+    return {"rows": fc[fc.origin_date == job["cutoff"]].to_dict("records"), "state": state}
+
+
 if __name__ == "__main__":
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     job = json.loads(sys.stdin.read())
-    res = {"smoke": smoke, "run": run, "dev_score": dev_score, "test_score": test_score}[job["job"]](job)
+    res = {"smoke": smoke, "run": run, "dev_score": dev_score, "test_score": test_score, "forecast": forecast}[job["job"]](job)
     print("@@RESULT " + json.dumps(res, default=str))

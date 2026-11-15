@@ -40,8 +40,15 @@ def main():
     if a.scope == "all":   # only series that are still being collected
         sids = [s for s in sids if panel.daily[s].index.max() >= pd.Timestamp(C.CUTOFF) - pd.Timedelta(days=3)]
 
-    fc, _, state = online.run(spec, panel, pd.date_range(C.WARMUP_START, C.CUTOFF), sids, C.HORIZONS)
-    fc = fc[fc.origin_date == C.CUTOFF].copy()
+    import coder
+    if coder.uses_generated(spec):   # LLM-written champion: forecast inside the sandbox (coder.py)
+        out = coder.sandbox({"job": "forecast", "spec": spec, "cutoff": C.CUTOFF, "sids": list(sids)})
+        if "error" in out:
+            raise SystemExit(f"sandboxed forecast failed:\n{out['error']}")
+        fc, state = pd.DataFrame(out["rows"]), out["state"]
+    else:
+        fc, _, state = online.run(spec, panel, pd.date_range(C.WARMUP_START, C.CUTOFF), sids, C.HORIZONS)
+        fc = fc[fc.origin_date == C.CUTOFF].copy()
     fc["team_id"] = a.team_id
     fc["method_note"] = f"gpu_scientist champion {src}"
 
