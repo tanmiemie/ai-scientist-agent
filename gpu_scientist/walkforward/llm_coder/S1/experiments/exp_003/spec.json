@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "The main finding is that the current champion (empirical_quantiles, window=30) has skill_pooled=0.1177 (dev), but poor coverage: only 0.61 in, with 0.29 above q90 and 0.11 below q10. By horizon, tail coverage is especially bad at 7 days (q90: 0.43). The weakest groups are fastgpu_daily|hyperscaler_spot (skill: -0.208, q90: 0.27, q10: 0.27) and fastgpu_daily|neocloud_spot (skill: 0.06, q90: 0.28, q10: 0.16). Empirical_quantiles is very simple: it just takes log changes on a rolling window. Recent rejection of a volatility-adaptive model showed huge overfitting and skill collapse. Leader/peer signals have not been exploited. -> Introducing an explicit model of directional trend, using a rolling average of recent log changes to bias the empirical quantiles, will improve both coverage and skill in groups with strongly persistent skew (e.g., fastgpu_daily|hyperscaler_spot, where q90/q10 rates are much too high and the skill is negative), by compensating for systematically missed directional moves across horizons. Change: Replace the empirical_quantiles model with a new model that augments the empirical distribution of log returns with a trend term, estimated as the mean log change over the window. This will bias the forecast slightly in the direction of recent movement, addressing the observed under- and overshoot in the tails. The window parameter is tunable (default 30). DEV sweep of models.0.params.trend_weight: 0.5->+0.0927, 1.0->+0.0626, 1.5->+0.0277, 2.0->-0.0109; chose 0.5.",
+ "models": [
+  {
+   "name": "trend_aware_empirical",
+   "params": {
+    "window": 30,
+    "trend_weight": 0.5
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

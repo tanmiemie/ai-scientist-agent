@@ -1,0 +1,21 @@
+{
+ "_hypothesis": "Coverage on DEV for the champion is 0.6037 (far below 0.8), and interval width increases (exp_005, scaled intervals) slightly improved coverage (to 0.64) but at the loss of skill. Attempts to increase window and scale both show that the basic log-empirical approach is under-dispersed. The high above_q90 at long horizons (0.368 for h=7) and after price changes (0.353 for dsc_bucket=0-1) indicates that variance increases after recent jumps, but the model intervals are static by horizon, so coverage fails exactly when volatility rises. Therefore, dynamically adapting the interval width based on recent volatility or time since price change could boost coverage without harming short-horizon intervals. -> If we widen the empirical prediction intervals (quantiles) immediately after a recent price change and contract them when the price is stable (using days_since_change as a volatility proxy), out-of-interval coverage (above_q90/below_q10) for short-dsc, long-horizon cases (especially h=7, dsc<=1) will increase the most, and total coverage will approach the 0.8 target, with minimal dev skill loss across stable periods. Change: NEW MODEL: Dynamically scale the interval width depending on days_since_change: apply a multiplicative factor >1 to log-quantile offsets for days_since_change <=1, linearly interpolating to 1 for days_since_change>=7. DEV sweep of models.0.params.vol_scale: 1.1->+0.1508, 1.2->+0.1508, 1.3->+0.1499, 1.4->+0.1485, 1.5->+0.1467; chose 1.1.",
+ "models": [
+  {
+   "name": "log_empirical_adjvol_window",
+   "params": {
+    "window": 60,
+    "vol_scale": 1.1,
+    "vol_days": 1,
+    "stable_scale": 1.0,
+    "stable_days": 7
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

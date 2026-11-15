@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "Overall skill_pooled: 0.1548; coverage_in: 0.6037 (well below 0.8 target); above_q90: 0.2802, below_q10: 0.1161. Coverage is notably too low, especially for horizons=7 (above_q90=0.368, below_q10=0.157). The pure empirical random walk has persistently low coverage, and attempts to increase window length have not brought coverage near target. -> The current wide-window log empirical model is persistently under-dispersed (too-narrow intervals, undercoverage). Explicitly inflating the intervals by a fixed factor can push coverage toward the 0.8 target, following robust quantile interval inflation techniques used under underdispersed quantile regression. Multiplying the log change sample quantiles by a constant >1 (widening) should yield higher in-interval coverage, especially for high-variance/poorly-calibrated series and at longer horizons, with minor tradeoffs to skill. The scale factor to achieve target coverage should lie in ~[1.0, 1.5], but needs tuning. Change: Implement a new model log_empirical_scaled_window that behaves identically to log_empirical_wide_window (window=60) but multiplies the log-return quantile offsets (from median) by a fixed scale factor >= 1. Sweep scale in [1.0, 1.2, 1.4, 1.6]. DEV sweep of models.0.params.scale: 1.0->+0.1497, 1.2->+0.1497, 1.4->+0.1458, 1.6->+0.1394; chose 1.2.",
+ "models": [
+  {
+   "name": "log_empirical_scaled_window",
+   "params": {
+    "window": 60,
+    "scale": 1.2
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

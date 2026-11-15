@@ -9,6 +9,7 @@ to its last raw row, so a row after the origin lengthened the history of series 
 origin (about 4% of pairs, all gpurentalprices). Panel.upto now stops at the last collected day on
 or before the origin, so gap series are included in the delete mode too."""
 import json
+import os
 
 import pandas as pd
 import pytest
@@ -23,6 +24,8 @@ WINDOW_DAYS = 21          # origins walked before the tested origin, so the feed
 SPEC04 = json.loads((C.ROOT / "specs" / "04_momentum.json").read_text())
 SPECS = {f"single:{n}": {"models": [{"name": n}]} for n in sorted(autoresearch.allowed_models(heavy=False))}
 SPECS["spec04"] = {k: v for k, v in SPEC04.items() if not k.startswith("_")}
+if os.environ.get("GPU_LOOKAHEAD_MODELS"):   # coder.py gate: check only the newly generated model(s)
+    SPECS = {f"single:{n}": {"models": [{"name": n}]} for n in os.environ["GPU_LOOKAHEAD_MODELS"].split(",")}
 
 
 @pytest.fixture(scope="module")

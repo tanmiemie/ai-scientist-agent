@@ -45,6 +45,15 @@ def champions_by_iteration(ledger_path):
     return out
 
 
+def uses_generated(spec, exp_dir) -> bool:
+    gen = exp_dir / "models"
+    if not gen.exists():
+        return False
+    import coder
+    names = {coder.static_info(f.read_text())[0] for f in gen.glob("m_*.py")}
+    return any(m.get("name") in names for m in spec.get("models", []))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--iters", type=int, default=6)
@@ -56,6 +65,8 @@ def main():
     ap.add_argument("--run", default=None)
     ap.add_argument("--no-memory", action="store_true", help="ablation: proposer sees no past lessons")
     ap.add_argument("--exa", action="store_true", help="outside evidence from Exa each iteration")
+    ap.add_argument("--coder", choices=["off", "allow", "always"], default="off",
+                    help="let/make the LLM write new models (coder.py gates, sandboxed runs)")
     a = ap.parse_args()
 
     run = a.run or f"{a.proposer}_{dt.datetime.now():%Y%m%d_%H%M}"
@@ -76,10 +87,20 @@ def main():
             cmd += ["--no-memory"]
         if a.exa:
             cmd += ["--exa"]
+        if a.coder != "off":
+            cmd += ["--coder", a.coder]
         print(f"\n### {sl['name']}: dev {sl['dev']} gate {sl['gate']} test {sl['test']}")
         subprocess.run(cmd, check=True, env=env, cwd=C.ROOT)
         cache = {}
         for row in champions_by_iteration(exp_dir / "ledger.jsonl"):
+            if row["champion"] not in cache and uses_generated(row["spec"], exp_dir):
+                import coder   # generated code is scored in the no-network sandbox, like during the run
+                t = coder.sandbox({"job": "test_score", "spec": row["spec"], "test": list(sl["test"]),
+                                   "out_dir": str(base / sl["name"] / "test"), "label": row["champion"]},
+                                  extra_env={"GPU_EXPERIMENTS": str(exp_dir)})
+                if "error" in t:
+                    raise RuntimeError(f"sandboxed TEST scoring of {row['champion']} failed: {t['error']}")
+                cache[row["champion"]] = t
             if row["champion"] not in cache:
                 fc, _, _ = online.run(row["spec"], panel, pd.date_range(C.WARMUP_START, sl["test"][1]), sids, C.HORIZONS)
                 cache[row["champion"]] = evaluate.score(fc, sl["test"], base / sl["name"] / "test", row["champion"],

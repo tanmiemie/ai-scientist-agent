@@ -4,6 +4,7 @@ from __future__ import annotations
 import datetime as dt
 import gzip
 import hashlib
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -20,6 +21,8 @@ def sha256(path) -> str:
 
 
 def code_commit() -> str | None:
+    if "GPU_CODE_COMMIT" in os.environ:   # set by coder.sandbox: the sandbox may not run git
+        return os.environ["GPU_CODE_COMMIT"] or None
     try:
         out = subprocess.run(["git", "rev-parse", "HEAD"], cwd=C.ROOT, capture_output=True, text=True, timeout=10)
         dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=C.ROOT,

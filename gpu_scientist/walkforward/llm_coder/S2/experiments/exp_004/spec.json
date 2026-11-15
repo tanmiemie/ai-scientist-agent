@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "The DEV coverage is low across nearly all groups and horizons (overall 0.60, far below target 0.80; e.g. at 7d, above_q90 is 0.455). All current models operate only on the prediction series' own history or its realized volatility. However, the diagnosis shows that for some series (typically same GPU/model, other catalog/collector), there are extremely strong and timely leader signals available (see corr = 0.974/lag_days=1 for fastgpu_daily.neocloud_spot.B200.spot.median led by gpurentalprices.neocloud_spot.B200.spot.median). No tested model leverages information from such highly correlated, slightly ahead peers. The current models also ignore provider count dynamics, which relate modestly to skill and may co-occur with signal propagation across sources. -> A peer-leader model, which looks at all other available series for the same gpu_model and identifies the peer with the highest lagged correlation to the target (allowing for a short, positive lag), then aligns and shifts that peer's recent log returns as a forecast for the target, will improve interval coverage and possibly skill for series/groups with evident leader-lag structure (especially hyperscaler spot and neocloud spot/rate card), because it incorporates information that 'arrives' earlier elsewhere. Change: Add a new peer_leader_lag model, using the peer of equal gpu_model, different series_id, with strongest log-return correlation lagged by up to 5 days; it predicts by shifting the peer's last h-day log price move onto the target and calibrates quantiles from peer's h-day empirical distribution (over a rolling window), lagged optimally per pair. DEV sweep of models.0.params.window: 30->-0.0000, 60->-0.0000, 90->-0.0000; chose 30.",
+ "models": [
+  {
+   "name": "peer_leader_lag",
+   "params": {
+    "window": 30,
+    "max_lag": 5
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

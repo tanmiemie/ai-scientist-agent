@@ -1,0 +1,19 @@
+{
+ "_hypothesis": "By days since last price change, the champion's skill drops sharply (from 0.139 at 0-1d to 0.036 at 8-30d, and 0 for >30d), and coverage above q90 also drops (from 0.335 at 0-1d to 0.154 at >30d). The tail forecasts are especially poor (no hits in either tail for several series with stale prices). Previous experiments attempting crude stale-aware widening severely degraded skill and failed coverage (exp_004 with max_scale=2.0). Nonlinear, gentler interval adaptation to staleness may improve calibration, especially at 7d horizons where coverage_above_q90 is 0.428 (target 0.1). -> A gentle, capped and nonlinear widening of the empirical quantile intervals for origins with high days-since-change will improve calibration for stale series (particularly in >7 dsc buckets and 7d horizon), by increasing coverage above q90, without the drastic skill loss seen with aggressive scaling. Using max_scale=1.25 (capped, modest adjustment) and ramping up only after stale_thresh, not linearly, may reduce overfitting. Change: Introduce new model: gentle_stale_aware_quantiles, which multiplies the empirical q10-q90 log interval width by a nonlinear, capped function of days_since_change (ramp starts after stale_thresh, max 1.25x widening). Use same window=30 as champion.",
+ "models": [
+  {
+   "name": "gentle_stale_aware_quantiles",
+   "params": {
+    "window": 30,
+    "stale_thresh": 7,
+    "max_scale": 1.25
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

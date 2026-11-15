@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is 0.456 (well below 0.8). Undercoverage is most acute at long horizons and following recent price changes (above_q90=0.494 at h=7, above_q90=0.557 for days-since-change <=1). Overall skill is mediocre (0.0697 pooled). -> The undercoverage and poor calibration of the current drift model suggest the forecast intervals are too narrow, especially after recent price moves or at longer horizons. A simple remedy may be to inflate the variance estimate in the log-returns; taking empirical quantiles over a longer window may make intervals wider and better calibrated. Change: Replace 'drift' with a new model (log_empirical_window) that uses the same rolling empirical quantile approach as drift, but exposes a tunable window parameter to test the effect of interval width. DEV sweep of models.0.params.window: 30->+0.1535, 60->+0.1497, 120->+0.1498, 240->+0.1500; chose 30.",
+ "models": [
+  {
+   "name": "log_empirical_window",
+   "params": {
+    "window": 30
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

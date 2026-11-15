@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is 0.61 (well below target 0.80), with undercoverage at horizon=7 (above_q90=0.382, below_q10=0.129). Increasing the window in the log_empirical_window model improved coverage, suggesting increased interval width helps. Diagnosis shows the basic approach works, but can be extended. New model direction: apply a similar empirical window technique, but estimate the 0.05\u20130.95 range (wider) and then shrink back to nominal interval, to build in guard rails and avoid under-estimation of tails. -> Estimating a wider interval empirically (e.g., q05\u2013q95) over the window and mapping it down to q10\u2013q90 will reduce undercoverage at the extremes, especially for 7-day horizon, boosting overall in-interval coverage toward 0.80. This guards against interval under-dispersion where extreme price moves have occurred, without widening intervals arbitrarily. Change: Use a new model log_empirical_wide_window: estimate q05/q95 log-changes over window=60, then contract linearly to fit q10/q90. Use the median for q50 as usual. DEV sweep of models.0.params.window: 45->+0.1494, 60->+0.1548, 90->+0.1546; chose 60.",
+ "models": [
+  {
+   "name": "log_empirical_wide_window",
+   "params": {
+    "window": 60
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

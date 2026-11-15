@@ -14,11 +14,13 @@ Proposers
   heuristic  a deterministic rule-based scientist that maps diagnosis numbers to mutations of the
              champion. No API needed; used for offline runs and as a control for the LLM.
 
-The proposer can only recombine and retune registered models (models/m_*.py); it does not write
-code, so a run can never break the pipeline or touch the evaluation.
+By default the proposer can only recombine and retune registered models (models/m_*.py). With
+--coder allow|always it may also write a new model; the code must pass the gates in coder.py (static
+check, 20-pair smoke test within 5 s, no-lookahead test) and only ever runs in a no-network sandbox.
 
   python autoresearch.py --iters 6 --proposer llm --provider openai
   python autoresearch.py --iters 6 --proposer heuristic
+  python autoresearch.py --iters 6 --proposer llm --coder always
 """
 from __future__ import annotations
 
@@ -117,6 +119,7 @@ def spec_hash(spec: dict) -> str:
 # ---------------------------------------------------------------- context the proposer sees
 USE_EXA = False    # set by --exa: outside evidence from exa_scout.py each iteration
 NO_MEMORY = False  # set by --no-memory: the proposer sees no past hypotheses or lessons (ablation)
+CODER = "off"      # set by --coder: off, allow (the proposer may write a model) or always (it must)
 
 
 def context(n_recent: int = 15) -> dict:
@@ -213,7 +216,11 @@ class LLMProposer:
         self.calls.append({"system": system[:200], "user": user, "reply": out})
         return out
 
-    def propose(self, ctx: dict, feedback: str | None = None) -> dict:
+    def propose(self, ctx: dict, feedback: str | None = None, previous: dict | None = None) -> dict:
+        system = SYSTEM
+        if CODER != "off":
+            import coder
+            system = SYSTEM.replace(" You cannot write code.", "") + "\n" + coder.prompt(CODER == "always")
         user = json.dumps({"allowed_models_and_default_params": allowed_models(self.heavy),
                            "champion": ctx["champion"], "history_most_recent_last": ctx["history"]}, indent=1)
         user += "\n\nDIAGNOSIS OF THE CHAMPION (DEV):\n" + ctx["diagnosis_md"]
@@ -221,9 +228,12 @@ class LLMProposer:
             o = ctx["outside"]
             user += (f"\n\nOUTSIDE EVIDENCE (Exa, published on or before {o['cutoff']}; newest found this turn, "
                      f"then the evidence memory):\n" + json.dumps(o["memory_for_prompt"], indent=1))
-        if feedback:
+        if feedback and previous and previous.get("new_model"):
+            user += ("\n\nYour previous proposal:\n" + json.dumps(previous, indent=1) +
+                     f"\n\nIt was refused: {feedback}\nFix the code (or the spec) and reply with the full proposal again.")
+        elif feedback:
             user += f"\n\nYour previous proposal was refused: {feedback}\nPropose a different, valid experiment."
-        txt = self._chat(SYSTEM, user, as_json=True)
+        txt = self._chat(system, user, as_json=True)
         m = re.search(r"\{.*\}", txt, re.S)
         return json.loads(m.group(0)) if m else {}
 
@@ -311,7 +321,7 @@ class HeuristicProposer:
                                         s.update(combine={"method": "hedge", "eta": 0.5, "group_by": "source_class"})))
         return out
 
-    def propose(self, ctx: dict, feedback: str | None = None) -> dict:
+    def propose(self, ctx: dict, feedback: str | None = None, previous: dict | None = None) -> dict:
         for c in self.candidates(ctx):
             if spec_hash(c["spec"]) not in ctx["tried"] and not validate(c["spec"], self.heavy):
                 return c
@@ -359,7 +369,13 @@ def dev_sweep(spec: dict, sweep: dict, heavy: bool, tried: set) -> tuple[dict, l
             rows.append({"value": v, "refused": errs})
             continue
         with tempfile.TemporaryDirectory() as d:
-            m = run_experiment.dev_score(cand, Path(d))
+            if CODER != "off" and _coder().uses_generated(cand):
+                m = _coder().sandbox({"job": "dev_score", "spec": cand, "out_dir": d})
+                if "error" in m:
+                    rows.append({"value": v, "refused": [m["error"][-300:]]})
+                    continue
+            else:
+                m = run_experiment.dev_score(cand, Path(d))
         rows.append({"value": v, "dev": round(m[C.PRIMARY_METRIC], 5), "coverage": round(m["coverage_in"], 3)})
     scored = [r for r in rows if "dev" in r]
     if not scored:
@@ -369,8 +385,45 @@ def dev_sweep(spec: dict, sweep: dict, heavy: bool, tried: set) -> tuple[dict, l
 
 
 # ---------------------------------------------------------------- the loop
+def _coder():
+    import coder
+    return coder
+
+
+def _check_new_model(prop: dict, spec: dict, heavy: bool, iteration: int, gates: list) -> list[str]:
+    """--coder: gate the proposal's new model (if any), then validate the spec that uses it."""
+    nm = prop.get("new_model")
+    if not isinstance(nm, dict):
+        return ["this run requires new_model (see WRITING A NEW MODEL)"] if CODER == "always" else []
+    g = _coder().gate(nm, iteration, len(gates) + 1)
+    gates.append(g)
+    if g["failed"]:
+        return [f"new model failed the {g['failed']} gate:\n{g['error']}"]
+    _coder().register_stubs()
+    errs = validate(spec, heavy) if spec else ["no spec returned"]
+    if not errs and CODER == "always" and nm["name"] not in {m.get("name") for m in spec.get("models", [])}:
+        errs = [f"spec does not use the new model {nm['name']!r}"]
+    if errs:
+        g.update(failed="spec", error="; ".join(errs))
+        _coder().discard(nm["name"])
+    return errs
+
+
+def _run(spec: dict, hyp: str, parent: str) -> dict:
+    if CODER != "off" and _coder().uses_generated(spec):
+        eid = run_experiment.next_id()
+        rec = _coder().sandbox({"job": "run", "spec": spec, "hypothesis": hyp, "parent": parent})
+        if "error" in rec:
+            import shutil
+            shutil.rmtree(C.EXPERIMENTS / eid, ignore_errors=True)
+        return rec
+    return run_experiment.run(spec, hyp, parent=parent, verbose=False)
+
+
 def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
     C.EXPERIMENTS.mkdir(parents=True, exist_ok=True)
+    if CODER != "off":
+        _coder().register_stubs()
     log = C.EXPERIMENTS / "autoresearch_log.jsonl"
     if not (C.EXPERIMENTS / "champion.json").exists():
         spec = json.loads(open(seed or SEED_SPEC).read())
@@ -386,12 +439,19 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
             o = ctx["outside"]
             print(f"[iter {i + 1}] Exa: {len(o['found_this_turn'])} results, {o['new_in_memory']} new in memory"
                   + (f", errors {o['errors']}" if o["errors"] else ""))
-        prop, feedback, refused = {}, None, []
-        for _ in range(3):
-            prop = proposer.propose(ctx, feedback) or {}
+        prop, feedback, refused, gates = {}, None, [], []
+        for _ in range(4 if CODER != "off" else 3):     # with --coder: one try plus at most 3 fixes
+            prop = proposer.propose(ctx, feedback, previous=prop) or {}
             spec = prop.get("spec") or {}
-            errs = validate(spec, heavy) if spec else ["no spec returned"]
+            if CODER != "off":
+                errs = _check_new_model(prop, spec, heavy, i + 1, gates)
+                if not errs and not prop.get("new_model"):
+                    errs = validate(spec, heavy) if spec else ["no spec returned"]
+            else:
+                errs = validate(spec, heavy) if spec else ["no spec returned"]
             if not errs and spec_hash(spec) in ctx["tried"]:
+                if isinstance(prop.get("new_model"), dict):
+                    _coder().discard(prop["new_model"]["name"])
                 errs = ["this spec runs exactly like one already tried (settings without effect count as unchanged)"]
             if not errs:
                 break
@@ -400,7 +460,7 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
         else:
             # no valid proposal this iteration: record it, count it as a rejection, keep going
             with open(log, "a") as f:
-                f.write(json.dumps({"id": None, "iteration": i + 1, "refused": refused,
+                f.write(json.dumps({"id": None, "iteration": i + 1, "refused": refused, "gates": gates,
                                     "llm_calls": getattr(proposer, "calls", [])}, default=str) + "\n")
             proposer.calls = []
             rejects += 1
@@ -425,14 +485,32 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
                     break
                 continue
         spec = {"_hypothesis": hyp, **clean(spec)}
-        rec = run_experiment.run(spec, hyp, parent=ctx["champion"]["id"], verbose=False)
+        rec = _run(spec, hyp, ctx["champion"]["id"])
+        if "error" in rec:
+            with open(log, "a") as f:
+                f.write(json.dumps({"id": None, "iteration": i + 1, "proposal": prop, "gates": gates,
+                                    "run_error": rec["error"], "llm_calls": getattr(proposer, "calls", [])},
+                                   default=str) + "\n")
+            proposer.calls = []
+            if gates and isinstance(prop.get("new_model"), dict):
+                _coder().discard(prop["new_model"]["name"])
+            rejects += 1
+            print(f"[iter {i + 1}] the sandboxed run failed; counted as a rejection: {rec['error'][-300:]}")
+            if rejects >= max_rejects:
+                break
+            continue
+        if gates:
+            _coder().copy_attempts(i + 1, rec["id"])     # every attempt stays with the experiment
+            if not rec["accepted"] and isinstance(prop.get("new_model"), dict):
+                _coder().discard(prop["new_model"]["name"])   # only accepted models stay in <experiments>/models
         lesson = proposer.lesson(rec, ctx)
         ledger.lesson(rec["id"], lesson)
         with open(log, "a") as f:
             exa_log = ({k: ctx["outside"][k] for k in ("cutoff", "queries", "found_this_turn", "errors")}
                        if ctx.get("outside") else None)
             f.write(json.dumps({"id": rec["id"], "proposal": prop, "refused_before": refused, "sweep": sweep_rows,
-                                "exa": exa_log, "source_url": prop.get("source_url"),
+                                "exa": exa_log, "source_url": prop.get("source_url"), "gates": gates or None,
+                                "generated_model": (prop.get("new_model") or {}).get("name") if gates else None,
                                 "accepted": rec["accepted"],
                                 "lesson": lesson, "llm_calls": getattr(proposer, "calls", [])}, default=str) + "\n")
         proposer.calls = []
@@ -464,10 +542,13 @@ def main():
                     help="each iteration, search the web with Exa (EXA_API_KEY) for methods and dated market news")
     ap.add_argument("--no-memory", action="store_true",
                     help="ablation: hide past hypotheses and lessons from the proposer")
+    ap.add_argument("--coder", choices=["off", "allow", "always"], default="off",
+                    help="let (allow) or make (always) the LLM proposer write a new model each iteration")
     a = ap.parse_args()
-    global NO_MEMORY, USE_EXA
+    global NO_MEMORY, USE_EXA, CODER
     NO_MEMORY = a.no_memory
     USE_EXA = a.exa
+    CODER = a.coder
     prop = (LLMProposer(a.provider, a.model, a.allow_heavy) if a.proposer == "llm"
             else HeuristicProposer(a.allow_heavy))
     loop(prop, a.iters, a.max_rejects, a.seed, a.allow_heavy)

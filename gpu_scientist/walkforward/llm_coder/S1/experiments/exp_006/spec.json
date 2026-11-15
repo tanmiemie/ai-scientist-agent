@@ -1,0 +1,19 @@
+{
+ "_hypothesis": "Coverage in interval is 0.61 (vs target 0.80), with skill_pooled 0.118; group fastgpu_daily|hyperscaler_spot skill -0.208, above_q90 0.274, below_q10 0.274; skill for dsc>8 days is sharply lower (0.036 at 8-30d, 0 at >30d). All models so far use only local empirical quantiles (log returns in a rolling window); all attempts to widen intervals or trend-bias them have either overfit or failed to improve. The main missed signal in the diagnosis is: on many GPUs, another data source leads by 1-5 days with high |corr|>0.5, |corr|>0.9 for some series. No prior model codes or ideas use the cross-series leader signals. -> Many series (especially rate cards and spot) have strongly leading signals from the same-GPU, different-source series, sometimes lagged by 1-5 days (e.g., H100_SXM_80GB on-demand: leader from hyperscaler_list or spot with -0.95 corr). Directly including recent log changes from such a leader should improve sharpness, skill, and especially tail coverage for those series and horizons. Change: Add a model that forms forecast quantiles from a linear blend between the local rolling empirical quantiles (as in champion) and log-changes over the past N days in the leading series (identified by same gpu_model, different source_id), shifted by optimal lag; blending factor and lag tunable. Use only new leader_quantiles in single mode. DEV sweep of models.0.params.leader_weight: 0.25->+0.1607, 0.5->+0.1698, 0.75->+0.1488; chose 0.5.",
+ "models": [
+  {
+   "name": "leader_quantiles",
+   "params": {
+    "window": 30,
+    "leader_weight": 0.5,
+    "lag_days": 2
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "_hypothesis": "Coverage for the champion (vol_weighted_drift_floor, vol_window=30) is 0.783 overall, but above_q90 is too high at 7 days (0.284), especially for neocloud_spot (0.213), indicating possible underestimation of risk in more volatile or clustered-regime series. Tuning the volatility lookback vol_window has not been tried beyond the default. -> A new model which tunes the vol_window parameter (volatility lookback) can reduce error from both under- and over-estimates of interval width. A longer vol_window (e.g., 45 or 60) will smooth volatility shocks better, raising coverage at 7-day horizons (bringing above_q90 closer to target 0.10\u20130.20) and stabilizing forecasts for spot and rate card series. Some short-horizon skill may be traded for this effect; overall calibration should improve. Change: Introduce a new model vol_weighted_drift_floor2, functionally equivalent to champion but parametrically independent, to enable vol_window tuning. DEV sweep of models.0.params.vol_window: 20->+0.1117, 30->+0.1092, 45->+0.1085, 60->+0.1069, 90->+0.1058; chose 20.",
+ "models": [
+  {
+   "name": "vol_weighted_drift_floor2",
+   "params": {
+    "window": 60,
+    "min_changes": 20,
+    "vol_window": 20,
+    "width": 1.0,
+    "min_vol": 0.01
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

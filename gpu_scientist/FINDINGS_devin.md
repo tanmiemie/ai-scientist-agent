@@ -206,3 +206,19 @@ HOLDOUT by collector (pooled skill): afhubbard (4 series) +0.2386 → +0.2525, f
 - **Evidence found:** 5 method papers per slice (mostly online/adaptive conformal); market articles dated on or before each cutoff: S1 1, S2 3, S3 4 (FastGPU October report 10-11, TokenWatt 16-provider snapshot 10-19, dreaming.press 10-23, Lindstead EU index).
 - **Issues (not fixed):** (1) `exa_scout.queries()` maps the diagnosis to one of 4 fixed issue strings and the market query depends only on the cutoff month, so every iteration in a slice sent the same two queries and the evidence memory stopped growing after iteration 1. (2) Lindstead's "EU GPU Price Index, October 2026" carries Exa `publishedDate` 2026-09-27 although the title covers October: a living page edited after its date, which a `publishedDate` filter cannot catch. (3) Method pages without a date pass the filter by design; the arXiv `v9` link is a later revision than the original.
 - The S1 seed TEST is 0.1449 here vs 0.1452 in v2 (same seed spec); probably code merged since v2, not verified.
+
+## LLM-written models (`DEVIN_NEXT.md` task E, `walkforward/llm_coder/`)
+
+`python walkforward.py --proposer llm --provider openai --iters 6 --coder always --run llm_coder` (gpt-4.1, 18/18 iterations). Gate counts from `coder_report.py` (`walkforward/llm_coder/CODER_REPORT.md`); `llm_openai_v2` (same slices and seed, no coder) as reference.
+
+| slice | seed TEST | final TEST | gain | v2 gain | accepted (all LLM-written models) |
+|---|---|---|---|---|---|
+| S1 | 0.1449 | 0.1850 | +0.0401 | +0.0571 | 1/6 |
+| S2 | 0.0217 | 0.2252 | +0.2036 | +0.0660 | 3/6 |
+| S3 | 0.0774 | 0.0658 | −0.0116 | +0.0015 | 2/6 |
+| mean | | | +0.0773 (2/3) | +0.0415 (3/3) | |
+
+- **Gates:** 22 generated attempts; 18 passed static, smoke and no-lookahead, 4 failed static (3 reused a name, 1 had a non-numeric default) and the next attempt passed every time. No sandboxed run failed. Passing the gates says nothing about quality: one model that passed all three scored DEV −35.9 and was stopped by the normal HOLDOUT gate.
+- **The mean is S2.** S2's `vol_weighted_drift_floor` (drift whose interval scales with recent volatility, with a volatility floor) reached TEST 0.2252, the best final TEST of any LLM run so far. S1 and S3 did worse than v2. One run, three slices: not evidence that writing models beats tuning.
+- **Bug seen in the run, fixed after review:** S3 reused the name `log_empirical_window` for a different model after the first one was rejected (iteration 1 vs 3). The ledger then shows two different models under one name. Names that appear in the ledger can no longer be reused.
+- **Sandbox after review:** generated code now also runs under a Python audit hook (`sandbox_guard.py`) that blocks network, processes, native code and file access outside the run's folders, except the framework's own call of the official scorer. Generated code refuses to run without `unshare -rn` unless `GPU_CODER_ALLOW_NETNS_FALLBACK=1`. `submit.py` forecasts with a generated champion inside the sandbox. Re-scoring S2's final champion under the guard gave the same TEST (0.2252).
