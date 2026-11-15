@@ -1,0 +1,116 @@
+{
+ "dev": {
+  "07 vs last value": {
+   "n_series": 36,
+   "better": 30,
+   "worse": 6,
+   "ties": 0,
+   "median_loss_ratio": 0.8207,
+   "geomean_loss_ratio": 0.8744,
+   "wilcoxon_p_one_sided": 0.00031
+  },
+  "07 vs 00 drift": {
+   "n_series": 36,
+   "better": 28,
+   "worse": 8,
+   "ties": 0,
+   "median_loss_ratio": 0.8698,
+   "geomean_loss_ratio": 0.9298,
+   "wilcoxon_p_one_sided": 0.00576
+  },
+  "07 vs 04 momentum": {
+   "n_series": 37,
+   "better": 26,
+   "worse": 4,
+   "ties": 7,
+   "median_loss_ratio": 0.9994,
+   "geomean_loss_ratio": 0.9917,
+   "wilcoxon_p_one_sided": 2e-05
+  },
+  "04 vs last value": {
+   "n_series": 36,
+   "better": 29,
+   "worse": 7,
+   "ties": 0,
+   "median_loss_ratio": 0.8207,
+   "geomean_loss_ratio": 0.8808,
+   "wilcoxon_p_one_sided": 0.00053
+  }
+ },
+ "holdout": {
+  "07 vs last value": {
+   "n_series": 34,
+   "better": 27,
+   "worse": 7,
+   "ties": 0,
+   "median_loss_ratio": 0.8342,
+   "geomean_loss_ratio": 0.9394,
+   "wilcoxon_p_one_sided": 0.00562
+  },
+  "07 vs 00 drift": {
+   "n_series": 36,
+   "better": 21,
+   "worse": 15,
+   "ties": 0,
+   "median_loss_ratio": 0.9647,
+   "geomean_loss_ratio": 1.112,
+   "wilcoxon_p_one_sided": 0.52165
+  },
+  "07 vs 04 momentum": {
+   "n_series": 37,
+   "better": 15,
+   "worse": 16,
+   "ties": 6,
+   "median_loss_ratio": 1.0,
+   "geomean_loss_ratio": 0.9996,
+   "wilcoxon_p_one_sided": 0.48074
+  },
+  "04 vs last value": {
+   "n_series": 34,
+   "better": 26,
+   "worse": 8,
+   "ties": 0,
+   "median_loss_ratio": 0.8298,
+   "geomean_loss_ratio": 0.9396,
+   "wilcoxon_p_one_sided": 0.00657
+  }
+ },
+ "both": {
+  "07 vs last value": {
+   "n_series": 37,
+   "better": 28,
+   "worse": 9,
+   "ties": 0,
+   "median_loss_ratio": 0.8244,
+   "geomean_loss_ratio": 0.8736,
+   "wilcoxon_p_one_sided": 0.00041
+  },
+  "07 vs 00 drift": {
+   "n_series": 37,
+   "better": 24,
+   "worse": 13,
+   "ties": 0,
+   "median_loss_ratio": 0.9042,
+   "geomean_loss_ratio": 0.939,
+   "wilcoxon_p_one_sided": 0.01613
+  },
+  "07 vs 04 momentum": {
+   "n_series": 37,
+   "better": 19,
+   "worse": 12,
+   "ties": 6,
+   "median_loss_ratio": 0.9999,
+   "geomean_loss_ratio": 0.9948,
+   "wilcoxon_p_one_sided": 0.013
+  },
+  "04 vs last value": {
+   "n_series": 37,
+   "better": 28,
+   "worse": 9,
+   "ties": 0,
+   "median_loss_ratio": 0.846,
+   "geomean_loss_ratio": 0.8782,
+   "wilcoxon_p_one_sided": 0.00072
+  }
+ }
+}
