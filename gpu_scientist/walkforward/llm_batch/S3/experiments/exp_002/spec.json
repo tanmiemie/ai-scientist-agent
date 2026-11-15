@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "y_above_q50 is 0.628 and above_q90 is 0.296 for dsc_bucket=0-1 (0/1 days since last price change), indicating frequent underprediction just after a price change. -> Drift alone responds too slowly to price changes. Adding a momentum model with moderate beta will let predictions 'catch up' when a recent change occurs, boosting coverage and skill in recently-changed series. Change: Add a momentum model (window=60, beta=0.5, k=1) in a mean ensemble with drift.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "params": {
+    "window": 60,
+    "beta": 0.5,
+    "k": 1
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

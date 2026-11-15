@@ -206,3 +206,19 @@ HOLDOUT by collector (pooled skill): afhubbard (4 series) +0.2386 → +0.2525, f
 - **Evidence found:** 5 method papers per slice (mostly online/adaptive conformal); market articles dated on or before each cutoff: S1 1, S2 3, S3 4 (FastGPU October report 10-11, TokenWatt 16-provider snapshot 10-19, dreaming.press 10-23, Lindstead EU index).
 - **Issues (not fixed):** (1) `exa_scout.queries()` maps the diagnosis to one of 4 fixed issue strings and the market query depends only on the cutoff month, so every iteration in a slice sent the same two queries and the evidence memory stopped growing after iteration 1. (2) Lindstead's "EU GPU Price Index, October 2026" carries Exa `publishedDate` 2026-09-27 although the title covers October: a living page edited after its date, which a `publishedDate` filter cannot catch. (3) Method pages without a date pass the filter by design; the arXiv `v9` link is a later revision than the original.
 - The S1 seed TEST is 0.1449 here vs 0.1452 in v2 (same seed spec); probably code merged since v2, not verified.
+
+## Ideas in batches (`DEVIN_NEXT.md` task F, `walkforward/llm_batch/`)
+
+`python walkforward.py --proposer llm --provider openai --iters 6 --ideas batch --run llm_batch` (gpt-4.1; 18/18 iterations). Each iteration: 5 ideas scored 1–10 on gain / feasibility / novelty, one reflection, run the top valid one; every idea is in `S*/experiments/ideas.json`. Baseline: `llm_openai_v2` (one idea per turn, same slices, seed and number of runs).
+
+| slice | seed TEST | v2 final | v2 gain | batch final | batch gain | accepted v2 / batch |
+|---|---|---|---|---|---|---|
+| S1 | 0.1449 | 0.2023 | +0.0571 | 0.2304 | +0.0855 | 2 / 1 |
+| S2 | 0.0217 | 0.0875 | +0.0660 | 0.0739 | +0.0522 | 1 / 3 |
+| S3 | 0.0774 | 0.0789 | +0.0015 | 0.0649 | −0.0125 | 2 / 3 |
+| mean | | | +0.0415 (3/3) | | +0.0417 (2/3) | 5 / 7 |
+
+- **No difference on TEST:** +0.0417 vs +0.0415. One run each; LLM repeats vary more than this (memory ablation), so batching neither helps nor hurts measurably.
+- **More acceptances, same overfit pattern:** batch accepted 7 vs 5, but the extra ones are small DEV gains (S3 exp_002/003: DEV +0.028/+0.003) that did not carry to TEST (S3 0.0463 → 0.0649 → 0.0649, below the seed). S1's batch champion is the first calibration step only (exp_001), which happens to test best.
+- **Scores barely discriminate:** of 90 ideas the totals sit at 19–28 (median 25–26); the reflection rarely changes the ranking. 12/90 ideas were refused by the validator (mostly out-of-range or already-tried specs); the top-ranked idea ran in 16/18 iterations, the other 2 fell to the next valid idea.
+- Review fixes: a non-numeric score (e.g. `"8/10"`) no longer aborts `rank()`, and `--ideas batch --exa` now passes the Exa evidence into both prompts (it was dropped; this run did not use Exa).

@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "The group 'gpurentalprices|neocloud_rate_card' has both severe over-coverage (above_q90 = 0.301) and y_above_q50 = 0.538, indicating intervals are too low and too narrow. Coverage_in is 0.648 overall, below the 0.80 target. -> Calibrating by 'gpu_model' instead of 'series_id' will make interval coverage less sensitive to data-thin series and smooth out group-level miscalibration, especially for frequently-failed groups such as rate_card. Change: calibrate.group_by from 'series_id' to 'gpu_model'.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "window": 60,
+   "beta": 1.0,
+   "k": 1,
+   "k_up": 1.0,
+   "k_dn": 1.0,
+   "floor": 1.0
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "instrument_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "gpu_model"
+ }
+}

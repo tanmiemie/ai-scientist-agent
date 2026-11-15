@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "In afhubbard|hyperscaler_spot, drift skill = 0.169, momentum = 0.050, and static 0.5/0.5 weights under-serve drift, contributing to large negative skill in key series. -> Allowing ensemble weights to adapt by group ('instrument_class') can exploit observed skill gaps, assigning more to drift where superior, as in afhubbard|hyperscaler_spot. Change: Switch combine.method to 'hedge', use group_by=instrument_class, eta=2.0.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "window": 60,
+   "beta": 1.0,
+   "k": 1,
+   "k_up": 1.0,
+   "k_dn": 1.0,
+   "floor": 1.0
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "instrument_class"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "Series with large-magnitude or anti-correlated leader signals (e.g., corr=-0.952 lag 2 for H100) may benefit from including the leader. -> Using a leader model with default parameters for the top-correlation pairs might improve accuracy, especially in long-horizon series where external signals lead the true price movement. Change: Combine leader and drift models via hedge, allowing group-specific adaptive weighting so leader is only trusted where predictive.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "window": 60,
+   "floor": 1.0,
+   "beta": 1.0
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "series_id"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

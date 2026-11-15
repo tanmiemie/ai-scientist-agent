@@ -1,0 +1,27 @@
+{
+ "_hypothesis": "afhubbard|hyperscaler_spot and fastgpu_daily|hyperscaler_spot show very different model wins\u2014momentum deeply underperforms for afhubbard but is overweighted by source_class hedge. -> Grouping hedge by series_id will zero in on local base model skill, enabling full local adjustment for misfit (e.g., sharply downweighting momentum for series like afhubbard|hyperscaler_spot). Change: Set combine.group_by to series_id (was source_class).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "params": {
+    "window": 60,
+    "beta": 0.5,
+    "k": 1
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "series_id"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

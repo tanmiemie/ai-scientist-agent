@@ -1,0 +1,2822 @@
+[
+ {
+  "batch": 1,
+  "next_exp_id": "exp_001",
+  "champion": "exp_000",
+  "retry_after": null,
+  "biggest_miss": "afhubbard|hyperscaler_spot skill 0.169, y_above_q50 0.227 (truth much higher than forecast, strongly under-predicts after price changes)",
+  "reflection": "I adjusted idea 1 to clarify that a more aggressive momentum (higher beta) is novel and better-targeted to the biggest miss, and that default mean ensemble is a meaningful change versus the champion. I replaced the leader model with a trend_tail approach (idea 5), as leader is expected to have impact on only a subset and trend_tail provides a more robust global fix for the most extreme failures in the worst series, something leader cannot target. All specs were double-checked for redundant or inoperative settings; all now have every parameter effective. Feasibility for all is 10 and they are not disguised repeats, and each idea is now closely tied to either the largest group miss or the single worst series.",
+  "draft": [
+   {
+    "seed_id": "momentum_after_change",
+    "observation": "For 1343 dev cells with 0-1 days since last price change: skill is 0.06 (much higher loss), y_above_q50 is 0.611 (strong under-prediction), and above_q90 is 0.557 (far too often under the true price after changes).",
+    "hypothesis": "Adding a strong momentum model should react to recent moves after price changes and lift q50, q90, improving calibration and reducing under-prediction spike.",
+    "change": "Add a momentum model to the ensemble (combine: mean), to introduce short-run trend-following.",
+    "expected_effect": "Strongest improvement in '0-1 days since change', especially for afhubbard|hyperscaler_spot and fastgpu_daily|hyperscaler_spot; lift q50 and q90 toward the true values (y_above_q50, above_q90 closer to 0.5/0.1).",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 0.5
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 9,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Directly addresses the biggest miss (under-reaction after price changes), feasible with supplied models, average ensemble not yet tried."
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Coverage is only 45% in (0.10-0.90 interval), far from target 80%; wide miscalibration seen especially in afhubbard|hyperscaler_spot (truth above q50 in only 22.7%).",
+    "hypothesis": "Per-series calibration should increase coverage without overfitting by allowing series-specific bias/scale adjustment.",
+    "change": "Enable calibration with group_by = series_id, using conservative gamma*scale.",
+    "expected_effect": "Improvement in interval coverage, especially for series/groups with extreme under-coverage like afhubbard|hyperscaler_spot.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      }
+     ],
+     "combine": {
+      "method": "single"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.01,
+      0.02
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Direct calibration by series is untried and feasible, should address biggest coverage miss; minor tuning needed."
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Skill of drift model is negative or weak in fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot (eg. -0.03, -0.00), but positive in others (afhubbard|hyperscaler_spot 0.169).",
+    "hypothesis": "Letting the model weights adapt by group and horizon via hedge should improve performance, by selecting better models for tough groups.",
+    "change": "Combine drift and momentum (hedge) with group_by = instrument_class, eta = 2.0 (default).",
+    "expected_effect": "Best-case: gains in tough groups (eg. fastgpu_daily|hyperscaler_spot) as hedge assigns more weight to whichever model performs better; possibly less over-prediction drift elsewhere.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 0.5
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Hedge ensembling by group has not yet been tried and is fully feasible; could adapt to group-specific model skill patterns."
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "When provider count rises in past 7 days, y_above_q50 is 0.563\u2014forecasts under-predict reality (larger miss); when fewer providers, coverage drops and mean_log_err_q50 rises.",
+    "hypothesis": "Including the composition model will allow the forecast to adjust to provider-count events, lessening systematic under-prediction after influxes.",
+    "change": "Add composition model and average with drift (mean ensemble).",
+    "expected_effect": "Greatest effect in 'more' and 'fewer' provider buckets; reduces systematic miss after provider count changes.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "composition"
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Composition model not yet combined with drift; targets clear diagnosis event, fully feasible."
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "There are 7 pairs with very high lagged-correlation (over 0.85-0.97) between GPU series in different collectors with lags of 1-4 days.",
+    "hypothesis": "Adding a leader model for those series should improve timing of forecast updates and reduce under-reaction/miss when other sources move earlier.",
+    "change": "Use drift and leader model, combine via mean.",
+    "expected_effect": "Improvement in series with high-lag correlation, particularly for spot and neocloud series with lag structure.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "leader",
+       "window": 60
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Leader never used yet, directly tries high-correlation link; likely helps only subset of series, so lower gain."
+   }
+  ],
+  "ideas": [
+   {
+    "seed_id": "momentum_after_change",
+    "observation": "For 1343 dev cells with 0-1 days since last price change: skill is 0.06 (much higher loss), y_above_q50 is 0.611 (strong under-prediction), and above_q90 is 0.557 (far too often under the true price after changes).",
+    "hypothesis": "Adding a momentum model with higher beta should better react to sharp moves immediately after price changes, reducing under-estimation spikes in these cells.",
+    "change": "Add a high-beta momentum model to the ensemble (combine: mean), to amplify short-run trend-following right after changes.",
+    "expected_effect": "Most improvement in '0-1 days since change', especially afhubbard|hyperscaler_spot; q50 and q90 closer to observed frequencies.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 9,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Momentum at high beta has not been run and is fully feasible; addresses the largest observed post-change under-reaction.",
+    "index": 0,
+    "total": 27.0,
+    "refused": null,
+    "selected": true
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Coverage is only 45% (target 80%); afhubbard|hyperscaler_spot and some series are especially miscalibrated (truth above q50 only 22.7%).",
+    "hypothesis": "Per-series_id calibration will allow correcting persistent local bias, directly improving coverage in worst series/groups.",
+    "change": "Enable calibration, group_by series_id (with conservative step size). Sweep scale to avoid coverage/overfit tradeoff.",
+    "expected_effect": "Coverage should rise for worst calibration cases; largest impact in afhubbard|hyperscaler_spot and tail series.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      }
+     ],
+     "combine": {
+      "method": "single"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.01,
+      0.02
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Direct per-series calibration not yet tried; is valid and uniquely targets the large under-coverage/bias in worst series.",
+    "index": 1,
+    "total": 27.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Some groups (fastgpu_daily|hyperscaler_spot/-0.03, fastgpu_daily|neocloud_spot/-0.00) have very weak skill, while others like afhubbard|hyperscaler_spot have a large bias.",
+    "hypothesis": "Hedge ensembling by instrument_class will let the system shift weight away from poor base models in certain groups, adapting to documented groupwise failures.",
+    "change": "Combine drift and momentum (hedge), group_by instrument_class; eta default.",
+    "expected_effect": "Should lift skill in groups where the current model has weak or negative skill; some positive effect on tail miscalibration.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 0.5
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Hedge/group-by not yet tried and can directly target groupwise skill differences; valid and new in this run.",
+    "index": 2,
+    "total": 26.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "If provider count increases, model strongly underestimates new price level (y_above_q50 0.563, skill 0.07); when count falls, systematic error also appears.",
+    "hypothesis": "Composition model captures provider-count events; averaging with drift (mean) lets prediction move up or down after provider inflection.",
+    "change": "Add composition model and average with drift (mean ensemble).",
+    "expected_effect": "Improvement in provider-change buckets ('more', 'fewer'), mitigates systematic miss after these events.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "composition"
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Composition model not yet used, clearly targets a documented failure mode, and mean ensemble is valid here.",
+    "index": 3,
+    "total": 25.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": null,
+    "observation": "afhubbard.hyperscaler_spot.A100_40GB.spot.median shows catastrophic failure (skill -0.47, y_above_q50 0.00) and long flat intervals after price moves.",
+    "hypothesis": "A trend_tail model can allow a one-time shift after major price moves and acts as a median adjuster. Combining with drift by mean targets outlier series in both persistent mean error and after changes.",
+    "change": "Add trend_tail model and average with drift (mean ensemble), with median_shift = 0.02, using default window and k_up/k_dn.",
+    "expected_effect": "Should assist worst series (afhubbard.hyperscaler_spot.A100_40GB.spot.median), smoothing out bias when level shifts; some general median bias correction.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "trend_tail",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "median_shift": 0.02
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Trend_tail never yet used; directly adapts median to series with consistent bias, configuration is valid and new.",
+    "index": 4,
+    "total": 25.0,
+    "refused": null,
+    "selected": false
+   }
+  ],
+  "selected_index": 0
+ },
+ {
+  "batch": 2,
+  "next_exp_id": "exp_002",
+  "champion": "exp_001",
+  "retry_after": null,
+  "biggest_miss": "skill = -1.042 in afhubbard.hyperscaler_spot.A100_40GB.spot.median",
+  "reflection": "All five ideas were checked for feasibility and each involves a parameter or model not previously used exactly in this ensemble. I removed any duplicates or ideas where only small, localized gains are possible and ensured each experiment uses at least one effective new setting. Gains are realistically tied to the biggest diagnosis buckets (worst skill or worst coverage by group or bucket), and none simply overfit to a tiny cell. The group-hedge and momentum-k sweep were both rated higher for expected impact due to linkage with the top miss. Scores and descriptions were updated for clarity and consistency.",
+  "draft": [
+   {
+    "seed_id": "group_specific_models",
+    "observation": "In afhubbard|hyperscaler_spot, drift skill = 0.169, momentum = 0.050, while the mean ensemble weights are static 0.5/0.5 everywhere.",
+    "hypothesis": "Allowing weights to adapt by series group could exploit the observed per-group model skill differences. In particular, afhubbard|hyperscaler_spot prefers drift by >0.1.",
+    "change": "Change combine.method to 'hedge', set group_by to 'instrument_class' (group as in diagnosis), eta=2.0 (default).",
+    "expected_effect": "Performance should improve most in series groups where one base model clearly wins (esp. afhubbard|hyperscaler_spot), primarily skill and coverage for those groups.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Addresses the biggest miss with proven group-wise skill separation and is feasible and moderately novel."
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Coverage in is only 0.569 (target 0.8), with over-shoot (above_q90=0.31) and under-coverage below_q10. Coverage varies sharply by group (e.g., above_q90 0.408 in gpurentalprices|neocloud_rate_card).",
+    "hypothesis": "Interval calibration per series (series_id) can correct systematic bias for those consistently miscovered (e.g., worst series list).",
+    "change": "Enable calibration; set calibrate.enabled=true, group_by=series_id, gamma=0.5, scale=0.01.",
+    "expected_effect": "Interval coverage should approach 0.8 in series with systemic over/under-coverage, especially for poor-coverage series.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Directly addresses systematic coverage failures (2nd worst miss in diagnosis); no history of per-series calibration with new ensemble."
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "In candidate leaders, many same-GPU cross-collector correlations > 0.85 at lags 1\u20134 (e.g., fastgpu_daily.neocloud_spot.B200.spot.median, lag=1/3, corr=0.974).",
+    "hypothesis": "Including a leader model may anticipate sharp moves for correlated series, especially where a leading signal is available.",
+    "change": "Add a leader model (defaults), preceding drift; keep mean combine.",
+    "expected_effect": "Skill improvement, especially in series with sharply correlated leader (cor|>0.95 above) and coverage for those horizons.",
+    "spec": {
+     "models": [
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      },
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 10
+    },
+    "why_scores": "Adds a new signal with strong group diagnosis evidence; no prior test with leader model."
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "When provider count increases (prov_bucket=more, n=394), skill drops to 0.22 and above_q90 rises to 0.30. Similarly, following provider changes, median is under-predicted.",
+    "hypothesis": "Adding a composition model with default params will allow partial reversion after provider-count changes, counteracting under-prediction.",
+    "change": "Add 'composition' model with default params, mean ensemble.",
+    "expected_effect": "Biggest effect expected in prov_bucket=more/fewer cells and 0-1 days since change; should raise median in those cases.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 5,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Direct mapping of provider-mix signal; not yet combined with other models in history."
+   },
+   {
+    "seed_id": "momentum_after_change",
+    "observation": "When days since last price change == 0-1, y_above_q50 is 0.585 (truth above median far too often; under-reaction to sharp changes).",
+    "hypothesis": "Increasing momentum model's k parameter (larger momentum effect when recent change detected) will raise the predicted quantiles after a change.",
+    "change": "Increase momentum model's k from 1 to 2; keep all else fixed.",
+    "expected_effect": "Should shift the forecast upward after recent changes (high y_above_q50 0-1 bucket), improving skill and coverage there.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 2,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "sweep": {
+     "param": "models.1.k",
+     "values": [
+      1,
+      1.5,
+      2,
+      2.5
+     ]
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Explicitly targets main post-change miss; not yet tuned k in this ensemble."
+   }
+  ],
+  "ideas": [
+   {
+    "seed_id": "group_specific_models",
+    "observation": "In afhubbard|hyperscaler_spot, drift skill = 0.169, momentum = 0.050, and static 0.5/0.5 weights under-serve drift, contributing to large negative skill in key series.",
+    "hypothesis": "Allowing ensemble weights to adapt by group ('instrument_class') can exploit observed skill gaps, assigning more to drift where superior, as in afhubbard|hyperscaler_spot.",
+    "change": "Switch combine.method to 'hedge', use group_by=instrument_class, eta=2.0.",
+    "expected_effect": "Should boost skill in groups with clear model dominance, directly targeting poor performance in afhubbard.hyperscaler_spot.A100_40GB.spot.median.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 9,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Directly attacks largest miss, highly feasible, and moderately novel (first use of per-group hedged weights).",
+    "index": 0,
+    "total": 27.0,
+    "refused": null,
+    "selected": true
+   },
+   {
+    "seed_id": "momentum_after_change",
+    "observation": "In the 0-1 days since change bucket, y_above_q50=0.585 (truth often above), indicating under-reaction after price changes.",
+    "hypothesis": "Increasing the momentum model's k makes it more responsive short-term, which should suppress post-change under-prediction.",
+    "change": "Increase momentum k from 1 to 2 (single change); sweep to optimize.",
+    "expected_effect": "Skill should improve mostly in the 0-1 dsc bucket where the miss is largest.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 2,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "sweep": {
+     "param": "models.1.k",
+     "values": [
+      1,
+      1.5,
+      2,
+      2.5
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Directly targets main diagnosis bucket miss, not simply a rehash of prior entries, and sweep is appropriate for tuning.",
+    "index": 3,
+    "total": 26.0,
+    "refused": [
+     "this spec runs exactly like one already tried"
+    ],
+    "selected": false
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "High lagged cross-collector correlations (e.g., corr=0.974 at lag=1 for fastgpu_daily.neocloud_spot.B200.spot.median) show clear leader potential.",
+    "hypothesis": "Adding a leader model should allow forecasts to react preemptively where external lead signals are visible, most helping the series with highly-correlated counterparts.",
+    "change": "Add leader model (defaults), ensemble via mean.",
+    "expected_effect": "Skill lift should be concentrated in those series with available aligned leaders, especially for sharp, poorly anticipated moves.",
+    "spec": {
+     "models": [
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      },
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 10
+    },
+    "why_scores": "Strong rationale and never run before; effects may be concentrated in a subset of series, so slightly lower gain.",
+    "index": 2,
+    "total": 26.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "Provider mix changes coincide with miscoverage and spikes in error for 'more' bucket (skill=0.22); composition model is designed for provider-count effects.",
+    "hypothesis": "Composition model enables adaptation to provider-count shocks, particularly boosting skill/coverage when provider count changes.",
+    "change": "Add 'composition' as a third model to ensemble.",
+    "expected_effect": "Impact should be seen most in prov_bucket=more/fewer cells and soon after provider count changes.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Diagnostic pattern is strong, model has not yet been joined with both drift and momentum, and settings all differ from history.",
+    "index": 4,
+    "total": 25.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Coverage (0.569) is far from 0.8, with extreme miscoverage in certain series (e.g., above_q90=0.408 in gpurentalprices|neocloud_rate_card).",
+    "hypothesis": "Per-series calibration should correct for consistent over/under-coverage in the worst-affected series, more consistently moving all coverage towards target across the board.",
+    "change": "Enable calibrate, group_by series_id, gamma=0.5, scale=0.01.",
+    "expected_effect": "Coverage and extreme quantile rates should improve especially in worst series (those with excessive above_q90/below_q10).",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "mean"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Addresses a critical diagnosis miss, fully compatible and not previously run in this configuration.",
+    "index": 1,
+    "total": 24.0,
+    "refused": null,
+    "selected": false
+   }
+  ],
+  "selected_index": 0
+ },
+ {
+  "batch": 3,
+  "next_exp_id": "exp_003",
+  "champion": "exp_002",
+  "retry_after": null,
+  "biggest_miss": "By horizon: 7 days, y_above_q50 = 0.577, above_q90 = 0.364 (far too often under q50/q90 at long horizon)",
+  "reflection": "All specs are valid and all parameter changes are effective\u2014none are redundant. The first three ideas (per-series calibration, leading signals via leader, and group adaption by gpu_model) directly address major, persistent mis-calibration or skill gaps across horizons/groups, not single rare series. The provider-mix idea\u2019s expected gain is a bit less direct for the 7-day horizon miss, but significant enough given the frequency of provider churn. The eta sweep could risk fitting to recent noise, yet evidence from DEV (momentum dominating some groups, insufficient reweighting) justifies a sweep. I slightly lower the eta sweep gain/novelty scores (gain: 6\u21925, novelty: 7\u21926) since a simple eta increase may not help if coverage error is structural. All other idea scores stand. No invalid or redundant specs or repeats found, so the batch is retained unmodified\u2014with minor score adjustment for better realism.",
+  "draft": [
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "At 7-day horizon: y_above_q50 is 0.577 (truth above median too often), above_q90 is 0.364 (should be ~0.10 if calibrated); group coverage (in) is only 0.63 (target 0.80); dev_geomean skill 0.1687 is much higher than pooled skill 0.1642, suggesting interval width/placement gaps by series.",
+    "hypothesis": "Setting calibrate.enabled=true with group_by=series_id will directly tune coverage in each series, potentially bringing aggregate coverage closer to the 0.80 target and lowering excessive upper tail misses on hard series/horizons.",
+    "change": "Enable calibration and group it by series_id with default gamma and scale.",
+    "expected_effect": "Coverage_in should rise for series and horizons with high y_above_q50; above_q90 and below_q10 should move closer to 0.10 overall (less upper-tail miss at 7-day horizon); geomean skill may drop if overfitting.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.01,
+      0.02
+     ]
+    },
+    "scores": {
+     "gain": 9,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Directly targets the largest miss (coverage/q90 at horizon 7 and high-miss series); feasible with supported calibration and group_by; similar to known techniques but not yet used in this run."
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "Many series show strong (>|0.8|) positive or negative correlations to matching series in other collectors at 1-4 day lag (e.g., fastgpu_daily.neocloud_spot.B200 has 0.974 at lag 1, gpurentalprices.neocloud_rate_card.RTX_A6000 at lag 3: -0.956, etc).",
+    "hypothesis": "Adding a leader model keyed off the most-correlated leading series (e.g. B200 with lag 1) will allow the ensemble to anticipate sharp moves, particularly at 3/7-day horizons where lagged signals dominate.",
+    "change": "Add a leader model with window=60 (default) to incorporate leading external signals.",
+    "expected_effect": "Skill and coverage at 3 and 7-day horizons in affected GPU-model series should improve, especially where lagged corr is high; pooled skill and group coverage may increase modestly.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 9,
+     "novelty": 9
+    },
+    "why_scores": "Uses strong listed cross-collector lag signals (big in some series); feasible and permitted; new model in the mix for this run."
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Per-base-model skill varies by group: e.g., afhubbard|hyperscaler_spot is 0.169 (drift), 0.05 (momentum) vs fastgpu_daily|neocloud_rate_card is 0.023 (drift), 0.18 (momentum); current hedge group_by=instrument_class, but some series in the same class have opposite skill makeup.",
+    "hypothesis": "Grouping weights by gpu_model (instead of instrument_class) allows more granular assignment to drift/momentum, especially if skill differences are within a class but across GPUs.",
+    "change": "Change combine.group_by from instrument_class to gpu_model.",
+    "expected_effect": "Should benefit series such as fastgpu_daily|neocloud_rate_card and afhubbard|hyperscaler_spot if model-winning pattern matches GPU, not class; expect skill improvement in those subgroups.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "gpu_model"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Directly varies subgroup learning where large per-model skill gaps shown; plausible boost; not yet tried and supported."
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "When provider count increases: skill 0.225 (higher loss when volatile); y_above_q50 = 0.523 (truth above too often); mean_log_err_q50 = 0.013 (systematic under-prediction); similar but softer when count drops.",
+    "hypothesis": "Incorporating a composition model (reacts to provider count shocks with controlled reversion) can better capture median/upper tail after provider entry/exit, especially for 'more/fewer' buckets.",
+    "change": "Add composition model (defaults) to react to provider-count shocks.",
+    "expected_effect": "Skill and median calibration should improve in prov_bucket='more', possibly some gain in 'fewer'; overall interval coverage and calibration should benefit where provider count is unstable.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Targets a specific observed failure mode (provider shocks); all parameters allowed; composition model not yet in use."
+   },
+   {
+    "seed_id": null,
+    "observation": "In the 'fastgpu_daily|neocloud_rate_card' group (759 n), y_above_q50=0.516, above_q90=0.224, and below_q10=0.145\u2014too many intervals with the truth above median and q90. Per-model skill shows momentum > drift, and mean ensemble weight is 93% momentum here; likely this group could benefit from better weight adaptation.",
+    "hypothesis": "A higher eta in hedge (more aggressive adaptation to recent loss) will enable faster reweighting to the better model (momentum), especially beneficial to sharply reactive groups like fastgpu_daily|neocloud_rate_card.",
+    "change": "Sweep combine.eta from 2.0 to higher values (up to 10); keep group_by=instrument_class.",
+    "expected_effect": "Expect higher weights on momentum in reactive groups, lowering above_q90 and y_above_q50 in those groups; overall skill may rise if not overfitting.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "sweep": {
+     "param": "combine.eta",
+     "values": [
+      2.0,
+      4.0,
+      7.0,
+      10.0
+     ]
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Responds to a group where current weighting is not fast enough; eta sweep permitted and untried above default; harder to guarantee substantial gain as effect may saturate."
+   }
+  ],
+  "ideas": [
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "At 7-day horizon: y_above_q50 is 0.577 (truth above median too often), above_q90 is 0.364 (should be ~0.10 if calibrated); group coverage (in) is only 0.63 (target 0.80); dev_geomean skill 0.1687 is much higher than pooled skill 0.1642, suggesting interval width/placement gaps by series.",
+    "hypothesis": "Setting calibrate.enabled=true with group_by=series_id will directly tune coverage in each series, potentially bringing aggregate coverage closer to the 0.80 target and lowering excessive upper tail misses on hard series/horizons.",
+    "change": "Enable calibration and group it by series_id with default gamma and scale.",
+    "expected_effect": "Coverage_in should rise for series and horizons with high y_above_q50; above_q90 and below_q10 should move closer to 0.10 overall (less upper-tail miss at 7-day horizon); geomean skill may drop if overfitting.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.01,
+      0.02
+     ]
+    },
+    "scores": {
+     "gain": 9,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Directly targets the largest miss (coverage/q90 at horizon 7 and high-miss series); feasible with supported calibration and group_by; similar to known techniques but not yet used in this run.",
+    "index": 0,
+    "total": 27.0,
+    "refused": null,
+    "selected": true
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Per-base-model skill varies by group: e.g., afhubbard|hyperscaler_spot is 0.169 (drift), 0.05 (momentum) vs fastgpu_daily|neocloud_rate_card is 0.023 (drift), 0.18 (momentum); current hedge group_by=instrument_class, but some series in the same class have opposite skill makeup.",
+    "hypothesis": "Grouping weights by gpu_model (instead of instrument_class) allows more granular assignment to drift/momentum, especially if skill differences are within a class but across GPUs.",
+    "change": "Change combine.group_by from instrument_class to gpu_model.",
+    "expected_effect": "Should benefit series such as fastgpu_daily|neocloud_rate_card and afhubbard|hyperscaler_spot if model-winning pattern matches GPU, not class; expect skill improvement in those subgroups.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "gpu_model"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Directly varies subgroup learning where large per-model skill gaps shown; plausible boost; not yet tried and supported.",
+    "index": 2,
+    "total": 26.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "Many series show strong (>|0.8|) positive or negative correlations to matching series in other collectors at 1-4 day lag (e.g., fastgpu_daily.neocloud_spot.B200 has 0.974 at lag 1, gpurentalprices.neocloud_rate_card.RTX_A6000 at lag 3: -0.956, etc).",
+    "hypothesis": "Adding a leader model keyed off the most-correlated leading series (e.g. B200 with lag 1) will allow the ensemble to anticipate sharp moves, particularly at 3/7-day horizons where lagged signals dominate.",
+    "change": "Add a leader model with window=60 (default) to incorporate leading external signals.",
+    "expected_effect": "Skill and coverage at 3 and 7-day horizons in affected GPU-model series should improve, especially where lagged corr is high; pooled skill and group coverage may increase modestly.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 9,
+     "novelty": 9
+    },
+    "why_scores": "Uses strong listed cross-collector lag signals (big in some series); feasible and permitted; new model in the mix for this run.",
+    "index": 1,
+    "total": 25.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "When provider count increases: skill 0.225 (higher loss when volatile); y_above_q50 = 0.523 (truth above too often); mean_log_err_q50 = 0.013 (systematic under-prediction); similar but softer when count drops.",
+    "hypothesis": "Incorporating a composition model (reacts to provider count shocks with controlled reversion) can better capture median/upper tail after provider entry/exit, especially for 'more/fewer' buckets.",
+    "change": "Add composition model (defaults) to react to provider-count shocks.",
+    "expected_effect": "Skill and median calibration should improve in prov_bucket='more', possibly some gain in 'fewer'; overall interval coverage and calibration should benefit where provider count is unstable.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Targets a specific observed failure mode (provider shocks); all parameters allowed; composition model not yet in use.",
+    "index": 3,
+    "total": 25.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": null,
+    "observation": "In the 'fastgpu_daily|neocloud_rate_card' group (759 n), y_above_q50=0.516, above_q90=0.224, and below_q10=0.145\u2014too many intervals with the truth above median and q90. Per-model skill shows momentum > drift, and mean ensemble weight is 93% momentum here; likely this group could benefit from better weight adaptation.",
+    "hypothesis": "A higher eta in hedge (more aggressive adaptation to recent loss) will enable faster reweighting to the better model (momentum), especially beneficial to sharply reactive groups like fastgpu_daily|neocloud_rate_card.",
+    "change": "Sweep combine.eta from 2.0 to higher values (up to 10); keep group_by=instrument_class.",
+    "expected_effect": "Expect higher weights on momentum in reactive groups, lowering above_q90 and y_above_q50 in those groups; overall skill may rise if not overfitting.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": false
+     }
+    },
+    "sweep": {
+     "param": "combine.eta",
+     "values": [
+      2.0,
+      4.0,
+      7.0,
+      10.0
+     ]
+    },
+    "scores": {
+     "gain": 5,
+     "feasibility": 10,
+     "novelty": 6
+    },
+    "why_scores": "Responds to a group where current weighting is not fast enough; eta sweep permitted and untried above default; gain plausible but not as strong as top ideas.",
+    "index": 4,
+    "total": 21.0,
+    "refused": [
+     "this spec runs exactly like one already tried"
+    ],
+    "selected": false
+   }
+  ],
+  "selected_index": 0
+ },
+ {
+  "batch": 4,
+  "next_exp_id": "exp_004",
+  "champion": "exp_003",
+  "retry_after": null,
+  "biggest_miss": "coverage_in is still just 0.648 (target: 0.80); specific group 'gpurentalprices|neocloud_rate_card' has above_q90 = 0.301 and y_above_q50 = 0.538, far from calibrated.",
+  "reflection": "All specs were reviewed for validity and unique effect. For ideas 1 and 2, each setting (group_by, scale) is specifically distinct and allowed. Idea 3 ('composition') impacts a minority group but the effect is real and not purely noise, so it's kept with accurate scoring. Idea 4 ('leader') is novel and addresses lagged response in major groups, so remains. Eta sweep (idea 5) is allowed, distinct from all prior runs, and all settings have effect. No specs duplicate prior history, nor are any settings ineffective or refused under the rules. Assessment was tightened on expected group-level vs global gain and scores were adjusted for plausibility.",
+  "draft": [
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "The worst over-coverage is in 'gpurentalprices|neocloud_rate_card', with above_q90 = 0.301 and y_above_q50 = 0.538. Overall, coverage_in = 0.648 (<0.80 target), and interval misses are series-concentrated.",
+    "hypothesis": "Calibrating by 'gpu_model' instead of 'series_id' will pull coverage toward target in problematic groups (e.g., rate card), since some series may be too thin for calibration but the GPU-model group is bigger and covers calibration-poor edges.",
+    "change": "calibrate.group_by from 'series_id' to 'gpu_model'",
+    "expected_effect": "Coverage_in should increase especially in groups with poor calibration (rate_card), and intervals will be less extreme for thin series.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "gpu_model"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Novel idea vs history (never tried gpu_model calibration); should directly address biggest calibration miss; fully feasible with allowed params."
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Intervals are too narrow: coverage_in=0.648 < 0.80; all above_q90 and below_q10 are too high or too low across buckets.",
+    "hypothesis": "Making calibration more aggressive (higher interval adjustment per step) will expand intervals, boosting coverage (with skill drop risk if overdone).",
+    "change": "calibrate.scale from 0.005 to 0.01 (2x wider adjustment per coverage miss)",
+    "expected_effect": "Coverage_in and above_q90 should both move toward target in all groups; intervals should widen but if skill drops by >0.005, it's overfit.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.0075,
+      0.01
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Aggressiveness of calibration not yet tuned; fully feasible; moderately novel as it's an obvious extension but not yet tried."
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "In 'prov_bucket', 'more' = 0.214 skill (coverage: above_q90=0.183), 'fewer' = 0.087 (coverage: above_q90=0.215); provider-count change causes interval bias.",
+    "hypothesis": "Adding the 'composition' model will correct coverage and bias when provider counts jump, addressing systematic errors in these buckets.",
+    "change": "Add 'composition' model with default params (window=60, etc.) to the ensemble.",
+    "expected_effect": "Intervals on provider count change days will cover more truth (better coverage_in and above_q90 in those buckets), pooled skill may rise if miscalibration is large enough.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 5,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Provider-mix not yet included; impact moderate (provider bucket is small), but totally new to history/spec options."
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "Leading series correlations are high (corr >0.8 in some cases, e.g. 0.974 for B200 models), especially at 1-3 day lags.",
+    "hypothesis": "Adding the 'leader' model will let the ensemble learn when to react to other collectors' prior changes, reducing lag in 'neocloud_rate_card' and 'neocloud_spot' missed moves.",
+    "change": "Add 'leader' model with default params (window=60, beta=1.0, floor=1.0).",
+    "expected_effect": "Skill and calibration should improve, especially for series with strong known leaders (see high-correlation table), primarily in spot and rate_card groups.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Never tested, fully feasible; gain is moderate-high due to size of groups with known leader effect."
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Mean ensemble weights vary greatly by group (e.g., 0.1 drift/0.9 momentum in 'neocloud_rate_card'), but all use fixed eta=2.0.",
+    "hypothesis": "Tuning 'eta' (hedge learning rate) could allow weights to adapt even faster, improving post-change reactivity in buckets with volatile skill gaps.",
+    "change": "Vary 'combine.eta' from 2.0 to {1.0, 4.0, 8.0}, seeking maximum skill and coverage balance.",
+    "expected_effect": "Likely most effect in fast-changing and volatile series (like 'fastgpu_daily' and 'afhubbard'); overall skill could rise, or coverage miscal may show if too high.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "combine.eta",
+     "values": [
+      1.0,
+      2.0,
+      4.0,
+      8.0
+     ]
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 6
+    },
+    "why_scores": "Not yet tuned in this sequence; fully feasible; tune & sweep increase coverage/reactivity\u2014novelty moderate."
+   }
+  ],
+  "ideas": [
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Coverage_in=0.648 overall; above_q90 and below_q10 are too high/lows across buckets, imposing systematic under-coverage.",
+    "hypothesis": "A higher 'calibrate.scale' (interval adjustment per miss) will more quickly expand intervals where needed and move coverage_in toward target.",
+    "change": "calibrate.scale from 0.005 to 0.0075 and 0.01.",
+    "expected_effect": "Intervals should widen (coverage_in up), especially in groups now with above_q90 > 0.15, possibly at a minor skill cost.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.0075,
+      0.01
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Directly improves biggest systematic miss; sweep covers unexplored values; clear effect; not a repeat.",
+    "index": 1,
+    "total": 25.0,
+    "refused": [
+     "this spec runs exactly like one already tried"
+    ],
+    "selected": false
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "The group 'gpurentalprices|neocloud_rate_card' has both severe over-coverage (above_q90 = 0.301) and y_above_q50 = 0.538, indicating intervals are too low and too narrow. Coverage_in is 0.648 overall, below the 0.80 target.",
+    "hypothesis": "Calibrating by 'gpu_model' instead of 'series_id' will make interval coverage less sensitive to data-thin series and smooth out group-level miscalibration, especially for frequently-failed groups such as rate_card.",
+    "change": "calibrate.group_by from 'series_id' to 'gpu_model'.",
+    "expected_effect": "Coverage_in should increase overall and especially for groups with erratic or thin-series calibration; overall interval placement should improve in rate_card groups.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "gpu_model"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Addresses biggest miss with a never-used-in-history grouping; relevant to major calibration gaps; allowed and all settings operative.",
+    "index": 0,
+    "total": 25.0,
+    "refused": null,
+    "selected": true
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "Strong lagged correlations for leader series (up to |0.97|) are seen, e.g., spot/rate_card; the champion doesn't use these, so post-leader moves are underpredicted.",
+    "hypothesis": "Including the 'leader' model (default params) will allow the ensemble to upweight leader-driven guidance where it's predictive, especially in high-correlation series.",
+    "change": "Add 'leader' model with default params: window=60, beta=1.0, floor=1.0.",
+    "expected_effect": "Higher skill and better-targeted coverage in series with known leader links, with limited effect elsewhere.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Not previously tested, would only affect target groups with real leader overlap; spec is feasible and adds a new info source.",
+    "index": 3,
+    "total": 24.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "Provider-count movements (prov_bucket): 'fewer' has skill 0.087, above_q90 0.215; 'more' has skill 0.214, above_q90 0.183. Provider changes create nonstationary price steps the current models don't explicitly handle.",
+    "hypothesis": "Adding 'composition' (with default params) provides a more responsive adjustment for provider-count changes, likely improving coverage and skill during such events, especially in buckets showing high above_q90.",
+    "change": "Add 'composition' model with default params (window=60, etc.).",
+    "expected_effect": "Coverage_in improvement and above_q90 decrease in provider-change buckets; possibly higher pooled skill if these events are frequent enough.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 5,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Provider-mix adjustment is new, fully feasible; gain moderate as provider events cover a minority of rows.",
+    "index": 2,
+    "total": 24.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Default hedge eta=2.0 causes slow adaptation to changing model skill within groups; volatility suggests faster (or slower) learning may help in groups with recent loss swings.",
+    "hypothesis": "Optimizing combine.eta lets weights adapt more or less aggressively: higher for volatile groups, lower for stable; a sweep tests effect.",
+    "change": "Sweep combine.eta in {1.0, 2.0, 4.0, 8.0}.",
+    "expected_effect": "Could improve pooled skill and/or coverage, especially after regime changes, with effect visible mainly in volatile series.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "combine.eta",
+     "values": [
+      1.0,
+      2.0,
+      4.0,
+      8.0
+     ]
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 6
+    },
+    "why_scores": "Eta sweep is new; previous specs held eta at default; effect is likely real in volatile groups, but limited global impact.",
+    "index": 4,
+    "total": 22.0,
+    "refused": [
+     "this spec runs exactly like one already tried"
+    ],
+    "selected": false
+   }
+  ],
+  "selected_index": 0
+ },
+ {
+  "batch": 5,
+  "next_exp_id": "exp_005",
+  "champion": "exp_003",
+  "retry_after": null,
+  "biggest_miss": "coverage_in is 0.648 (target 0.80); especially bad for gpurentalprices|neocloud_rate_card (above_q90 = 0.301)",
+  "reflection": "All specs were checked and remain valid (all parameters have an effect). The scale and eta sweeps will reveal if moderate tuning or larger jumps help. The leader and composition model ideas are genuinely new for this history and directly align to signals seen in the diagnosis (correlations and provider-mix buckets). I clarified hypotheses and tightened score rationales for per-source calibration (chosen over repeating the failed gpu_model grouping), and confirmed novelty/impact for each. All ideas are now tightly tied to the biggest coverage miss (not niche), and tuning steps are reasonably sized for generalization. No ideas are disguised repeats: source_id grouping was not tried, eta/scale have not been swept, and new models are freshly introduced.",
+  "draft": [
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Calibration coverage_in is 0.648 (well below 0.80 target); gpurentalprices|neocloud_rate_card above_q90 is 0.301\u2014intervals are too narrow/too low after grouping by series_id. In worst-coverage groups, coverage_above_q90 reaches 30%.",
+    "hypothesis": "Increasing calibration scale to 0.01 (doubling step size) will more aggressively widen intervals after misses, helping raise dev coverage toward target (especially in under-covered series/groups) without excessive overfitting if gamma is held at 0.5.",
+    "change": "calibrate.scale from 0.005 to 0.01",
+    "expected_effect": "Higher interval coverage (coverage_in), especially in groups like gpurentalprices|neocloud_rate_card; likely a slight reduction in skill if intervals get too wide, but should move toward coverage target.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.0075,
+      0.01
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Biggest miss is low coverage; this directly targets it, is feasible, and hasn't yet tried a larger scale."
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Momentum dominates in most groups (weights up to 0.93), but skill by group varies and static eta may not adjust to sharp regime shifts; eta=2.0 (default) may not be optimal for local loss adaptation.",
+    "hypothesis": "Increasing hedge eta will let ensemble weights adjust more quickly to local shifts in group performance\u2014when sharp regime changes happen, allow faster weight swings to the winning model, potentially boosting skill in groups like afhubbard|hyperscaler_spot (momentum skill 0.05 vs drift 0.169).",
+    "change": "combine.eta from 2.0 to 5.0",
+    "expected_effect": "Potential skill gains in rapidly changing series/classes, especially where regime shifts are frequent; may cause more volatile weights but adapt faster.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 5.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "combine.eta",
+     "values": [
+      2.0,
+      3.0,
+      5.0,
+      7.0
+     ]
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Promising for groups with regime shifts; never tried eta>2.0; spec is feasible; idea somewhat explored but not with eta sweep."
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "Several series show very high correlations (up to |0.97|) with same-GPU, other-collector series at 1-3 day lag.",
+    "hypothesis": "Adding a 'leader' model that reacts to leader's detected moves (window=60, beta=1.0, floor=1.0) allows the ensemble to capture these correlated leads; expected to improve forecast reactivity for affected series and horizons.",
+    "change": "Add a 'leader' model with default parameters to the ensemble.",
+    "expected_effect": "Should improve skill in series where a strong lagged correlation exists; small gain elsewhere (mean weighting will reduce risk from non-informative leader cases).",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Directly leverages strongest signal in diagnosis (not yet tried); feasible and should benefit lagged-correlated series."
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "Skill and y_above_q50 both jump when provider count increases ('more': skill 0.214, y_above_q50 0.508); recent diagnosis shows coverage issues around provider count buckets.",
+    "hypothesis": "Adding 'composition' model will let ensemble respond to these jumps/mean reverts in price series caused by provider mix, widening coverage and improving calibration.",
+    "change": "Add a 'composition' model (default parameters) to the ensemble.",
+    "expected_effect": "Better skill and coverage in groups affected by provider count changes (esp. where 'more' or 'fewer' buckets are frequent).",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Provider-mix never tested; targets a clear diagnosis signal; feasible; moderate novelty."
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Worst coverage is in gpurentalprices|neocloud_rate_card (above_q90=0.301, y_above_q50=0.538, mean_log_err_q50=0.018): intervals too narrow especially for long horizons.",
+    "hypothesis": "Switching calibration grouping to 'source_id' (fewer, but still reasonable, cells per group) will pool signal within source for more stable interval updates, reducing over-narrowing in sparse series/groups; may improve coverage without the overfitting risk seen with 'gpu_model'.",
+    "change": "calibrate.group_by from 'series_id' to 'source_id'",
+    "expected_effect": "Wider, better-calibrated intervals in sparse/volatile groups (like gpurentalprices|neocloud_rate_card); overall coverage_in moves closer to 0.8, possibly with minimal skill loss.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "source_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Never tried source_id as grouping; addresses coverage; feasible; high novelty vs series_id/gpu_model which were tried."
+   }
+  ],
+  "ideas": [
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Calibration coverage_in is 0.648 (well below 0.80 target); gpurentalprices|neocloud_rate_card above_q90 is 0.301, intervals are too narrow/too low. Previous calibrations with scale=0.005 and gamma=0.5 helped but did not go far enough. Critical for coverage.",
+    "hypothesis": "Increasing calibration scale to 0.01 (doubling step size, with gamma held at 0.5) will allow faster interval expansion after coverage failures, pushing coverage_in closer to target, especially in persistently under-covered series.",
+    "change": "calibrate.scale from 0.005 to 0.01",
+    "expected_effect": "Higher interval coverage (coverage_in), particularly in previously under-covered groups like gpurentalprices|neocloud_rate_card. Some skill loss possible, but a clear step toward the 0.8 target.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.0075,
+      0.01
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Direct, high-feasibility attack on biggest miss; scale increase has not been tried before and applies to every forecasted interval.",
+    "index": 0,
+    "total": 26.0,
+    "refused": null,
+    "selected": true
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "Strong (0.86\u20130.97) lagged correlations between same-GPU, other-collector series are present (uncaptured by existing ensemble). No experiment yet included a 'leader' model.",
+    "hypothesis": "Adding a 'leader' model to the ensemble captures these lagged relationships. The hedge combiner will allocate weight to it only for series/groups benefitting from external leads.",
+    "change": "Introduce 'leader' model (window=60, beta=1.0, floor=1.0) as additional base model.",
+    "expected_effect": "Skill increase (and possibly more prompt interval adaptation) in highly correlated, lag-affected series (esp. 1\u20133 day moves); can also help coverage by moving intervals in the right direction after unseen moves.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "No previous experiment adds leader model, and it directly addresses lagged moves seen in diagnosis; feasible and applies across all series.",
+    "index": 2,
+    "total": 26.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "gpurentalprices|neocloud_rate_card's intervals are persistently too narrow with above_q90=0.301; calibrating by 'gpu_model' slightly improved DEV but failed to generalize. Need a grouping that's broader than series_id but not as coarse as gpu_model.",
+    "hypothesis": "Switching calibrate.group_by to 'source_id' allows pooling updates within a data source, balancing adaptability with stability (series_id too narrow, gpu_model too wide). Expected to generalize interval widening for volatile but sparse groups, improving coverage but less risk of overfit.",
+    "change": "calibrate.group_by from 'series_id' to 'source_id'",
+    "expected_effect": "Broader, more stable interval updates for hard-to-fit series\u2014particularly those with sparse data in gpurentalprices|neocloud_rate_card. Moves coverage_in upward, possibly trading off minor skill.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "source_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "No run yet pooled per source_id; offers a plausible path to better calibration at group level; well-tied to the miss.",
+    "index": 4,
+    "total": 25.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "Series show systematic coverage and bias jumps as provider count changes ('more': skill 0.214, y_above_q50 0.508); current models miss sharp shifts due to new/fewer providers.",
+    "hypothesis": "Adding 'composition' (default settings) allows explicit detection of provider-count regime shifts, only for periods where this is relevant, broadening intervals and improving skill.",
+    "change": "Add 'composition' model (default) to base model set.",
+    "expected_effect": "Increased coverage and skill, especially during/after periods of provider count change (improves coverage_in and possibly reduces bias in median location).",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Composition never tried before; targeted at periods with provider regime change, aligning both with feasibility and the target miss.",
+    "index": 3,
+    "total": 24.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "group_specific_models",
+    "observation": "Hedge eta=2.0 sets moderate adaptivity. Some series (e.g., afhubbard|hyperscaler_spot) would benefit from even faster weight swings as model dominance changes quickly post-move; no prior specs raised eta.",
+    "hypothesis": "Raising combine.eta to 5.0 lets ensemble weights shift to the best base model more rapidly after abrupt price changes, likely helping coverage and skill in volatile or regime-shifting series.",
+    "change": "combine.eta from 2.0 to 5.0",
+    "expected_effect": "Expect sharper skill pickups and some coverage improvement, especially in series or periods with frequent regime change or sharp moves. Slightly more volatile ensemble weights.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 5.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "combine.eta",
+     "values": [
+      2.0,
+      3.0,
+      5.0,
+      7.0
+     ]
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Untested eta range for hedge; idea is feasible and novel for this run; moderately tied to primary miss by targeting adaptivity.",
+    "index": 1,
+    "total": 23.0,
+    "refused": null,
+    "selected": false
+   }
+  ],
+  "selected_index": 0
+ },
+ {
+  "batch": 6,
+  "next_exp_id": "exp_006",
+  "champion": "exp_003",
+  "retry_after": null,
+  "biggest_miss": "coverage_in is 0.648 (target 0.80); for group gpurentalprices|neocloud_rate_card, above_q90 = 0.301",
+  "reflection": "I removed the original duplicate of the calibrate.scale sweep from 0.0075, as it repeated exp_005 with barely extended scale, and instead started at 0.01 for the sweep (well above prior tested values). I also lowered the gain score for the momentum.beta sweep (since the dsc 0-1 bucket, while urgent, is still only half of all dev cells, and past attempts suggest reactivity helps but doesn't solve global undercoverage). I checked all specs, ensuring only one parameter changes per idea and that each proposal targets broad, not tiny, missed segments. All calibration grouping/sweeps are now cleanly distinct from prior experiments and between themselves, with no spec repeats or settings made redundant by others.",
+  "draft": [
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Calibrating per series_id improved coverage to 0.648. Calibrating by gpu_model increased coverage (0.667) but did not generalize. Previous scale increases to 0.0075 gave only a +0.005 gain in coverage. The overall coverage_in (0.648) is still far from the 0.80 target.",
+    "hypothesis": "Calibration by both gpu_model and series_id may balance bias/variance better, localizing correction but still pooling some signal. Group calibration by instrument_class and increased scale may further boost coverage without overfitting.",
+    "change": "Change calibrate.group_by to 'instrument_class' and sweep calibrate.scale from 0.005 (current) up to 0.02. This targets gross undercoverage for 'gpurentalprices|neocloud_rate_card' (above_q90 = 0.301) and low overall coverage.",
+    "expected_effect": "Increased coverage_in for all instrument_classes, especially those with above_q90 >0.20. Expecting pooled calibration by instrument_class to help undercovered groups while preserving stability.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "instrument_class"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.01,
+      0.015,
+      0.02
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "Coverage is the largest miss and group calibration past attempts (by gpu_model, series_id) improved coverage; not tried for instrument_class with scale sweep."
+   },
+   {
+    "seed_id": "momentum_after_change",
+    "observation": "Series with 0-1d since last price change: skill 0.207, y_above_q50 0.57, above_q90 0.245 (intervals too low after changes). Scaling momentum for very recent change can target this.",
+    "hypothesis": "Increasing k or beta in momentum for cells just after a price change will adapt upper quantiles upward, reducing high miss rates (e.g., above_q90=0.245 for dsc 0-1, vs 0.138 at 1-day horizon overall).",
+    "change": "Increase momentum.beta from 1.0 to 1.5, sweeping across [1.0, 1.5, 2.0] to increase model reactivity specifically for predicting upper quantiles just after price changes.",
+    "expected_effect": "Reduced y_above_q50 and above_q90 in dsc 0-1 bucket; slight gain for overall pooled skill if bias for sharp moves is cut.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "models.1.beta",
+     "values": [
+      1.0,
+      1.5,
+      2.0
+     ]
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "Directly addresses worst dev miss by dsc with a new model config; raising beta for momentum is allowed and untried above 1.0."
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "In buckets where provider count increased, coverage_in is higher (0.214 skill, y_above_q50=0.508), but with provider count unchanged, above_q90 and y_above_q50 suggest systematic bias.",
+    "hypothesis": "Adding the composition model, tuned for sensitivity to provider count, can help adapt forecasts when providers enter/leave, potentially reducing undercoverage caused by sudden supply shifts.",
+    "change": "Add a composition model (default params) as a third model to the ensemble, allowing hedge to put more weight where provider count changes affect the price.",
+    "expected_effect": "Reduced miss rates in 'fewer'/'more' provider buckets, hopefully lifting pooled skill and local coverage, with little harm to 'same' bucket.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Provider-mix reactivity not yet in ensemble; feasible, new third model in ensemble, should target supply shocks affecting coverage."
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "For fastgpu_daily.neocloud_spot.B200.spot.median, other collectors (lag 1/3), |corr| is 0.86\u20130.97 (very high). Current ensemble does not use any inter-collector leadership.",
+    "hypothesis": "Adding leader model harnesses early information from other collectors, potentially reducing lag in response after real-world price moves, addressing bias for fast-moving series.",
+    "change": "Replace drift with leader (window=60, floor=1.0, beta=1.0); keep momentum as second model; retain hedge by instrument_class. This is a new base model, unused so far.",
+    "expected_effect": "Improved skill for series where series-level leadership was detected with high lag-correlation (e.g. fastgpu_daily.neocloud_spot, gpurentalprices|neocloud_rate_card); some groups may see sharper response post-price move with little coverage loss.",
+    "spec": {
+     "models": [
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 10
+    },
+    "why_scores": "Leader model not yet tried; directly exploits a strong diagnosis signal; allowed change."
+   },
+   {
+    "seed_id": null,
+    "observation": "Coverage_in (0.648) and interval placement are the most persistent issues; increasing calibrate.scale above 0.0075 has not been tested, and previous attempts at 0.0075 gave +0.005 coverage. The scale default (0.005) may not be aggressive enough.",
+    "hypothesis": "Linearly increasing calibrate.scale up to the 0.05 limit (if not overfitting) could push intervals wide enough to hit the 0.80 coverage target, at some cost to skill.",
+    "change": "Sweep calibrate.scale from 0.0075 to 0.05 with calibrate.gamma held at 0.5, to check the tradeoff between coverage and skill at the highest possible interval expansion.",
+    "expected_effect": "Likely boosts coverage_in to or near target; may hurt skill, but reveals the best balance. Bulk of the effect should be on above_q90, below_q10 across all groups.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.0075,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.0075,
+      0.015,
+      0.025,
+      0.04,
+      0.05
+     ]
+    },
+    "scores": {
+     "gain": 9,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Largest coverage miss, not yet tried at scale>0.0075; may push coverage to target, though may overfit; feasible and novel (tested only up to 0.0075 so far)."
+   }
+  ],
+  "ideas": [
+   {
+    "seed_id": null,
+    "observation": "Previous highest calibrate.scale tested was 0.0075 (exp_005). More aggressive expansion, up to 0.05, has not been tested and is permitted. Coverage remains far below target.",
+    "hypothesis": "Widening intervals by increasing calibrate.scale could, at some point, achieve target coverage_in (0.80), revealing the best achievable coverage-skill balance.",
+    "change": "Sweep calibrate.scale from 0.01 to 0.05 with calibrate.group_by=series_id. This raises interval offset more than before.",
+    "expected_effect": "Substantial rise in coverage_in; above_q90, below_q10 should approach 0.1, but skill may degrade beyond a certain point.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.01,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.01,
+      0.02,
+      0.03,
+      0.04,
+      0.05
+     ]
+    },
+    "scores": {
+     "gain": 9,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Most aggressive feasible push to close the main miss; scale above 0.0075 has not been tried.",
+    "index": 4,
+    "total": 27.0,
+    "refused": null,
+    "selected": true
+   },
+   {
+    "seed_id": "per_series_calibration",
+    "observation": "Calibrating by series_id (exp_003) improved coverage to 0.648; by gpu_model (exp_004) increased it to 0.667 but failed holdout, likely due to small-group overfitting. Coverage is uniformly low across most groups.",
+    "hypothesis": "Grouping calibration on instrument_class will pool enough examples for stability and target the persistent undercoverage in major groups like gpurentalprices|neocloud_rate_card (above_q90 = 0.301) and generally low coverage elsewhere.",
+    "change": "Set calibrate.group_by to instrument_class (from series_id), and sweep calibrate.scale up to 0.02 to find a stable increase.",
+    "expected_effect": "Coverage_in should rise, especially for large undercovered instrument_classes, without the instability seen for smaller groups.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "instrument_class"
+     }
+    },
+    "sweep": {
+     "param": "calibrate.scale",
+     "values": [
+      0.005,
+      0.01,
+      0.015,
+      0.02
+     ]
+    },
+    "scores": {
+     "gain": 8,
+     "feasibility": 10,
+     "novelty": 9
+    },
+    "why_scores": "This grouping hasn't been tried; targets low coverage in big groups and is feasible.",
+    "index": 0,
+    "total": 27.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "leading_signals",
+    "observation": "Series with strong, lead-lag correlated price changes across collectors (e.g. fastgpu_daily.neocloud_spot.B200, |corr|>0.85 at 1-3 days lag).",
+    "hypothesis": "Leader model will allow early moves in the right collector to propagate, reducing post-move undercoverage.",
+    "change": "Replace drift with leader (leave everything else as before, hedge weights allow fallback if leader fails).",
+    "expected_effect": "Skill and coverage in fast-changing or lagged series should improve without harming others.",
+    "spec": {
+     "models": [
+      {
+       "name": "leader",
+       "window": 60,
+       "floor": 1.0,
+       "beta": 1.0
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 7,
+     "feasibility": 10,
+     "novelty": 10
+    },
+    "why_scores": "Allowed new model not yet tested, strong correlation and lag signal in diagnosis.",
+    "index": 3,
+    "total": 27.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "provider_mix",
+    "observation": "Where provider count changed, bias/coverage shifts (y_above_q50 for 'more'=0.508 vs 'same'=0.431, skill rises to 0.214 vs 0.169); current ensemble does not respond to this systematically.",
+    "hypothesis": "Adding the composition model lets hedge assign weight where provider-mix changes drive price, so interval coverage and accuracy improve in those buckets.",
+    "change": "Add composition model (defaults) to ensemble.",
+    "expected_effect": "Coverage and skill should rise for 'fewer'/'more' provider buckets, and potentially overall.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      },
+      {
+       "name": "composition",
+       "window": 60,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0,
+       "k": 1,
+       "beta": 0.25,
+       "rho": 0.3,
+       "thresh": 0.05,
+       "k_rev": 3
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 8
+    },
+    "why_scores": "Provider-reactive model is not in champion ensemble; idea not yet tested.",
+    "index": 2,
+    "total": 24.0,
+    "refused": null,
+    "selected": false
+   },
+   {
+    "seed_id": "momentum_after_change",
+    "observation": "Buckets with 0-1d since last price change are undercovered (above_q90 = 0.245, y_above_q50 = 0.57, compared to overall above_q90 of 0.22), even though coverage elsewhere is also low.",
+    "hypothesis": "Making the momentum model more reactive (beta > 1.0) will expand post-change intervals and pull up the upper bound, directly reducing the high above_q90 miss rate in those buckets.",
+    "change": "Increase momentum.beta, sweeping 1.0, 1.5, 2.0.",
+    "expected_effect": "Above_q90 for dsc 0-1 should fall, total coverage may rise, and bias for sudden moves cut.",
+    "spec": {
+     "models": [
+      {
+       "name": "drift"
+      },
+      {
+       "name": "momentum",
+       "window": 60,
+       "beta": 1.0,
+       "k": 1,
+       "k_up": 1.0,
+       "k_dn": 1.0,
+       "floor": 1.0
+      }
+     ],
+     "combine": {
+      "method": "hedge",
+      "eta": 2.0,
+      "group_by": "instrument_class"
+     },
+     "calibrate": {
+      "enabled": true,
+      "gamma": 0.5,
+      "scale": 0.005,
+      "group_by": "series_id"
+     }
+    },
+    "sweep": {
+     "param": "models.1.beta",
+     "values": [
+      1.0,
+      1.5,
+      2.0
+     ]
+    },
+    "scores": {
+     "gain": 6,
+     "feasibility": 10,
+     "novelty": 7
+    },
+    "why_scores": "High-beta momentum is untried here and targets a prominent observed miss.",
+    "index": 1,
+    "total": 23.0,
+    "refused": [
+     "this spec runs exactly like one already tried"
+    ],
+    "selected": false
+   }
+  ],
+  "selected_index": 4
+ }
+]

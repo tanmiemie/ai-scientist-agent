@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage well below 0.80 for all groups, worst for afhubbard|hyperscaler_spot (0.229) and fastgpu_daily|hyperscaler_spot (0.211). -> Turning on per-series calibration will drive coverage upward most in worst undercovered series, while the default gamma*scale value keeps responses stable (avoiding overfitting). Change: Enable calibration with group_by='series_id', gamma=0.5, scale=0.01.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

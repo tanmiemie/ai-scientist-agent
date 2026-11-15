@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "Calibration coverage_in is 0.648 (well below 0.80 target); gpurentalprices|neocloud_rate_card above_q90 is 0.301, intervals are too narrow/too low. Previous calibrations with scale=0.005 and gamma=0.5 helped but did not go far enough. Critical for coverage. -> Increasing calibration scale to 0.01 (doubling step size, with gamma held at 0.5) will allow faster interval expansion after coverage failures, pushing coverage_in closer to target, especially in persistently under-covered series. Change: calibrate.scale from 0.005 to 0.01 DEV sweep of calibrate.scale: 0.0075->+0.1740, 0.01->+0.1734; chose 0.0075.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "window": 60,
+   "beta": 1.0,
+   "k": 1,
+   "k_up": 1.0,
+   "k_dn": 1.0,
+   "floor": 1.0
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "instrument_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.0075,
+  "group_by": "series_id"
+ }
+}
