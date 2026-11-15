@@ -44,12 +44,18 @@ re-score. Keep exactly {N_IDEAS} ideas (you may replace a weak one). Reply with 
 format plus "reflection": "<what you changed and why, 2-4 sentences>"."""
 
 
-def total(idea: dict) -> float:
-    s = idea.get("scores") or {}
+def score(idea: dict, k: str) -> float:
+    """One score clamped to 1..10; a missing or non-numeric score counts as 0."""
+    s = idea.get("scores") if isinstance(idea, dict) else None
     try:
-        return float(sum(min(10.0, max(1.0, float(s.get(k, 1)))) for k in SCORES))
-    except (TypeError, ValueError):
+        return min(10.0, max(1.0, float((s or {}).get(k, 1))))
+    except (TypeError, ValueError, AttributeError):
         return 0.0
+
+
+def total(idea: dict) -> float:
+    parts = [score(idea, k) for k in SCORES]
+    return 0.0 if 0.0 in parts else float(sum(parts))
 
 
 def rank(ideas: list[dict], tried: set, heavy: bool) -> list[dict]:
@@ -63,7 +69,7 @@ def rank(ideas: list[dict], tried: set, heavy: bool) -> list[dict]:
         out.append({**(idea if isinstance(idea, dict) else {"raw": idea}), "index": i, "total": total(idea or {}),
                     "refused": errs or None})
     # the score decides; position in the reply breaks ties
-    return sorted(out, key=lambda r: (-r["total"], -float((r.get("scores") or {}).get("gain", 0) or 0), r["index"]))
+    return sorted(out, key=lambda r: (-r["total"], -score(r, "gain"), r["index"]))
 
 
 class BatchProposer(LLMProposer):

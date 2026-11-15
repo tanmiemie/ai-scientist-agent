@@ -54,3 +54,12 @@ def test_propose_runs_top_valid_idea_and_logs_every_idea(tmp_path, monkeypatch):
     log = json.loads((tmp_path / "ideas.json").read_text())
     assert len(log) == 1 and len(log[0]["ideas"]) == 5 and log[0]["selected_index"] == 2
     assert sum(i["selected"] for i in log[0]["ideas"]) == 1 and log[0]["reflection"] == "checked"
+
+
+def test_rank_survives_non_numeric_scores():
+    from idea_batch import rank
+    good = {"scores": {"gain": 5, "feasibility": 5, "novelty": 5}}
+    bad = {"scores": {"gain": "8/10", "feasibility": 9, "novelty": 9}}
+    out = rank([bad, good], set(), False)
+    assert [r["index"] for r in out] == [1, 0]
+    assert out[1]["total"] == 0.0
