@@ -26,6 +26,7 @@ import models as M
 from data import Ctx, Panel
 
 QS = (0.1, 0.5, 0.9)
+EDGE_TOL = 1e-9   # relative tolerance for 'truth outside the interval' (see feedback step)
 
 
 def cell_loss(y, q):
@@ -70,8 +71,11 @@ def run(spec: dict, panel: Panel, origins, series_ids, horizons=(1, 3, 7)):
                 weights[(gk, h)] = w / w.sum() if w.sum() > 0 else np.ones(n) / n
             if cal["enabled"]:
                 q10, _, q90 = it["final"]
-                d_up[(ck, h)] += cal["gamma"] * cal["scale"] * ((y > q90) - 0.1)
-                d_dn[(ck, h)] += cal["gamma"] * cal["scale"] * ((y < q10) - 0.1)
+                # A truth equal to an edge counts as inside. Posted prices often sit exactly on the
+                # last value, which is also q10 or q90; without the tolerance the last-bit rounding
+                # of exp/log decides the miss and different machines learn different offsets.
+                d_up[(ck, h)] += cal["gamma"] * cal["scale"] * (float(y > q90 * (1 + EDGE_TOL)) - 0.1)
+                d_dn[(ck, h)] += cal["gamma"] * cal["scale"] * (float(y < q10 * (1 - EDGE_TOL)) - 0.1)
         pending = still
 
         # 2-3. forecast every series from this origin

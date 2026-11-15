@@ -37,6 +37,17 @@ bash run_all.sh                      # rebuild everything from the pack and writ
 python3 ledger.py show               # what has been tried
 ```
 
+## Changelog
+
+- **Calibration tie fix (`online.py`, EDGE_TOL).** Posted prices often equal the last value, which is
+  also q10 (or q90). The calibration step compared `y < q10` exactly, so the last-bit rounding of
+  exp/log decided about 1,500 of 6,300 feedback events, and two machines with the same data learned
+  different offsets (Mac vs Devin: 43/111 submission rows differed, dev +0.1742 vs +0.1831 for the
+  same spec). Ties now count as inside the interval. Replay after the fix: exp_002 dev +0.1833 /
+  holdout +0.0970; exp_004 (momentum) now passes the gate (dev +0.0039, holdout +0.0032) and becomes
+  champion; exp_005 is still rejected (holdout -0.0786). Ledgers in `experiments/` and
+  `experiments_devin/` predate the fix; `run_all.sh` regenerates the corrected one.
+
 ## Optional: Chronos-Bolt (pretrained time-series model)
 
 `models/m_chronos.py` wraps Amazon's Chronos-Bolt, zero-shot. It needs extra packages and a
