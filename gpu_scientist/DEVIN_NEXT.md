@@ -3,6 +3,19 @@
 Rules from HANDOFF_DEVIN.md still apply. Read EDA.md, SIGNIFICANCE.md (if merged) and HONEST_EVAL.md first.
 New since last time: run_experiment.py records provenance and commits forecast_all.csv.gz per experiment.
 
+## 0. URGENT, before 13:15 PT today: one real Exa run  (branch `devin/exa-run`, do this first)
+Needs EXA_API_KEY and OPENAI_API_KEY in Secrets. Exa is now in the research loop (`exa_scout.py`,
+`autoresearch.py --exa`): each iteration searches for a method and for dated market news (published on
+or before the run's cutoff), keeps them in `<experiments>/evidence.jsonl`, and the LLM proposer cites
+the source it used in `source_url`.
+1. `python walkforward.py --proposer llm --provider openai --iters 6 --exa --run llm_exa`
+2. Commit `walkforward/llm_exa/` (summary.md, summary.json, walkforward.png, each slice's
+   ledger.jsonl, autoresearch_log.jsonl, evidence.jsonl and REPORT.md). Open a PR with a short
+   comparison against `walkforward/llm_openai_v2/` (same slices, no Exa): TEST gain per slice, and
+   which proposals cited an Exa source and whether they were kept.
+3. If the run cannot finish by 13:15, commit whatever slices finished and say so.
+Do not change experiments_final/ or submission_final/. Then continue with A, C, D, E, F below.
+
 ## A. One new signal: GetDeploying weekly medians  (branch `devin/signal-aggregator`)
 `aggregator_medians.csv` (weekly medians from an independent aggregator) is in the pack and unused.
 Hypothesis to test: when the aggregator's latest weekly median for the same GPU (and a matching
