@@ -20,6 +20,10 @@ if command -v sha256sum >/dev/null; then got=$(sha256sum "$DEST/$ZIP" | cut -d' 
 if [ "$got" != "$SHA" ]; then
   echo "checksum mismatch: $got (expected $SHA); delete $DEST/$ZIP and retry" >&2; exit 1
 fi
-unzip -q "$DEST/$ZIP" -d "$DEST"
+TMP="$DEST/.$NAME.partial"
+rm -rf "$TMP"
+unzip -q "$DEST/$ZIP" -d "$TMP"
+mv "$TMP/$NAME" "$DEST/$NAME"
+rmdir "$TMP"
 echo "unpacked to $DEST/$NAME"
 echo "keep its ATTRIBUTION.md (CC BY 4.0) with any work that uses it"
