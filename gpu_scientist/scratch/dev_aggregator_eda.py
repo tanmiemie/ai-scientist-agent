@@ -13,7 +13,7 @@ import numpy as np, pandas as pd
 from scipy.stats import spearmanr
 sys.path.insert(0, ".")
 import config as C, data
-from models.m_aggregator import agg_series, agg_key
+from models.m_aggregator import agg_series, agg_key, provider_change
 
 s, c = data.build(); P = data.Panel.load(s, c)
 sids = P.series_ids()
@@ -28,6 +28,7 @@ def rows(lag=0, col="median_usd_per_gpu_hour"):
         if key is None:
             continue
         a = agg_series(*key, col=col, lag=lag)
+        pch = provider_change(*key, lag=lag)
         full = P.daily[sid]
         # gap at every day up to the last DEV origin, for a trailing-median "normal gap"
         days = pd.date_range("2026-07-01", dev[-1])
@@ -44,13 +45,14 @@ def rows(lag=0, col="median_usd_per_gpu_hour"):
             dgap = gap - past.median() if len(past) >= 28 else np.nan
             wk = a.loc[:o]
             dagg = np.log(wk.iloc[-1] / wk.iloc[-2]) if len(wk) >= 2 else np.nan
+            npch = bool(pch.get(wk.index[-1], False))
             for hz in C.HORIZONS:
                 y = P.truth(sid, o + pd.Timedelta(days=hz))
                 if y is None:
                     continue
                 q50 = fc.q50.get((sid, o, hz), np.nan)
                 out.append(dict(sid=sid, cls=m["instrument_class"], src=m["source_id"], h=hz, gap=gap, dgap=dgap,
-                                dagg=dagg, r=np.log(y / last), res=np.log(y / q50)))
+                                dagg=dagg, npch=npch, o=o, r=np.log(y / last), res=np.log(y / q50)))
     return pd.DataFrame(out)
 
 def summarise(d, sig):

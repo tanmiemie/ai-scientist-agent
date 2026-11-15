@@ -11,6 +11,8 @@ The CSV is read once and cached; every lookup is cut at the origin.
 apply="all" shifts all three quantiles by beta_agg * clip(signal, +-cap); apply="tail" moves only the
 interval edge on the signal's side. Signals: "gap" = log(aggregator / last value); "dgap" = gap minus
 its median over the previous norm_days (removes the persistent level difference between collectors).
+skip_provider_change=1 drops the signal when the latest usable week's n_providers changed from the week
+before (the median then partly reflects providers joining or leaving, not price moves).
 """
 from functools import lru_cache
 
@@ -52,10 +54,19 @@ def agg_series(gpu: str, mode: str, col: str = "median_usd_per_gpu_hour", lag: i
     return s[s > 0]
 
 
+@lru_cache(maxsize=None)
+def provider_change(gpu: str, mode: str, lag: int = 0) -> pd.Series:
+    """True for weeks whose n_providers differs from the previous week, indexed like agg_series."""
+    g = _table().loc[(gpu, mode)].sort_values("week_start")
+    ch = g.n_providers.diff().fillna(0).ne(0)
+    return pd.Series(ch.values, index=g.week_start + pd.Timedelta(days=7 + max(int(lag), 0)))
+
+
 class Aggregator(Composition):
     name = "aggregator"
     defaults = {**Composition.defaults, "signal": "gap", "beta_agg": 0.1, "cap": 0.2, "lag": 0,
-                "col": "median_usd_per_gpu_hour", "norm_days": 56, "apply": "all", "min_gap": 0.0}
+                "col": "median_usd_per_gpu_hour", "norm_days": 56, "apply": "all", "min_gap": 0.0,
+                "skip_provider_change": 0}
 
     def _signal(self, ctx):
         key = agg_key(ctx.meta)
@@ -63,6 +74,8 @@ class Aggregator(Composition):
             return 0.0
         a = agg_series(*key, col=self.p["col"], lag=self.p["lag"]).loc[:ctx.origin]
         if not len(a):
+            return 0.0
+        if self.p["skip_provider_change"] and provider_change(*key, lag=self.p["lag"]).get(a.index[-1], False):
             return 0.0
         gap = float(np.log(a.iloc[-1] / ctx.last))
         if self.p["signal"] == "gap":
