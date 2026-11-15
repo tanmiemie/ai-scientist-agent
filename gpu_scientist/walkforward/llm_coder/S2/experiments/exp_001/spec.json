@@ -1,0 +1,19 @@
+{
+ "_hypothesis": "Coverage is severely low (0.45), with the q90 and q10 bounds hit too often (q90: 42%, q10: 12%), especially for the most volatile horizons and for series with frequent price changes. The champion, drift, does not use calibration and thus underestimates forecast uncertainty. The bias in q50 is negligible (mean_log_err_q50 \u2248 0), so the main issue is interval width. No attempt at interval correction has been made. -> Expanding drift's forecast interval width by a deterministic multiplicative factor in log space will move coverage_above_q90 and coverage_below_q10 toward 0.1 each, bringing coverage near the 0.80 target with minimal median error change. Best values will depend on the tradeoff between coverage and skill; too wide could inflate pinball loss. Change: Introduce a new model, wide_drift, that repeats drift's logic but multiplies the log distance from q50 to q10/q90 by a parameter width > 1. Sweep width = [1.0, 1.2, 1.4, 1.6, 1.8] to determine the value that best approaches 0.8 coverage with least skill loss. DEV sweep of models.0.params.width: 1.0->+0.1009, 1.2->+0.0982, 1.4->+0.0928, 1.6->+0.0854, 1.8->+0.0767; chose 1.0.",
+ "models": [
+  {
+   "name": "wide_drift",
+   "params": {
+    "width": 1.0,
+    "window": 60,
+    "min_changes": 20
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "_hypothesis": "Coverage is very low (0.46 overall); major undercoverage in q10/q90; skill by group is mediocre; clear evidence (table: 'Candidate leading signals') that some series are led by other series of the same GPU by 1-4 days with correlations above 0.9. The 'leader' diagnostic shows opportunity for leading signals. -> Incorporating a simple leader-following logic\u2014using the most strongly correlated peer for each series, shifted back by the empirically best lag\u2014will reduce pinball loss and improve both skill and coverage, especially in series where a clear leader exists. The impact should be largest in the groups and series highlighted in the 'Candidate leading signals' table. Change: Add a new model 'simple_leader' that, for each series, if a leader with lag and correlation >0.85 is found (by prior computation), predicts based on the leader's historical values shifted by the lag; otherwise, falls back to empirical historical drift. Use this as the only model.",
+ "models": [
+  {
+   "name": "simple_leader"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

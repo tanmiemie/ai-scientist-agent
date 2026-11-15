@@ -1,0 +1,21 @@
+{
+ "_hypothesis": "DEV coverage is 0.60 (target 0.80); skill is adequate (0.1135). Coverage is especially low at longer horizons (7d above_q90: 0.455) and for highly volatile/spot series. Prior broadening of vol_weighted_drift width (to 1.2) modestly boosted coverage, but hurt skill and failed to close the coverage gap. Coverage below q10 remains low. There is evidence that near-zero recent volatility (see >30 days since price change: coverage stalls; coverage_above_q90 and below_q10 total only 0.22), while high volatility still sees substantial misses. -> The current model relies on short-term realized volatility (vol_window=30, width=1.0) to scale the intervals. In long no-change regimes (days_since_change >30), realized volatility shrinks artificially, leading to under-dispersed (too-narrow) intervals and poor coverage. A volatility floor, so that the intervals never get 'too thin', should restore coverage for these low-vol/constant series without sacrificing skill for more volatile series. Change: Introduce a volatility floor in a new model (vol_weighted_drift_floor), modifying vol_weighted_drift so that the estimated volatility over vol_window days is floored at a tunable minimum (min_vol, in log-units, default 0.01). This prevents collapse of the predictive interval for price-flat regimes. Sweep min_vol to find the right floor. DEV sweep of models.0.params.min_vol: 0.005->+0.1601, 0.01->+0.1851, 0.02->+0.1787, 0.04->+0.0869; chose 0.01.",
+ "models": [
+  {
+   "name": "vol_weighted_drift_floor",
+   "params": {
+    "window": 60,
+    "min_changes": 20,
+    "vol_window": 30,
+    "width": 1.0,
+    "min_vol": 0.01
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

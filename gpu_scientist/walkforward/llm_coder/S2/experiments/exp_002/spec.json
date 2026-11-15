@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "By horizon, coverage is poor and interval coverage in the champion is ~0.54 (want 0.8), with q90 hit much too often, especially at 7 days (0.46 above q90, with true 0.1 if calibrated), and many worst series are volatile spot prices or newly appearing B200/B300. Mean_log_err_q50 is slightly positive, but the main issue is low interval width, not median bias. -> The intervals are too narrow because the whole-history random walk (wide_drift) underestimates uncertainty after recent price changes. Instead of using a fixed width multiplier, a model that ties interval width to recent volatility (over an adaptive window) will produce better-calibrated quantiles, especially for volatile or frequently-changing series (see dsc_bucket: 0-1 days since change, coverage above q90 is 0.44 at 7 days). Change: Write a new model, vol_weighted_drift, that bases the width of the forecast interval on the rolling standard deviation of recent daily log price changes. This differs from wide_drift, which just multiplies by a fixed width, by adapting interval width to local volatility. DEV sweep of models.0.params.vol_window: 5->+0.0803, 10->+0.0980, 20->+0.1124, 30->+0.1135; chose 30.",
+ "models": [
+  {
+   "name": "vol_weighted_drift",
+   "params": {
+    "window": 60,
+    "min_changes": 20,
+    "vol_window": 30,
+    "width": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

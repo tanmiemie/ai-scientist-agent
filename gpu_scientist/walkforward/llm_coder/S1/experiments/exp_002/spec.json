@@ -1,0 +1,22 @@
+{
+ "_hypothesis": "Coverage in the current champion is only 0.61 (target 0.80), with 0.29 of outcomes above q90 (should be 0.10 if calibrated), and weak skill especially for fastgpu_daily|hyperscaler_spot (-0.208) and fastgpu_daily|neocloud_spot (0.06). The current model, empirical_quantiles, builds intervals from a fixed-width rolling window of log changes, failing to adapt to changing short-term volatility and missing recent spikes or droughts (see high above_q90 rates in several groups and horizons). -> A new volatility-adaptive model that dynamically widens or narrows its forecast interval according to recent volatility (as measured by the median absolute deviation of short-horizon returns) will materially increase in-interval coverage (toward 0.80), particularly reducing above_q90 events, especially on groups/periods where volatility regime changes rapidly. Change: Switch to a new volatility-adaptive interval model, 'vol_adapt', replacing empirical_quantiles. DEV sweep of models.0.params.m: 5.0->-35.9368, 10.0->-479.9884, 15.0->-5889.6452; chose 5.0.",
+ "models": [
+  {
+   "name": "vol_adapt",
+   "params": {
+    "window": 60,
+    "lookback": 30,
+    "m": 5.0,
+    "lo_clip": 0.5,
+    "hi_clip": 2.0,
+    "floor": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

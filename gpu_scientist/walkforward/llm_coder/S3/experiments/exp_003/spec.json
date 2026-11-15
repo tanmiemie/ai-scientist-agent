@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Skill is mediocre (0.0697 pooled); coverage is extremely poor (0.456 in, 0.418 above q90, 0.126 below q10). Drift gives only one interval (whole-history empirical random walk). Skill is low at short and long horizons, but above all: coverage is far below the 0.8 target; model is under-dispersed. -> Increasing interval width empirically using short-window log differences will boost coverage towards the 0.8 target, at the cost of possibly small skill loss. A wider, local-variance-based empirical random walk will better capture bursty moves after recent changes, correcting undercoverage at high and low quantiles. Change: Introduce a new model, log_empirical_window, that works identically to drift but only uses recent log changes (window in [10, 20, 30, 45, 60]). Tune window to optimize skill and coverage. DEV sweep of models.0.params.window: 10->+0.0705, 20->+0.1382, 45->+0.1506, 60->+0.1497; chose 45.",
+ "models": [
+  {
+   "name": "log_empirical_window",
+   "params": {
+    "window": 45
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

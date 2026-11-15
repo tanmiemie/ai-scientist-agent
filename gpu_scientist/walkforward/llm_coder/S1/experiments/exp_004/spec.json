@@ -1,0 +1,19 @@
+{
+ "_hypothesis": "The champion's dev skill_pooled is 0.118, but coverage_in is 0.61 (well under the 0.80 target). The q90 tail especially is much too high: coverage_above_q90 is 0.286 overall and 0.428 at 7 days. Previous direct-widen approaches overfit (exp_002, massive skill loss), and blind trend adjustments (exp_003) worsened both skill and coverage. One diagnosis hint: by dsc_bucket, skill and coverage collapse for dsc>8 days (skill=0.036/0, coverage_above_q90 drops, below_q10 rises), suggesting possible regime change or model overconfidence in staleness. The current model (empirical_quantiles(window=30)) ignores how stale the price is at the origin. -> Price intervals are much too narrow when the price has not changed for many days, leading to overconfidence (low coverage_in and excessive above_q90). Explicitly widening intervals by a factor based on days-since-change should improve coverage (especially in dsc_bucket 8-30 and >30) and bring calibration closer to the 80% target, without the catastrophic over-widening of vol-adapt (exp_002), if the widening is minimal for recent changes and ramps up only at high staleness. Change: Introduce a new model, stale_aware_quantiles, that applies a mild linear scaling to the empirical quantile interval width as days_since_change grows beyond 7 days (no effect if dsc<=7, up to 2x wider if dsc>=30). Keep window=30 as in the champion. DEV sweep of models.0.params.max_scale: 1.25->+0.0643, 1.5->+0.0643, 1.75->+0.0643, 2.0->+0.0643; chose 2.0.",
+ "models": [
+  {
+   "name": "stale_aware_quantiles",
+   "params": {
+    "window": 30,
+    "stale_thresh": 7,
+    "max_scale": 2.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

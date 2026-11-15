@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Skill is 0.0459 with very poor coverage (0.46 in); highest skill (0.186, 0.196) is on afhubbard|hyperscaler_spot and gpurentalprices|marketplace_ask. There is underestimation at the upper tail: above_q90 is 0.41 (should be 0.10 if well calibrated); below_q10 also over (0.12 vs 0.10). This suggests drift underestimates the true interval width. -> A simple log-changes based empirical quantile model, using the last N days for all three required horizons, should produce wider intervals and increase coverage toward the 0.8 target, with little loss (and possibly a gain) in overall skill. The coverage problem stems from underestimating price volatility, which a direct empirical quantile should correct on volatile series. Change: Replace the drift baseline with a new model that, for each horizon, computes the empirical 10th/50th/90th percentiles of h-day log changes over a rolling window (default 60 days) and applies them to forecast the p10/p50/p90 quantiles at 1, 3, and 7 days. DEV sweep of models.0.params.window: 30->+0.1177, 60->+0.1083, 120->+0.1078; chose 30.",
+ "models": [
+  {
+   "name": "empirical_quantiles",
+   "params": {
+    "window": 30
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

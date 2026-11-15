@@ -1,0 +1,52 @@
+{
+ "id": "exp_001",
+ "spec": {
+  "_hypothesis": "Skill is 0.0459 with very poor coverage (0.46 in); highest skill (0.186, 0.196) is on afhubbard|hyperscaler_spot and gpurentalprices|marketplace_ask. There is underestimation at the upper tail: above_q90 is 0.41 (should be 0.10 if well calibrated); below_q10 also over (0.12 vs 0.10). This suggests drift underestimates the true interval width. -> A simple log-changes based empirical quantile model, using the last N days for all three required horizons, should produce wider intervals and increase coverage toward the 0.8 target, with little loss (and possibly a gain) in overall skill. The coverage problem stems from underestimating price volatility, which a direct empirical quantile should correct on volatile series. Change: Replace the drift baseline with a new model that, for each horizon, computes the empirical 10th/50th/90th percentiles of h-day log changes over a rolling window (default 60 days) and applies them to forecast the p10/p50/p90 quantiles at 1, 3, and 7 days. DEV sweep of models.0.params.window: 30->+0.1177, 60->+0.1083, 120->+0.1078; chose 30.",
+  "models": [
+   {
+    "name": "empirical_quantiles",
+    "params": {
+     "window": 30
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": false
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.117747,
+  "skill_median_of_series": 0.078996,
+  "skill_geomean": 0.115988,
+  "coverage_in": 0.608696,
+  "coverage_above_q90": 0.285628,
+  "coverage_below_q10": 0.105676,
+  "share_series_positive": 0.777778,
+  "by_horizon": {
+   "1": 0.117207,
+   "3": 0.120491,
+   "7": 0.116632
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.178139,
+  "skill_median_of_series": 0.203414,
+  "skill_geomean": 0.117261,
+  "coverage_in": 0.629817,
+  "coverage_above_q90": 0.264706,
+  "coverage_below_q10": 0.105477,
+  "share_series_positive": 0.75,
+  "by_horizon": {
+   "1": 0.08306,
+   "3": 0.160394,
+   "7": 0.222823
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}
