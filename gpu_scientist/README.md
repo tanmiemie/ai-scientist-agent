@@ -37,6 +37,18 @@ bash run_all.sh                      # rebuild everything from the pack and writ
 python3 ledger.py show               # what has been tried
 ```
 
+## Interactive app
+
+```
+python3 -m pip install -r app/requirements.txt
+GPU_PACK=/path/to/pack OPENAI_API_KEY=... streamlit run app/main.py
+```
+
+Browse every ledger (overview, research timeline, diagnosis, forecast explorer, walk-forward, proposer log,
+submission) and, in **Lab**, design an experiment by hand, launch `autoresearch.py` or `walkforward.py`, and watch
+the log live. Lab runs go to `experiments_app/` and `walkforward/app_*/` (git-ignored), never the tracked ledgers.
+The results pages work without the data pack; Lab needs it.
+
 ## Autonomous loop (no human in it)
 
 `autoresearch.py` closes the research loop. Each iteration it reads the ledger (with lessons) and the
