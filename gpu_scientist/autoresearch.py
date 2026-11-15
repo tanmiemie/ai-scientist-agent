@@ -364,6 +364,11 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
             print(f"stopping: {rejects} rejections in a row")
             break
     ledger.plot()
+    try:
+        import report
+        print(report.build())
+    except Exception as e:  # the report must never break a research run
+        print(f"report.py failed: {e}")
 
 
 def main():

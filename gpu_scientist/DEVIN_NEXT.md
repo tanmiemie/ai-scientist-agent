@@ -37,6 +37,19 @@ champion and its diagnosis; exact duplicate specs are still refused).
    hypotheses; list them). Write `walkforward/MEMORY_ABLATION.md`. A null result is fine; say so plainly.
    Do not change experiments_final/ or submission_final/.
 
+## D. Reviewer ensemble  (branch `devin/reviewer`, after C)
+Borrowed from Sakana's AI Scientist (perform_review: 5 reviewers, reflection, low temperature), but
+the reviewer FLAGS and never overrules the numeric gate.
+1. New `review.py`: for one experiment, give an LLM the hypothesis, spec diff, DEV/HOLDOUT reports,
+   per-horizon and per-group skill, coverage, and the diagnosis. Ask for JSON on a fixed checklist:
+   leakage risk, gain carried by a few large series, interval widened rather than better centred,
+   overlap with an idea already rejected in the ledger, other. Each item: yes/no, evidence, severity 1–3.
+2. Ask 5 times at temperature 0.1 (API key from the environment only) and keep an item if at least 3
+   of 5 flag it. Write `<exp>/review.json`; `report.py` should print the kept flags if the file exists.
+3. Run it on experiments_final exp_001 to exp_007 in a COPY of the folder and report whether the flags
+   agree with what we know (exp_005 overfit per-GPU calibration; exp_006 Chronos lost on DEV).
+   Do not change experiments_final/ or submission_final/.
+
 ## B. Long-horizon value view: CANCELLED, Claude is writing LONG_HORIZON.md. Skip this task.
 
 (Original text kept for reference.)
