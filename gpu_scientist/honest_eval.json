@@ -1,0 +1,129 @@
+{
+ "early_set": {
+  "00_drift": {
+   "skill_pooled": 0.155575,
+   "skill_median_of_series": 0.145736,
+   "skill_geomean": 0.154508,
+   "coverage_in": 0.594417
+  },
+  "01_trend_tail": {
+   "skill_pooled": 0.168678,
+   "skill_median_of_series": 0.196707,
+   "skill_geomean": 0.188348,
+   "coverage_in": 0.694581
+  },
+  "02_trend_tail_cal": {
+   "skill_pooled": 0.095268,
+   "skill_median_of_series": 0.160371,
+   "skill_geomean": 0.107181,
+   "coverage_in": 0.694581
+  },
+  "04_momentum": {
+   "skill_pooled": 0.10665,
+   "skill_median_of_series": 0.160525,
+   "skill_geomean": 0.11666,
+   "coverage_in": 0.699507
+  },
+  "07_composition": {
+   "skill_pooled": 0.1116,
+   "skill_median_of_series": 0.156402,
+   "skill_geomean": 0.117676,
+   "coverage_in": 0.702791
+  }
+ },
+ "by_collector": [
+  {
+   "spec": "00_drift",
+   "collector": "afhubbard",
+   "pooled": 0.1355
+  },
+  {
+   "spec": "00_drift",
+   "collector": "fastgpu_daily",
+   "pooled": -0.0335
+  },
+  {
+   "spec": "00_drift",
+   "collector": "gpurentalprices",
+   "pooled": 0.1579
+  },
+  {
+   "spec": "01_trend_tail",
+   "collector": "afhubbard",
+   "pooled": 0.2258
+  },
+  {
+   "spec": "01_trend_tail",
+   "collector": "fastgpu_daily",
+   "pooled": 0.0355
+  },
+  {
+   "spec": "01_trend_tail",
+   "collector": "gpurentalprices",
+   "pooled": 0.1621
+  },
+  {
+   "spec": "02_trend_tail_cal",
+   "collector": "afhubbard",
+   "pooled": 0.2362
+  },
+  {
+   "spec": "02_trend_tail_cal",
+   "collector": "fastgpu_daily",
+   "pooled": 0.0979
+  },
+  {
+   "spec": "02_trend_tail_cal",
+   "collector": "gpurentalprices",
+   "pooled": 0.0791
+  },
+  {
+   "spec": "04_momentum",
+   "collector": "afhubbard",
+   "pooled": 0.2386
+  },
+  {
+   "spec": "04_momentum",
+   "collector": "fastgpu_daily",
+   "pooled": 0.0957
+  },
+  {
+   "spec": "04_momentum",
+   "collector": "gpurentalprices",
+   "pooled": 0.0915
+  },
+  {
+   "spec": "07_composition",
+   "collector": "afhubbard",
+   "pooled": 0.2386
+  },
+  {
+   "spec": "07_composition",
+   "collector": "fastgpu_daily",
+   "pooled": 0.0936
+  },
+  {
+   "spec": "07_composition",
+   "collector": "gpurentalprices",
+   "pooled": 0.097
+  }
+ ],
+ "early_set_tests": {
+  "07 vs last value": {
+   "better": 13,
+   "n": 16,
+   "p": 0.0125
+  },
+  "07 vs drift": {
+   "better": 8,
+   "n": 17,
+   "p": 0.7981
+  },
+  "07 vs 01": {
+   "better": 5,
+   "n": 17,
+   "p": 0.9826
+  }
+ },
+ "early_set_size": 17
+}
