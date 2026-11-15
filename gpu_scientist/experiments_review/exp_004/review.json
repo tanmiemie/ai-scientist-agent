@@ -1,0 +1,187 @@
+{
+ "experiment": "exp_004",
+ "provider": "openai",
+ "model": "gpt-4.1",
+ "n_reviews": 5,
+ "keep_if_votes_at_least": 3,
+ "temperature": 0.1,
+ "kept_flags": [
+  "other"
+ ],
+ "items": {
+  "leakage_risk": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "gain_from_few_series": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "interval_widened_not_centred": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "repeats_rejected_idea": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "other": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "DEV skill_pooled (0.1871) is much higher than HOLDOUT (0.1002); DEV/HOLDOUT divergence suggests possible overfitting or non-stationarity.",
+    "DEV skill_pooled gain over champion is small (+0.0039), and DEV/HOLDOUT divergence is notable: skill_pooled drops from 0.1871 (DEV) to 0.1002 (HOLDOUT), and skill_median_of_series is higher on HOLDOUT (0.1696) than skill_pooled, suggesting outlier effects or instability.",
+    "DEV skill_pooled (0.1871) is much higher than HOLDOUT (0.1002), and DEV skill_median_of_series (0.1793) is higher than HOLDOUT (0.1696), suggesting possible overfitting or distribution shift.",
+    "DEV skill_pooled gain is small (+0.0039), and skill_median_of_series actually decreased (0.1793 vs 0.1852); DEV/HOLDOUT divergence is present (DEV skill_pooled 0.1871, HOLDOUT 0.1002), suggesting possible overfitting or instability.",
+    "DEV skill_pooled gain over champion is small (+0.0039), and DEV/HOLDOUT divergence is notable: skill_pooled drops from 0.1871 (DEV) to 0.1002 (HOLDOUT), and skill_median_of_series is higher on HOLDOUT (0.1696) than skill_pooled, suggesting instability or overfitting."
+   ]
+  }
+ },
+ "reviews": [
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; beta was chosen by a DEV-only sweep.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 26.5% of the absolute change, which is notable but not extreme given 37 series; 21/37 series improved.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width q90/q10 increased only slightly on DEV (0.09208 vs 0.08949) and is unchanged on HOLDOUT (0.11107 vs 0.1112); improvement is not mainly from interval widening.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "The rejected exp_003 used a different mechanism (trend_tail, step_hazard, drift) than the current momentum model; no direct overlap.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled (0.1871) is much higher than HOLDOUT (0.1002); DEV/HOLDOUT divergence suggests possible overfitting or non-stationarity.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; beta was chosen by a DEV-only sweep.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 26.5% of the absolute change, but 21 of 37 series improved and 16 worsened, so the gain is not dominated by just a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width increased only slightly on DEV (0.09208 vs 0.08949) and was unchanged on HOLDOUT (0.11107 vs 0.1112), so improvement is not mainly from wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "The rejected exp_003 used a different mechanism (trend_tail, step_hazard, drift), while this experiment adds a momentum model; no direct overlap.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled gain over champion is small (+0.0039), and DEV/HOLDOUT divergence is notable: skill_pooled drops from 0.1871 (DEV) to 0.1002 (HOLDOUT), and skill_median_of_series is higher on HOLDOUT (0.1696) than skill_pooled, suggesting outlier effects or instability.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; beta was chosen by a DEV-only sweep.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 26.5% of the absolute change, but 21 of 37 series improved and 16 worsened, so the gain is not dominated by just a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width q90-q10 increased only slightly on DEV (0.09208 vs 0.08949) and was unchanged on HOLDOUT (0.11107 vs 0.1112), so improvement is not mainly from interval widening.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "The rejected exp_003 used a different mechanism (trend_tail, step_hazard, drift), while this experiment uses a momentum model; no direct overlap.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled (0.1871) is much higher than HOLDOUT (0.1002), and DEV skill_median_of_series (0.1793) is higher than HOLDOUT (0.1696), suggesting possible overfitting or distribution shift.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; beta was chosen by DEV-only sweep.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 26.5% of the absolute change, but 21 of 37 series improved and the gain is not dominated by a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width q90/q10 increased only slightly on DEV (0.09208 vs 0.08949) and was unchanged on HOLDOUT (0.11107 vs 0.1112); skill improvement is not due to interval widening.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "The rejected exp_003 used a different mechanism (trend_tail, step_hazard, drift), while this experiment adds a momentum model; no direct overlap.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled gain is small (+0.0039), and skill_median_of_series actually decreased (0.1793 vs 0.1852); DEV/HOLDOUT divergence is present (DEV skill_pooled 0.1871, HOLDOUT 0.1002), suggesting possible overfitting or instability.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; beta was chosen by a DEV-only sweep.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 26.5% of the absolute change, but 21 of 37 series improved and 16 worsened, so the gain is not dominated by a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width increased only slightly on DEV (0.09208 vs 0.08949) and was unchanged on HOLDOUT (0.11107 vs 0.1112); skill improvements are not due to interval widening.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "The rejected exp_003 used a different mechanism (trend_tail, step_hazard, drift), while this experiment uses a momentum model; no direct overlap.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled gain over champion is small (+0.0039), and DEV/HOLDOUT divergence is notable: skill_pooled drops from 0.1871 (DEV) to 0.1002 (HOLDOUT), and skill_median_of_series is higher on HOLDOUT (0.1696) than skill_pooled, suggesting instability or overfitting.",
+    "severity": 2
+   }
+  }
+ ],
+ "note": "Flags only; the numeric gate's accept/reject decision is unchanged."
+}

@@ -1,0 +1,194 @@
+{
+ "experiment": "exp_006",
+ "provider": "openai",
+ "model": "gpt-4.1",
+ "n_reviews": 5,
+ "keep_if_votes_at_least": 3,
+ "temperature": 0.1,
+ "kept_flags": [
+  "interval_widened_not_centred",
+  "other"
+ ],
+ "items": {
+  "leakage_risk": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "gain_from_few_series": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "interval_widened_not_centred": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage is only slightly up (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting wider intervals did not improve centering or sharpness.",
+    "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting wider intervals did not improve centering.",
+    "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting interval widening did not improve placement.",
+    "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting interval widening did not improve placement.",
+    "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871); suggests interval widened without better centering."
+   ]
+  },
+  "repeats_rejected_idea": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "other": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "DEV/HOLDOUT divergence: DEV skill_pooled dropped -0.0513 vs champion, but HOLDOUT improved +0.0879, suggesting possible overfitting or instability; also, some series have -inf or strongly negative skill (e.g., fastgpu_daily.neocloud_spot.A100_80GB.spot.median: -inf, afhubbard.hyperscaler_spot.A100_40GB.spot.median: -1.339), indicating the method fails badly for some cases.",
+    "DEV/HOLDOUT divergence: DEV skill_pooled dropped vs champion (-0.0513), but holdout improved (+0.0879), suggesting possible overfitting or instability; also, some series have -inf or strongly negative skill (e.g., fastgpu_daily.neocloud_spot.A100_80GB.spot.median: -inf).",
+    "DEV/HOLDOUT divergence: DEV skill_pooled dropped vs champion (0.1358 vs 0.1871), but HOLDOUT improved (0.1881 vs 0.1002); this suggests possible overfitting or instability.",
+    "DEV/HOLDOUT divergence: DEV skill_pooled dropped vs champion (-0.0513), but holdout improved (+0.0879); this suggests possible overfitting or instability in generalization.",
+    "DEV/HOLDOUT divergence: DEV skill_pooled dropped -0.0513 vs champion, but HOLDOUT improved +0.0879; this could indicate overfitting or instability in model generalization."
+   ]
+  }
+ },
+ "reviews": [
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; variant selection was DEV-only as required.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "Of 37 series, 17 are better and 20 are worse; the largest 3 series account for 42.6% of the absolute change, but the total loss reduction is negative (-4.88), so no gain is carried by a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage is only slightly up (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting wider intervals did not improve centering or sharpness.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "Earlier rejections (exp_003, exp_005) focused on hedging and calibration offsets, not on pretrained foundation model interval widths as in this experiment.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: DEV skill_pooled dropped -0.0513 vs champion, but HOLDOUT improved +0.0879, suggesting possible overfitting or instability; also, some series have -inf or strongly negative skill (e.g., fastgpu_daily.neocloud_spot.A100_80GB.spot.median: -inf, afhubbard.hyperscaler_spot.A100_40GB.spot.median: -1.339), indicating the method fails badly for some cases.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; variant selection was DEV-only as described.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "Of 37 series, 17 better and 20 worse; largest 3 series account for 42.6% of absolute change, but overall loss is negative (-4.88), so not a gain carried by a few.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting wider intervals did not improve centering.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "Previous rejections (exp_003, exp_005) were for different mechanisms (hedging, volatility offsets), not for pretrained foundation model interval widths.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: DEV skill_pooled dropped vs champion (-0.0513), but holdout improved (+0.0879), suggesting possible overfitting or instability; also, some series have -inf or strongly negative skill (e.g., fastgpu_daily.neocloud_spot.A100_80GB.spot.median: -inf).",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; variant was chosen by DEV-only scratch run.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "17 of 37 series improved, 20 worsened; largest 3 series account for 42.6% of absolute change, but total loss reduction is negative (-4.88), so no evidence that a few series carried the gain.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting interval widening did not improve placement.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No direct overlap with previously rejected ideas; prior rejections involved hedging with other models or volatility-aware calibration, not foundation model interval width.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: DEV skill_pooled dropped vs champion (0.1358 vs 0.1871), but HOLDOUT improved (0.1881 vs 0.1002); this suggests possible overfitting or instability.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; variant selection was DEV-only as required.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "Of 37 series, 17 are better and 20 are worse vs champion; largest 3 series account for 42.6% of absolute change, but overall loss is negative (-4.88), so no gain is carried by a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871), suggesting interval widening did not improve placement.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "Previous rejections (exp_003, exp_005) focused on hedging/trend_tail and volatility-aware calibration, not on pretrained foundation model interval widths.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: DEV skill_pooled dropped vs champion (-0.0513), but holdout improved (+0.0879); this suggests possible overfitting or instability in generalization.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; variant was chosen by a DEV-only scratch run.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "Of 37 series, 17 are better and 20 are worse; the largest 3 series account for 42.6% of the absolute change, but the total loss reduction is negative (-4.88), so no gain is carried by a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased on DEV (0.09982 vs 0.09208 for champion), but coverage_in only slightly increased (0.799 vs 0.782), and skill dropped (0.1358 vs 0.1871); suggests interval widened without better centering.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "Previous rejections (exp_003, exp_005) involved different mechanisms (hedging, volatility-aware calibration), not the use of a pretrained foundation model for interval width.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: DEV skill_pooled dropped -0.0513 vs champion, but HOLDOUT improved +0.0879; this could indicate overfitting or instability in model generalization.",
+    "severity": 2
+   }
+  }
+ ],
+ "note": "Flags only; the numeric gate's accept/reject decision is unchanged."
+}

@@ -54,6 +54,23 @@ def _diff(parent: dict | None, spec: dict) -> str:
     return "; ".join(out) or "no parameter change (re-run)"
 
 
+def _review_lines(path: Path) -> list[str]:
+    """Kept flags from review.py (LLM reviewer ensemble), if it was run. Flags never change the decision."""
+    if not path.exists():
+        return []
+    rv = json.loads(path.read_text())
+    n = rv.get("n_reviews", 5)
+    if not rv.get("kept_flags"):
+        return [f"**Reviewer flags.** none kept ({n} reviews, {rv.get('model')}).", ""]
+    out = [f"**Reviewer flags** (kept if ≥{rv.get('keep_if_votes_at_least', 3)} of {n} reviews; they do not change "
+           f"the decision):"]
+    for k in rv["kept_flags"]:
+        it = rv["items"][k]
+        ev = (it["evidence"][0] if it["evidence"] else "").replace("\n", " ")
+        out.append(f"- `{k}` ({it['votes']}/{n}, severity {it['severity']}): {ev}")
+    return out + [""]
+
+
 def build(exp_dir: Path | None = None) -> Path:
     exp_dir = Path(exp_dir or C.EXPERIMENTS)
     recs = [json.loads(l) for l in (exp_dir / "ledger.jsonl").read_text().splitlines() if l.strip()]
@@ -111,6 +128,7 @@ def build(exp_dir: Path | None = None) -> Path:
         L += [f"**Decision.** {r.get('reason', '')}", ""]
         if r.get("lesson"):
             L += [f"**Lesson written to memory.** {r['lesson'].strip()}", ""]
+        L += _review_lines(exp_dir / r["id"] / "review.json")
 
     if rejected:
         L += ["## What the loop ruled out", ""]

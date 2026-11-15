@@ -1,0 +1,194 @@
+{
+ "experiment": "exp_007",
+ "provider": "openai",
+ "model": "gpt-4.1",
+ "n_reviews": 5,
+ "keep_if_votes_at_least": 3,
+ "temperature": 0.1,
+ "kept_flags": [
+  "gain_from_few_series",
+  "other"
+ ],
+ "items": {
+  "leakage_risk": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "gain_from_few_series": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), suggesting the DEV gain is concentrated in a few series.",
+    "The largest 3 series account for 58.5% of the absolute skill gain (0.0968, 0.0606, 0.0586 out of total 0.3455), suggesting the improvement is concentrated in a few series.",
+    "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), suggesting the DEV gain is concentrated in a few series.",
+    "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), suggesting the DEV gain is concentrated in a few series.",
+    "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), indicating the DEV gain is concentrated in a few series."
+   ]
+  },
+  "interval_widened_not_centred": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "repeats_rejected_idea": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "other": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "DEV/holdout skill_pooled diverges: DEV +0.0036, but holdout only +0.0008; skill_median_of_series drops from 0.1793 (champion) to 0.1658 (holdout), and geomean is nearly unchanged (0.0606 vs 0.0603), suggesting DEV gain may not generalize.",
+    "DEV/HOLDOUT divergence: DEV skill_pooled +0.0036, but HOLDOUT only +0.0008; also, skill_geomean is much lower than skill_pooled (DEV: 0.1256 vs 0.1908, HOLDOUT: 0.0606 vs 0.1010), suggesting uneven benefit and possible overfitting.",
+    "DEV/holdout skill_pooled improvement is much smaller on holdout (+0.0008) than DEV (+0.0036), and skill_median_of_series actually drops on holdout (0.1658 vs 0.1696), suggesting possible overfitting or lack of generalization.",
+    "DEV/holdout skill_pooled improvement is much smaller on holdout (+0.0008) than DEV (+0.0036), and skill_median_of_series actually drops on holdout (0.1658 vs 0.1696), suggesting possible overfitting or lack of generalization.",
+    "DEV/holdout skill_pooled improvement is much smaller on holdout (+0.0008) than DEV (+0.0036), and skill_median_of_series actually drops on holdout (0.1658 vs 0.1696), suggesting possible overfitting or lack of generalization."
+   ]
+  }
+ },
+ "reviews": [
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; the experiment is described as DEV-only sweep and the holdout is only used for final evaluation.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), suggesting the DEV gain is concentrated in a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width q90/q10 is slightly narrower in the new experiment (DEV: 0.09147 vs 0.09208; HOLDOUT: 0.11007 vs 0.11107), so improvement is not due to interval widening.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected hypotheses; this experiment's mechanism (momentum shift conditional on provider count) is distinct from earlier rejected ideas.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/holdout skill_pooled diverges: DEV +0.0036, but holdout only +0.0008; skill_median_of_series drops from 0.1793 (champion) to 0.1658 (holdout), and geomean is nearly unchanged (0.0606 vs 0.0603), suggesting DEV gain may not generalize.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; all changes are based on observable provider count at the forecast origin.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 58.5% of the absolute skill gain (0.0968, 0.0606, 0.0586 out of total 0.3455), suggesting the improvement is concentrated in a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width decreased slightly on both DEV (0.0915 vs 0.0921) and HOLDOUT (0.1101 vs 0.1111), so the improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "The hypothesis and mechanism (momentum shift conditional on provider count) are distinct from previously rejected ideas, which focused on group-specific models and volatility-aware calibration.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence: DEV skill_pooled +0.0036, but HOLDOUT only +0.0008; also, skill_geomean is much lower than skill_pooled (DEV: 0.1256 vs 0.1908, HOLDOUT: 0.0606 vs 0.1010), suggesting uneven benefit and possible overfitting.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; the experiment is described as DEV-only sweep and the holdout is only used for final evaluation.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), suggesting the DEV gain is concentrated in a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width q90/q10 is slightly narrower in the new experiment (DEV: 0.09147 vs 0.09208; HOLDOUT: 0.11007 vs 0.11107), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected hypotheses; prior rejections were about group weighting, volatility offsets, and foundation model intervals, not the momentum/composition mechanism.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/holdout skill_pooled improvement is much smaller on holdout (+0.0008) than DEV (+0.0036), and skill_median_of_series actually drops on holdout (0.1658 vs 0.1696), suggesting possible overfitting or lack of generalization.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; the experiment is described as DEV-only sweep and the holdout is only used for final evaluation.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), suggesting the DEV gain is concentrated in a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width q90/q10 is slightly narrower in the new experiment (DEV: 0.09147 vs 0.09208; HOLDOUT: 0.11007 vs 0.11107), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected hypotheses; this experiment focuses on momentum gating by provider count, which is not the mechanism of prior rejections.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/holdout skill_pooled improvement is much smaller on holdout (+0.0008) than DEV (+0.0036), and skill_median_of_series actually drops on holdout (0.1658 vs 0.1696), suggesting possible overfitting or lack of generalization.",
+    "severity": 2
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead in features is present in the description or diagnosis.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 58.5% of the total absolute loss reduction (0.0968, 0.0606, 0.0586 out of 0.3455), indicating the DEV gain is concentrated in a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width q90/q10 is slightly narrower in the new experiment (DEV: 0.09147 vs 0.09208; HOLDOUT: 0.11007 vs 0.11107), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "The hypothesis and mechanism (momentum shift conditional on provider count change) are distinct from previously rejected ideas, which focused on group weighting, volatility offsets, and foundation model intervals.",
+    "severity": 1
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/holdout skill_pooled improvement is much smaller on holdout (+0.0008) than DEV (+0.0036), and skill_median_of_series actually drops on holdout (0.1658 vs 0.1696), suggesting possible overfitting or lack of generalization.",
+    "severity": 2
+   }
+  }
+ ],
+ "note": "Flags only; the numeric gate's accept/reject decision is unchanged."
+}

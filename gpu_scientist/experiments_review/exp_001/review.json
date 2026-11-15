@@ -1,0 +1,187 @@
+{
+ "experiment": "exp_001",
+ "provider": "openai",
+ "model": "gpt-4.1",
+ "n_reviews": 5,
+ "keep_if_votes_at_least": 3,
+ "temperature": 0.1,
+ "kept_flags": [
+  "interval_widened_not_centred"
+ ],
+ "items": {
+  "leakage_risk": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "gain_from_few_series": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "interval_widened_not_centred": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage_in rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals.",
+    "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage_in rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals.",
+    "Mean log interval width increased from 0.02497 to 0.04567 (dev) and from 0.04839 to 0.06735 (holdout), and coverage_in rose from 0.454853 to 0.643735 (dev), suggesting much of the skill gain may be from wider intervals.",
+    "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals rather than better centering.",
+    "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage_in rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals rather than better centering."
+   ]
+  },
+  "repeats_rejected_idea": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "other": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  }
+ },
+ "reviews": [
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; ensemble weights are 1 for the only model, and no HOLDOUT is used for choices.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 40.2% of the absolute change, but 33 of 37 series improved and only 3 worsened, indicating broad-based gain.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage_in rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected ideas; rejected_earlier_in_ledger is empty.",
+    "severity": 1
+   },
+   "other": {
+    "flag": false,
+    "evidence": "DEV and HOLDOUT skill both positive (0.1677 vs 0.0903 pooled), and skill_median_of_series is higher on HOLDOUT (0.1822) than DEV (0.1543), so no clear overfitting or divergence.",
+    "severity": 1
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; ensemble weights are 1 for the only model, and no HOLDOUT is used for choices.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 40.2% of the absolute change, but 33/37 series improved and the total loss reduction is spread across most series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage_in rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No related ideas were previously rejected, as indicated by the empty 'rejected_earlier_in_ledger' list.",
+    "severity": 1
+   },
+   "other": {
+    "flag": false,
+    "evidence": "DEV and HOLDOUT skill both improved (DEV +0.0964, HOLDOUT +0.0466 vs champion), and the hypothesis is directly tested by the change.",
+    "severity": 1
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout misuse, or look-ahead in features; all ensemble weights are 1 for the new model, and no HOLDOUT data is used for choices.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 40.2% of the absolute loss reduction, but 33 of 37 series improved and only 3 worsened, so gains are not overly concentrated.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.02497 to 0.04567 (dev) and from 0.04839 to 0.06735 (holdout), and coverage_in rose from 0.454853 to 0.643735 (dev), suggesting much of the skill gain may be from wider intervals.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No earlier similar hypothesis is listed in rejected_earlier_in_ledger.",
+    "severity": 1
+   },
+   "other": {
+    "flag": false,
+    "evidence": "DEV and HOLDOUT skill both improved (DEV +0.0964, HOLDOUT +0.0466 vs champion), and the improvement is not limited to a single group or horizon.",
+    "severity": 1
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; ensemble weights are 1 for the only model, and no HOLDOUT is used for choices.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 40.2% of the absolute skill gain, but 33 of 37 series improved and the gain is not dominated by just a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals rather than better centering.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected ideas; 'rejected_earlier_in_ledger' is empty.",
+    "severity": 1
+   },
+   "other": {
+    "flag": false,
+    "evidence": "DEV and HOLDOUT skill both improve over champion (DEV +0.0964, HOLDOUT +0.0466), and no signs of overfitting or divergence.",
+    "severity": 1
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; ensemble weights are 1 for the only model, and no HOLDOUT data is used for choices.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": false,
+    "evidence": "The largest 3 series account for 40.2% of the absolute loss reduction, but 33 of 37 series improved and the gain is not dominated by just a few series.",
+    "severity": 1
+   },
+   "interval_widened_not_centred": {
+    "flag": true,
+    "evidence": "Mean log interval width increased from 0.02497 to 0.04567 (dev), and coverage_in rose from 0.454853 to 0.643735, suggesting much of the skill gain is from wider intervals rather than better centering.",
+    "severity": 2
+   },
+   "repeats_rejected_idea": {
+    "flag": false,
+    "evidence": "No overlap with previously rejected ideas; 'rejected_earlier_in_ledger' is empty.",
+    "severity": 1
+   },
+   "other": {
+    "flag": false,
+    "evidence": "DEV and HOLDOUT skill both positive (DEV: 0.167744, HOLDOUT: 0.090252), and the improvement is consistent across most groups and horizons.",
+    "severity": 1
+   }
+  }
+ ],
+ "note": "Flags only; the numeric gate's accept/reject decision is unchanged."
+}

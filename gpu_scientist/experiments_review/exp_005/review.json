@@ -1,0 +1,201 @@
+{
+ "experiment": "exp_005",
+ "provider": "openai",
+ "model": "gpt-4.1",
+ "n_reviews": 5,
+ "keep_if_votes_at_least": 3,
+ "temperature": 0.1,
+ "kept_flags": [
+  "gain_from_few_series",
+  "repeats_rejected_idea",
+  "other"
+ ],
+ "items": {
+  "leakage_risk": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "gain_from_few_series": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "The largest 3 series account for 27.4% of the absolute change in loss, with one series improving by 0.587 and two others worsening by -0.494 and -0.411, indicating outsized influence from a few series.",
+    "The largest 3 series account for 27.4% of the absolute change in loss, with one series improving by 0.587 and two others worsening by -0.494 and -0.411, indicating outsized influence from a few series.",
+    "The largest 3 series account for 27.4% of the absolute change in loss, with one series improving by +0.587 and two others worsening by -0.494 and -0.411, indicating outsized influence from a few series.",
+    "The largest 3 series account for 27.4% of the absolute change in loss, with one series gaining +0.587 and two losing -0.494 and -0.411, indicating outsized influence from a few series.",
+    "The largest 3 series account for 27.4% of the absolute change in loss, and one series (gpurentalprices.neocloud_rate_card.B200.on_demand.median) alone contributes +0.587, while another (fastgpu_daily.neocloud_rate_card.B200.on_demand.median) is -0.494, indicating outsized influence from a few series."
+   ]
+  },
+  "interval_widened_not_centred": {
+   "votes": 0,
+   "kept": false,
+   "severity": null,
+   "evidence": []
+  },
+  "repeats_rejected_idea": {
+   "votes": 5,
+   "kept": true,
+   "severity": 2,
+   "evidence": [
+    "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (group-specific modeling with trend_tail and calibration).",
+    "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (calibration and trend_tail together), as noted in the ledger.",
+    "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (group-specific modeling with trend_tail and calibration).",
+    "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (group-specific calibration and trend_tail model).",
+    "A similar idea (trend_tail model) was previously rejected in exp_003 for not improving dev skill (-0.0065), and the current experiment again adds trend_tail."
+   ]
+  },
+  "other": {
+   "votes": 5,
+   "kept": true,
+   "severity": 3,
+   "evidence": [
+    "There is a large DEV/HOLDOUT divergence: skill_pooled is 0.191 on DEV but only 0.022 on HOLDOUT, and holdout skill is much worse than the champion (0.022 vs 0.100), suggesting overfitting or poor generalization.",
+    "DEV skill_pooled improved only slightly (+0.0038), but HOLDOUT skill_pooled dropped sharply (0.0216 vs 0.1002 for champion), and geomean skill on HOLDOUT is negative (-0.0029 vs 0.0603), indicating overfitting or poor generalization.",
+    "DEV/HOLDOUT divergence is severe: DEV skill_pooled +0.1909 vs HOLDOUT +0.0216, and holdout skill drops sharply from champion (+0.1002 to +0.0216); by horizon, holdout skill at 7 days is negative (-0.0045).",
+    "DEV/HOLDOUT divergence is severe: skill_pooled drops from 0.191 (DEV) to 0.022 (HOLDOUT), and skill_geomean from 0.178 to -0.003, suggesting overfitting or poor generalization.",
+    "There is a large DEV/HOLDOUT divergence: dev skill_pooled is 0.1909, but holdout is only 0.0216 (vs champion's 0.1002), and holdout skill_geomean is negative (-0.0029), suggesting overfitting or poor generalization."
+   ]
+  }
+ },
+ "reviews": [
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead in features is described.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 27.4% of the absolute change in loss, with one series improving by 0.587 and two others worsening by -0.494 and -0.411, indicating outsized influence from a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width decreased on both dev (0.066 vs 0.092) and holdout (0.099 vs 0.111), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": true,
+    "evidence": "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (group-specific modeling with trend_tail and calibration).",
+    "severity": 2
+   },
+   "other": {
+    "flag": true,
+    "evidence": "There is a large DEV/HOLDOUT divergence: skill_pooled is 0.191 on DEV but only 0.022 on HOLDOUT, and holdout skill is much worse than the champion (0.022 vs 0.100), suggesting overfitting or poor generalization.",
+    "severity": 3
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future data, holdout leakage, or look-ahead features; calibration keys and model selection are DEV-only as described.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 27.4% of the absolute change in loss, with one series improving by 0.587 and two others worsening by -0.494 and -0.411, indicating outsized influence from a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width decreased on DEV (0.066 vs 0.092) and HOLDOUT (0.099 vs 0.111), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": true,
+    "evidence": "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (calibration and trend_tail together), as noted in the ledger.",
+    "severity": 2
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV skill_pooled improved only slightly (+0.0038), but HOLDOUT skill_pooled dropped sharply (0.0216 vs 0.1002 for champion), and geomean skill on HOLDOUT is negative (-0.0029 vs 0.0603), indicating overfitting or poor generalization.",
+    "severity": 3
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; calibration keys and model selection are DEV-only.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 27.4% of the absolute change in loss, with one series improving by +0.587 and two others worsening by -0.494 and -0.411, indicating outsized influence from a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width decreased on DEV (0.066 vs 0.092) and HOLDOUT (0.099 vs 0.111), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": true,
+    "evidence": "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (group-specific modeling with trend_tail and calibration).",
+    "severity": 2
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence is severe: DEV skill_pooled +0.1909 vs HOLDOUT +0.0216, and holdout skill drops sharply from champion (+0.1002 to +0.0216); by horizon, holdout skill at 7 days is negative (-0.0045).",
+    "severity": 3
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead features; calibration keys and model selection are DEV-only.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 27.4% of the absolute change in loss, with one series gaining +0.587 and two losing -0.494 and -0.411, indicating outsized influence from a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width decreased on DEV (0.066 vs 0.092) and HOLDOUT (0.099 vs 0.111), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": true,
+    "evidence": "The experiment adds 'trend_tail', which was previously rejected in exp_003 for similar reasons (group-specific calibration and trend_tail model).",
+    "severity": 2
+   },
+   "other": {
+    "flag": true,
+    "evidence": "DEV/HOLDOUT divergence is severe: skill_pooled drops from 0.191 (DEV) to 0.022 (HOLDOUT), and skill_geomean from 0.178 to -0.003, suggesting overfitting or poor generalization.",
+    "severity": 3
+   }
+  },
+  {
+   "leakage_risk": {
+    "flag": false,
+    "evidence": "No evidence of future truth, holdout leakage, or look-ahead in features is mentioned.",
+    "severity": 1
+   },
+   "gain_from_few_series": {
+    "flag": true,
+    "evidence": "The largest 3 series account for 27.4% of the absolute change in loss, and one series (gpurentalprices.neocloud_rate_card.B200.on_demand.median) alone contributes +0.587, while another (fastgpu_daily.neocloud_rate_card.B200.on_demand.median) is -0.494, indicating outsized influence from a few series.",
+    "severity": 2
+   },
+   "interval_widened_not_centred": {
+    "flag": false,
+    "evidence": "Mean log interval width decreased on both dev (0.06605 vs 0.09208) and holdout (0.0989 vs 0.11107), so improvement is not due to wider intervals.",
+    "severity": 1
+   },
+   "repeats_rejected_idea": {
+    "flag": true,
+    "evidence": "A similar idea (trend_tail model) was previously rejected in exp_003 for not improving dev skill (-0.0065), and the current experiment again adds trend_tail.",
+    "severity": 2
+   },
+   "other": {
+    "flag": true,
+    "evidence": "There is a large DEV/HOLDOUT divergence: dev skill_pooled is 0.1909, but holdout is only 0.0216 (vs champion's 0.1002), and holdout skill_geomean is negative (-0.0029), suggesting overfitting or poor generalization.",
+    "severity": 3
+   }
+  }
+ ],
+ "note": "Flags only; the numeric gate's accept/reject decision is unchanged."
+}
