@@ -105,5 +105,75 @@
         "base_2028_years_of_net_cash": 1.12
       }
     }
+  },
+  "market_forward_2029": {
+    "H100": 2.63,
+    "A100": 1.24
+  },
+  "parity_a100_over_h100": {
+    "compute_mlperf": 0.41,
+    "memory_bandwidth": 0.61
+  },
+  "pack_tests": {
+    "on_demand": {
+      "cross_section_change_per_year_of_age": -0.264,
+      "cohort_change_over_year": {
+        "A100": 0.225,
+        "H100": 0.33
+      },
+      "a100_over_h100": [
+        0.51,
+        0.47
+      ],
+      "n_providers_last_week": {
+        "A100": 39,
+        "H100": 46
+      }
+    },
+    "reserved_1m": {
+      "cross_section_change_per_year_of_age": -0.261,
+      "cohort_change_over_year": {
+        "A100": -0.236,
+        "H100": -0.155
+      },
+      "a100_over_h100": [
+        0.59,
+        0.54
+      ],
+      "n_providers_last_week": {
+        "A100": 6,
+        "H100": 10
+      }
+    },
+    "reserved_12m": {
+      "cross_section_change_per_year_of_age": -0.247,
+      "cohort_change_over_year": {
+        "A100": -0.316,
+        "H100": 0.02
+      },
+      "a100_over_h100": [
+        0.82,
+        0.55
+      ],
+      "n_providers_last_week": {
+        "A100": 10,
+        "H100": 14
+      }
+    },
+    "spot": {
+      "cross_section_change_per_year_of_age": -0.249,
+      "cohort_change_over_year": {
+        "A100": 0.143,
+        "H100": 0.082
+      },
+      "a100_over_h100": [
+        0.51,
+        0.54
+      ],
+      "n_providers_last_week": {
+        "A100": 8,
+        "H100": 12
+      }
+    }
   }
 }

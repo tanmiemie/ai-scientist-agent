@@ -31,7 +31,7 @@ YEARS = {"2027-11": 1, "2028-11": 2, "2029-11": 3}
 # A100: GetDeploying spot 1.51, reserved_1m 1.70, reserved_12m 1.68, on_demand 1.99;
 #       Akash 80GB average 1.54 (Aug 2026).
 RENTAL_ANCHOR = {"H100": 3.00, "A100": 1.65}
-# Annual change. Reasons in LONG_HORIZON.md section 3.
+# Annual change. Reasons in LONG_HORIZON.md sections 3 and 4.
 RENTAL_RATE = {
     "H100": {"low": -0.35, "base": -0.12, "high": +0.03},
     "A100": {"low": -0.40, "base": -0.15, "high": 0.00},
@@ -58,6 +58,50 @@ UTIL = 0.70  # assumed sold utilisation for the cash-flow cross-check
 CAPABILITY = {"A100": 1.0, "H100": 2.465, "H200": 2.716, "B200": 7.915}
 # GetDeploying reserved_1m medians, week of 2026-11-02 (pack)
 RES1M = {"A100": 1.6962, "H100": 3.36, "H200": 3.9536, "B200": 8.0925}
+
+
+# ---------- Market-implied path (Silicon Data 36-month forwards vs spot, 2026-09-03,
+# as reported by the Compute-and-LLM dashboard): A100 -24.9%, H100 -12.3% over 36 months.
+FORWARD_36M = {"H100": -0.123, "A100": -0.249}
+
+# ---------- Ages used for the cross-sectional age curve (CCIR, 2026-09-28, +0.1y to Nov) ----------
+AGE = {"NVIDIA A100": 5.9, "NVIDIA H100": 3.9, "NVIDIA H200": 2.3, "NVIDIA B200": 1.6}
+# Performance parity of A100 vs H100: compute (pack MLPerf units) and memory bandwidth (datasheet, pack)
+PARITY_A100_H100 = {"compute_mlperf": round(1 / 2.465, 2), "memory_bandwidth": round(1 / 1.643, 2)}
+
+
+def pack_tests() -> dict | None:
+    """H1 (cross-section = cohort decline?) and H3 (A100 converging to parity?) on the pack's
+    GetDeploying weekly medians, Nov 2025 -> Nov 2026 (first and last 4 weeks averaged)."""
+    import numpy as np
+    import pandas as pd
+    try:
+        from .config import PACK
+    except Exception:
+        return None
+    f = PACK / "aggregator_medians.csv"
+    if not f.exists():
+        return None
+    a = pd.read_csv(f)
+    out = {}
+    for m in ("on_demand", "reserved_1m", "reserved_12m", "spot"):
+        s = a[(a.pricing_mode == m) & a.gpu_model.isin(AGE)]
+        p = s.pivot_table(index="week_start", columns="gpu_model",
+                          values="median_usd_per_gpu_hour").sort_index()
+        start, end = p.iloc[:4].mean(), p.iloc[-4:].mean()
+        e = end.dropna()
+        slope = np.polyfit([AGE[g] for g in e.index], np.log(e.values), 1)[0]
+        out[m] = {
+            "cross_section_change_per_year_of_age": round(float(np.exp(slope) - 1), 3),
+            "cohort_change_over_year": {g.split()[-1]: round(float(end[g] / start[g] - 1), 3)
+                                        for g in ("NVIDIA A100", "NVIDIA H100")},
+            "a100_over_h100": [round(float(start["NVIDIA A100"] / start["NVIDIA H100"]), 2),
+                               round(float(end["NVIDIA A100"] / end["NVIDIA H100"]), 2)],
+            "n_providers_last_week": {g.split()[-1]: int(s[(s.gpu_model == g)].sort_values("week_start")
+                                                         .n_providers.iloc[-1])
+                                      for g in ("NVIDIA A100", "NVIDIA H100")},
+        }
+    return out
 
 
 def path(anchor: float, rate: float, floor: float | None = None) -> dict:
@@ -96,6 +140,9 @@ def build() -> dict:
         node2 = m2 * NODE_PER_GPU[g] / RESALE_ANCHOR[g]
         mult[g]["base_2028_years_of_net_cash"] = round(node2 / net2, 2)
     res["cross_checks"]["resale_vs_rent"] = mult
+    res["market_forward_2029"] = {g: round(RENTAL_ANCHOR[g] * (1 + FORWARD_36M[g]), 2) for g in FORWARD_36M}
+    res["parity_a100_over_h100"] = PARITY_A100_H100
+    res["pack_tests"] = pack_tests()
     return res
 
 
@@ -118,8 +165,14 @@ def plot(res: dict) -> None:
             lo = [d["low"][x] for x in xs]; hi = [d["high"][x] for x in xs]; b = [d["base"][x] for x in xs]
             ax.fill_between(range(4), lo, hi, color=col[g], alpha=0.15, linewidth=0)
             ax.plot(range(4), b, color=col[g], lw=2, marker="o", ms=5)
-            ax.annotate(f"{g} base {fmt.format(b[2])} (2028)", (2, b[2]), xytext=(6, 8),
+            below = key.startswith("rental") and g == "A100"
+            ax.annotate(f"{g} base {fmt.format(b[2])} (2028)", (2, b[2]), xytext=(-8, -24) if below else (6, 8), ha="right" if below else "left",
                         textcoords="offset points", color=ink, fontsize=9)
+            if key.startswith("rental"):
+                fv = res["market_forward_2029"][g]
+                ax.plot([3], [fv], marker="D", ms=7, mfc="none", mec=col[g], mew=1.6)
+                ax.annotate("forward", (3, fv), xytext=(8, 2), textcoords="offset points",
+                            color=muted, fontsize=8.5)
             ax.annotate(f"{g}", (3, b[3]), xytext=(8, -3), textcoords="offset points",
                         color=ink, fontsize=10, weight="bold")
         ax.set_xticks(range(4), xl, color=muted, fontsize=9)
@@ -132,8 +185,8 @@ def plot(res: dict) -> None:
             ax.spines[s].set_visible(False)
         ax.spines["bottom"].set_color(grid)
         ax.set_title(title, loc="left", color=ink, fontsize=11)
-    fig.text(0.01, 0.01, "Line = base case; band = low to high scenario. Rental and resale are separate "
-             "markets and are not converted into each other.", color=muted, fontsize=8.5)
+    fig.text(0.01, 0.01, "Line = base case; band = low to high scenario; hollow diamond = market forward "
+             "(Silicon Data 36-month, Sep 2026). Rental and resale are separate markets.", color=muted, fontsize=8.5)
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     fig.savefig(OUT_PNG, dpi=160)
 
