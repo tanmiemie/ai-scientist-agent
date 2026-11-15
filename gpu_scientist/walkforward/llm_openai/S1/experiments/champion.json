@@ -1,0 +1,55 @@
+{
+ "id": "exp_004",
+ "spec": {
+  "_hypothesis": "dev coverage_in is 0.7506 vs target 0.80; some series (e.g., neocloud_rate_card, neocloud_spot) have exceptionally low or negative skill, but group-based recalibration showed no effect. Increasing calibrate.gamma to 0.10 caused overfitting and a sharp skill decline. Champion uses gamma=0.05, scale=0.05. All failures thus far have involved calibration, not the base predictive model. -> The current champion uses only the drift model, which performs poorly/negatively for some groups and series. Adding a second, simple model such as last_value (which can be more robust/less reactive in flat/sticky areas) in a mean ensemble may improve worst-case groups and raise median skill, without harming overall coverage, as mean ensembling can regularize drift in unstable series. Change: Add the last_value model alongside drift and ensemble via mean (equal weight); keep calibration as in the champion.",
+  "models": [
+   {
+    "name": "drift"
+   },
+   {
+    "name": "last_value"
+   }
+  ],
+  "combine": {
+   "method": "mean"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.05,
+   "scale": 0.05,
+   "group_by": "all"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.248969,
+  "skill_median_of_series": 0.171253,
+  "skill_geomean": -0.010214,
+  "coverage_in": 0.76872,
+  "coverage_above_q90": 0.132246,
+  "coverage_below_q10": 0.099034,
+  "share_series_positive": 0.75,
+  "by_horizon": {
+   "1": 0.059175,
+   "3": 0.164496,
+   "7": 0.306395
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.183263,
+  "skill_median_of_series": 0.084285,
+  "skill_geomean": 0.034404,
+  "coverage_in": 0.802231,
+  "coverage_above_q90": 0.078093,
+  "coverage_below_q10": 0.119675,
+  "share_series_positive": 0.638889,
+  "by_horizon": {
+   "1": 0.085902,
+   "3": 0.154194,
+   "7": 0.235754
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}

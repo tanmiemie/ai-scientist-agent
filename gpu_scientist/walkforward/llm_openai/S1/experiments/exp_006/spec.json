@@ -1,0 +1,21 @@
+{
+ "_hypothesis": "By horizon, skill increases from 0.059 (1d) \u2192 0.306 (7d); q10 and q90 coverage are too high at 3d (below_q10=0.136, above_q90=0.156), especially for 7d. Calibration exp_003 showed that increasing gamma worsened skill without improving coverage. Worst skill by group is for afhubbard|hyperscaler_spot (0.105) and fastgpu_daily|neocloud_spot (0.086). Drift\u2019s solo skill is much higher than last_value\u2019s (near zero) for those two groups. Mean weights are always 0.5/0.5. -> Using a hedge (online weighted) ensemble will increase dev skill for afhubbard|hyperscaler_spot and fastgpu_daily|neocloud_spot by upweighting the better-performing drift model, especially at short horizons (1-3d), improving both skill and coverage consistency, while avoiding the performance dilution seen when averaging with the weak last_value model. Change: Change combine.method from 'mean' to 'hedge' (with eta=2.0), all else unchanged.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "last_value"
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

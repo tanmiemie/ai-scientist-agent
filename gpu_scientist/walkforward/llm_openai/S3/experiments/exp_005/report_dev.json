@@ -1,0 +1,1963 @@
+{
+  "starter_version": "0.1",
+  "run_utc": "2026-11-15T09:18:36Z",
+  "status": "scored",
+  "mode": "backtest",
+  "cutoff": null,
+  "quantiles": [
+    0.1,
+    0.5,
+    0.9
+  ],
+  "horizons": [
+    1,
+    3,
+    7
+  ],
+  "skill_baseline": "last_value",
+  "skill_definition": {
+    "cell": "mean over q10, q50, q90 of the pinball loss against the truth at origin + horizon",
+    "pooled": "1 - (mean cell loss / mean baseline cell loss) over every scored cell (equal cell weights; the track text's definition; scale-dependent, so high-priced volatile series weigh more)",
+    "mean_of_series": "mean over series of (1 - series loss / series baseline loss); series whose baseline loss is exactly 0 are excluded; unbounded below when a series barely moved",
+    "median_of_series": "median of the per-series skills",
+    "geomean": "1 - exp(mean over series of log(series loss / series baseline loss)), ratio floored at 0.001; scale-free and symmetric in over- and under-performance",
+    "primary": "pooled"
+  },
+  "missing_forecast_cells_scored_as_baseline": false,
+  "inputs": {
+    "forecast": {
+      "path": "forecast_dev.csv",
+      "sha256": "4cbf10bff5dd130b0e906bbe377c57d1cacc01499202eac40714de5791a3a522",
+      "bytes": 415528
+    },
+    "truth": {
+      "path": "series_daily.csv",
+      "sha256": "c0c0c3c7883dda942d5485aa11dfbe817731390eda8f314346f9484dac21c5cd",
+      "bytes": 7900816
+    },
+    "history": {
+      "path": "series_daily.csv",
+      "sha256": "c0c0c3c7883dda942d5485aa11dfbe817731390eda8f314346f9484dac21c5cd",
+      "bytes": 7900816
+    },
+    "baseline_forecast": null
+  },
+  "refusals": [],
+  "forecast_validation": {
+    "rows_in": 3432,
+    "rows_valid": 3432,
+    "n_problems": 0,
+    "problems": []
+  },
+  "scope": {
+    "n_series_scored_set": 37,
+    "n_origins": 32,
+    "origins": [
+      "2026-09-15",
+      "2026-09-16",
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-19",
+      "2026-09-20",
+      "2026-09-21",
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-26",
+      "2026-09-27",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-03",
+      "2026-10-04",
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-10",
+      "2026-10-11",
+      "2026-10-12",
+      "2026-10-13",
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16"
+    ],
+    "unknown_series_in_forecast": [],
+    "n_unknown_series_in_forecast": 0
+  },
+  "cells": {
+    "scored": 3341,
+    "missing_truth": 91,
+    "missing_forecast": 120,
+    "filled_from_baseline": 0,
+    "missing_baseline": 0,
+    "forecast_rows_outside_scope": 0
+  },
+  "overall": {
+    "n_cells": 3341,
+    "pinball": 0.025259,
+    "baseline_pinball": 0.029314,
+    "skill_pooled": 0.138329,
+    "pinball_by_quantile": {
+      "q10": 0.015893,
+      "q50": 0.029282,
+      "q90": 0.030603
+    },
+    "baseline_pinball_by_quantile": {
+      "q10": 0.015974,
+      "q50": 0.029314,
+      "q90": 0.042654
+    },
+    "coverage": {
+      "below_q10": 0.114936,
+      "within_q10_q90": 0.76953,
+      "above_q90": 0.115534
+    },
+    "mae_q50": 0.058563,
+    "baseline_mae_q50": 0.058629,
+    "skill_mean_of_series": -0.066046,
+    "skill_median_of_series": 0.093359,
+    "share_series_positive_skill": 0.666667,
+    "relative_loss_geomean": 0.967141,
+    "skill_geomean": 0.032859,
+    "n_series_with_skill": 36,
+    "n_series_baseline_degenerate": 1,
+    "n_series_no_cells": 0,
+    "headline_skill": 0.138329,
+    "headline_definition": "pooled"
+  },
+  "by_horizon": {
+    "1": {
+      "n_cells": 1118,
+      "pinball": 0.009895,
+      "baseline_pinball": 0.010676,
+      "skill_pooled": 0.073167,
+      "pinball_by_quantile": {
+        "q10": 0.006359,
+        "q50": 0.010653,
+        "q90": 0.012672
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.006614,
+        "q50": 0.010676,
+        "q90": 0.014738
+      },
+      "coverage": {
+        "below_q10": 0.13059,
+        "within_q10_q90": 0.745081,
+        "above_q90": 0.124329
+      },
+      "mae_q50": 0.021305,
+      "baseline_mae_q50": 0.021351,
+      "skill_mean_of_series": -0.099116,
+      "skill_median_of_series": 0.08081,
+      "share_series_positive_skill": 0.666667,
+      "relative_loss_geomean": 0.972255,
+      "skill_geomean": 0.027745,
+      "n_series_with_skill": 36
+    },
+    "3": {
+      "n_cells": 1118,
+      "pinball": 0.02168,
+      "baseline_pinball": 0.025928,
+      "skill_pooled": 0.163834,
+      "pinball_by_quantile": {
+        "q10": 0.013871,
+        "q50": 0.025898,
+        "q90": 0.02527
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.014647,
+        "q50": 0.025928,
+        "q90": 0.037209
+      },
+      "coverage": {
+        "below_q10": 0.115385,
+        "within_q10_q90": 0.782648,
+        "above_q90": 0.101968
+      },
+      "mae_q50": 0.051797,
+      "baseline_mae_q50": 0.051856,
+      "skill_mean_of_series": 0.012915,
+      "skill_median_of_series": 0.118548,
+      "share_series_positive_skill": 0.75,
+      "relative_loss_geomean": 0.914409,
+      "skill_geomean": 0.085591,
+      "n_series_with_skill": 36
+    },
+    "7": {
+      "n_cells": 1105,
+      "pinball": 0.044426,
+      "baseline_pinball": 0.051598,
+      "skill_pooled": 0.139002,
+      "pinball_by_quantile": {
+        "q10": 0.027585,
+        "q50": 0.051553,
+        "q90": 0.054141
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.026788,
+        "q50": 0.051598,
+        "q90": 0.076409
+      },
+      "coverage": {
+        "below_q10": 0.098643,
+        "within_q10_q90": 0.780995,
+        "above_q90": 0.120362
+      },
+      "mae_q50": 0.103106,
+      "baseline_mae_q50": 0.103197,
+      "skill_mean_of_series": -0.105396,
+      "skill_median_of_series": 0.100567,
+      "share_series_positive_skill": 0.666667,
+      "relative_loss_geomean": 0.986128,
+      "skill_geomean": 0.013872,
+      "n_series_with_skill": 36
+    }
+  },
+  "per_series": [
+    {
+      "series_id": "afhubbard.hyperscaler_spot.A100_40GB.spot.median",
+      "n_cells": 96,
+      "pinball": 0.012442,
+      "baseline_pinball": 0.002538,
+      "skill_pooled": -3.902359,
+      "pinball_by_quantile": {
+        "q10": 0.006768,
+        "q50": 0.002538,
+        "q90": 0.028021
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.004568,
+        "q50": 0.002538,
+        "q90": 0.000508
+      },
+      "coverage": {
+        "below_q10": 0.177083,
+        "within_q10_q90": 0.822917,
+        "above_q90": 0.0
+      },
+      "mae_q50": 0.005076,
+      "baseline_mae_q50": 0.005076,
+      "skill": -3.902359,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 32,
+          "pinball": 0.004492,
+          "baseline_pinball": 0.000692,
+          "skill": -5.489727
+        },
+        "3": {
+          "n_cells": 32,
+          "pinball": 0.008661,
+          "baseline_pinball": 0.002077,
+          "skill": -3.17101
+        },
+        "7": {
+          "n_cells": 32,
+          "pinball": 0.024173,
+          "baseline_pinball": 0.004845,
+          "skill": -3.989027
+        }
+      }
+    },
+    {
+      "series_id": "afhubbard.hyperscaler_spot.A100_SXM_80GB.spot.median",
+      "n_cells": 96,
+      "pinball": 0.015338,
+      "baseline_pinball": 0.014749,
+      "skill_pooled": -0.039929,
+      "pinball_by_quantile": {
+        "q10": 0.009632,
+        "q50": 0.014749,
+        "q90": 0.021633
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.015339,
+        "q50": 0.014749,
+        "q90": 0.014159
+      },
+      "coverage": {
+        "below_q10": 0.15625,
+        "within_q10_q90": 0.78125,
+        "above_q90": 0.0625
+      },
+      "mae_q50": 0.029498,
+      "baseline_mae_q50": 0.029498,
+      "skill": -0.039929,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 32,
+          "pinball": 0.005569,
+          "baseline_pinball": 0.004138,
+          "skill": -0.345868
+        },
+        "3": {
+          "n_cells": 32,
+          "pinball": 0.014579,
+          "baseline_pinball": 0.012909,
+          "skill": -0.129355
+        },
+        "7": {
+          "n_cells": 32,
+          "pinball": 0.025866,
+          "baseline_pinball": 0.0272,
+          "skill": 0.049051
+        }
+      }
+    },
+    {
+      "series_id": "afhubbard.hyperscaler_spot.T4.spot.median",
+      "n_cells": 96,
+      "pinball": 0.001591,
+      "baseline_pinball": 0.001181,
+      "skill_pooled": -0.347814,
+      "pinball_by_quantile": {
+        "q10": 0.000927,
+        "q50": 0.001181,
+        "q90": 0.002667
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.001129,
+        "q50": 0.001181,
+        "q90": 0.001233
+      },
+      "coverage": {
+        "below_q10": 0.239583,
+        "within_q10_q90": 0.739583,
+        "above_q90": 0.020833
+      },
+      "mae_q50": 0.002361,
+      "baseline_mae_q50": 0.002361,
+      "skill": -0.347814,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 32,
+          "pinball": 0.000555,
+          "baseline_pinball": 0.000483,
+          "skill": -0.148551
+        },
+        "3": {
+          "n_cells": 32,
+          "pinball": 0.001198,
+          "baseline_pinball": 0.001059,
+          "skill": -0.130713
+        },
+        "7": {
+          "n_cells": 32,
+          "pinball": 0.003022,
+          "baseline_pinball": 0.002,
+          "skill": -0.510913
+        }
+      }
+    },
+    {
+      "series_id": "afhubbard.hyperscaler_spot.V100.spot.median",
+      "n_cells": 96,
+      "pinball": 0.01326,
+      "baseline_pinball": 0.015226,
+      "skill_pooled": 0.129142,
+      "pinball_by_quantile": {
+        "q10": 0.007567,
+        "q50": 0.015226,
+        "q90": 0.016987
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.014774,
+        "q50": 0.015226,
+        "q90": 0.015679
+      },
+      "coverage": {
+        "below_q10": 0.052083,
+        "within_q10_q90": 0.9375,
+        "above_q90": 0.010417
+      },
+      "mae_q50": 0.030452,
+      "baseline_mae_q50": 0.030452,
+      "skill": 0.129142,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 32,
+          "pinball": 0.005088,
+          "baseline_pinball": 0.003958,
+          "skill": -0.285516
+        },
+        "3": {
+          "n_cells": 32,
+          "pinball": 0.011551,
+          "baseline_pinball": 0.01263,
+          "skill": 0.08544
+        },
+        "7": {
+          "n_cells": 32,
+          "pinball": 0.023141,
+          "baseline_pinball": 0.029091,
+          "skill": 0.20453
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.hyperscaler_spot.A100_80GB.spot.median",
+      "n_cells": 90,
+      "pinball": 0.030979,
+      "baseline_pinball": 0.032656,
+      "skill_pooled": 0.051331,
+      "pinball_by_quantile": {
+        "q10": 0.03199,
+        "q50": 0.032656,
+        "q90": 0.028292
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.048389,
+        "q50": 0.032656,
+        "q90": 0.016922
+      },
+      "coverage": {
+        "below_q10": 0.377778,
+        "within_q10_q90": 0.555556,
+        "above_q90": 0.066667
+      },
+      "mae_q50": 0.065311,
+      "baseline_mae_q50": 0.065311,
+      "skill": 0.051331,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.010514,
+          "baseline_pinball": 0.00905,
+          "skill": -0.161784
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.023237,
+          "baseline_pinball": 0.0234,
+          "skill": 0.006969
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.059187,
+          "baseline_pinball": 0.065517,
+          "skill": 0.096614
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.hyperscaler_spot.T4.spot.median",
+      "n_cells": 90,
+      "pinball": 0.001716,
+      "baseline_pinball": 0.002083,
+      "skill_pooled": 0.176333,
+      "pinball_by_quantile": {
+        "q10": 0.001406,
+        "q50": 0.002083,
+        "q90": 0.001659
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.002399,
+        "q50": 0.002083,
+        "q90": 0.001768
+      },
+      "coverage": {
+        "below_q10": 0.2,
+        "within_q10_q90": 0.722222,
+        "above_q90": 0.077778
+      },
+      "mae_q50": 0.004167,
+      "baseline_mae_q50": 0.004167,
+      "skill": 0.176333,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.00059,
+          "baseline_pinball": 0.000567,
+          "skill": -0.040728
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.001569,
+          "baseline_pinball": 0.001883,
+          "skill": 0.166692
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.002989,
+          "baseline_pinball": 0.0038,
+          "skill": 0.21348
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.A100_40GB.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.036344,
+      "baseline_pinball": 0.039925,
+      "skill_pooled": 0.089704,
+      "pinball_by_quantile": {
+        "q10": 0.044075,
+        "q50": 0.039925,
+        "q90": 0.025031
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.045981,
+        "q50": 0.039925,
+        "q90": 0.033869
+      },
+      "coverage": {
+        "below_q10": 0.188889,
+        "within_q10_q90": 0.566667,
+        "above_q90": 0.244444
+      },
+      "mae_q50": 0.07985,
+      "baseline_mae_q50": 0.07985,
+      "skill": 0.089704,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.017023,
+          "baseline_pinball": 0.017825,
+          "skill": 0.04501
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.039769,
+          "baseline_pinball": 0.041383,
+          "skill": 0.039005
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.052239,
+          "baseline_pinball": 0.060567,
+          "skill": 0.1375
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.A100_80GB.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.01678,
+      "baseline_pinball": 0.016361,
+      "skill_pooled": -0.025593,
+      "pinball_by_quantile": {
+        "q10": 0.014799,
+        "q50": 0.016361,
+        "q90": 0.019179
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.013197,
+        "q50": 0.016361,
+        "q90": 0.019526
+      },
+      "coverage": {
+        "below_q10": 0.088889,
+        "within_q10_q90": 0.888889,
+        "above_q90": 0.022222
+      },
+      "mae_q50": 0.032722,
+      "baseline_mae_q50": 0.032722,
+      "skill": -0.025593,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.009557,
+          "baseline_pinball": 0.010417,
+          "skill": 0.082494
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.015336,
+          "baseline_pinball": 0.015333,
+          "skill": -0.000206
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.025446,
+          "baseline_pinball": 0.023333,
+          "skill": -0.09053
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.B200.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.091002,
+      "baseline_pinball": 0.12555,
+      "skill_pooled": 0.275172,
+      "pinball_by_quantile": {
+        "q10": 0.052364,
+        "q50": 0.12555,
+        "q90": 0.095092
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.055972,
+        "q50": 0.12555,
+        "q90": 0.195128
+      },
+      "coverage": {
+        "below_q10": 0.111111,
+        "within_q10_q90": 0.688889,
+        "above_q90": 0.2
+      },
+      "mae_q50": 0.2511,
+      "baseline_mae_q50": 0.2511,
+      "skill": 0.275172,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.047626,
+          "baseline_pinball": 0.05285,
+          "skill": 0.098852
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.086177,
+          "baseline_pinball": 0.119558,
+          "skill": 0.279203
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.139204,
+          "baseline_pinball": 0.204242,
+          "skill": 0.318437
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.B300.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.10718,
+      "baseline_pinball": 0.145611,
+      "skill_pooled": 0.263932,
+      "pinball_by_quantile": {
+        "q10": 0.058463,
+        "q50": 0.145611,
+        "q90": 0.117465
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.058056,
+        "q50": 0.145611,
+        "q90": 0.233167
+      },
+      "coverage": {
+        "below_q10": 0.144444,
+        "within_q10_q90": 0.733333,
+        "above_q90": 0.122222
+      },
+      "mae_q50": 0.291222,
+      "baseline_mae_q50": 0.291222,
+      "skill": 0.263932,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.045297,
+          "baseline_pinball": 0.053417,
+          "skill": 0.152007
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.095318,
+          "baseline_pinball": 0.127583,
+          "skill": 0.252893
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.180924,
+          "baseline_pinball": 0.255833,
+          "skill": 0.292807
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.H100_PCIe_80GB.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.048281,
+      "baseline_pinball": 0.046167,
+      "skill_pooled": -0.045792,
+      "pinball_by_quantile": {
+        "q10": 0.058665,
+        "q50": 0.046167,
+        "q90": 0.040011
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.066211,
+        "q50": 0.046167,
+        "q90": 0.026122
+      },
+      "coverage": {
+        "below_q10": 0.244444,
+        "within_q10_q90": 0.733333,
+        "above_q90": 0.022222
+      },
+      "mae_q50": 0.092333,
+      "baseline_mae_q50": 0.092333,
+      "skill": -0.045792,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.019278,
+          "baseline_pinball": 0.016833,
+          "skill": -0.145214
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.040005,
+          "baseline_pinball": 0.0405,
+          "skill": 0.012224
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.08556,
+          "baseline_pinball": 0.081167,
+          "skill": -0.054121
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.H100_SXM_80GB.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.013416,
+      "baseline_pinball": 0.007494,
+      "skill_pooled": -0.790086,
+      "pinball_by_quantile": {
+        "q10": 0.005264,
+        "q50": 0.007494,
+        "q90": 0.027489
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.002974,
+        "q50": 0.007494,
+        "q90": 0.012014
+      },
+      "coverage": {
+        "below_q10": 0.077778,
+        "within_q10_q90": 0.9,
+        "above_q90": 0.022222
+      },
+      "mae_q50": 0.014989,
+      "baseline_mae_q50": 0.014989,
+      "skill": -0.790086,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.002606,
+          "baseline_pinball": 0.002333,
+          "skill": -0.116734
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.009408,
+          "baseline_pinball": 0.006583,
+          "skill": -0.429039
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.028234,
+          "baseline_pinball": 0.013567,
+          "skill": -1.081098
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.H200.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.032217,
+      "baseline_pinball": 0.034122,
+      "skill_pooled": 0.055842,
+      "pinball_by_quantile": {
+        "q10": 0.01272,
+        "q50": 0.034122,
+        "q90": 0.049808
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.011536,
+        "q50": 0.034122,
+        "q90": 0.056709
+      },
+      "coverage": {
+        "below_q10": 0.077778,
+        "within_q10_q90": 0.722222,
+        "above_q90": 0.2
+      },
+      "mae_q50": 0.068244,
+      "baseline_mae_q50": 0.068244,
+      "skill": 0.055842,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.010167,
+          "baseline_pinball": 0.011083,
+          "skill": 0.082675
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.03215,
+          "baseline_pinball": 0.030608,
+          "skill": -0.050369
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.054333,
+          "baseline_pinball": 0.060675,
+          "skill": 0.10452
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.L40S.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.008198,
+      "baseline_pinball": 0.010283,
+      "skill_pooled": 0.202758,
+      "pinball_by_quantile": {
+        "q10": 0.004314,
+        "q50": 0.010283,
+        "q90": 0.009997
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.003008,
+        "q50": 0.010283,
+        "q90": 0.017559
+      },
+      "coverage": {
+        "below_q10": 0.066667,
+        "within_q10_q90": 0.9,
+        "above_q90": 0.033333
+      },
+      "mae_q50": 0.020567,
+      "baseline_mae_q50": 0.020567,
+      "skill": 0.202758,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.002751,
+          "baseline_pinball": 0.00385,
+          "skill": 0.285338
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.005925,
+          "baseline_pinball": 0.008142,
+          "skill": 0.272289
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.015919,
+          "baseline_pinball": 0.018858,
+          "skill": 0.155881
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.RTX_6000_Ada.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.018267,
+      "baseline_pinball": 0.020717,
+      "skill_pooled": 0.118237,
+      "pinball_by_quantile": {
+        "q10": 0.022305,
+        "q50": 0.020717,
+        "q90": 0.01178
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.020152,
+        "q50": 0.020717,
+        "q90": 0.021281
+      },
+      "coverage": {
+        "below_q10": 0.133333,
+        "within_q10_q90": 0.644444,
+        "above_q90": 0.222222
+      },
+      "mae_q50": 0.041433,
+      "baseline_mae_q50": 0.041433,
+      "skill": 0.118237,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.004954,
+          "baseline_pinball": 0.005958,
+          "skill": 0.168578
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.014377,
+          "baseline_pinball": 0.0175,
+          "skill": 0.178479
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.035471,
+          "baseline_pinball": 0.038692,
+          "skill": 0.083238
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.RTX_A6000.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.007872,
+      "baseline_pinball": 0.007494,
+      "skill_pooled": -0.050342,
+      "pinball_by_quantile": {
+        "q10": 0.009867,
+        "q50": 0.007494,
+        "q90": 0.006254
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.009943,
+        "q50": 0.007494,
+        "q90": 0.005046
+      },
+      "coverage": {
+        "below_q10": 0.144444,
+        "within_q10_q90": 0.711111,
+        "above_q90": 0.144444
+      },
+      "mae_q50": 0.014989,
+      "baseline_mae_q50": 0.014989,
+      "skill": -0.050342,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.00266,
+          "baseline_pinball": 0.002783,
+          "skill": 0.044398
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.006437,
+          "baseline_pinball": 0.00735,
+          "skill": 0.124199
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.014518,
+          "baseline_pinball": 0.01235,
+          "skill": -0.17557
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_rate_card.RTX_PRO_6000.on_demand.median",
+      "n_cells": 90,
+      "pinball": 0.037222,
+      "baseline_pinball": 0.045847,
+      "skill_pooled": 0.188129,
+      "pinball_by_quantile": {
+        "q10": 0.019214,
+        "q50": 0.045847,
+        "q90": 0.046605
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.026685,
+        "q50": 0.045847,
+        "q90": 0.065009
+      },
+      "coverage": {
+        "below_q10": 0.144444,
+        "within_q10_q90": 0.644444,
+        "above_q90": 0.211111
+      },
+      "mae_q50": 0.091694,
+      "baseline_mae_q50": 0.091694,
+      "skill": 0.188129,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.015725,
+          "baseline_pinball": 0.018358,
+          "skill": 0.143456
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.036668,
+          "baseline_pinball": 0.0458,
+          "skill": 0.199399
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.059274,
+          "baseline_pinball": 0.073383,
+          "skill": 0.192271
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_spot.A100_80GB.spot.median",
+      "n_cells": 90,
+      "pinball": 0.002665,
+      "baseline_pinball": 0.0,
+      "skill_pooled": null,
+      "pinball_by_quantile": {
+        "q10": 0.001044,
+        "q50": 0.0,
+        "q90": 0.006952
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.0,
+        "q50": 0.0,
+        "q90": 0.0
+      },
+      "coverage": {
+        "below_q10": 0.0,
+        "within_q10_q90": 1.0,
+        "above_q90": 0.0
+      },
+      "mae_q50": 0.0,
+      "baseline_mae_q50": 0.0,
+      "skill": null,
+      "baseline_degenerate": true,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.00026,
+          "baseline_pinball": 0.0,
+          "skill": null
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.001664,
+          "baseline_pinball": 0.0,
+          "skill": null
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.006073,
+          "baseline_pinball": 0.0,
+          "skill": null
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_spot.B200.spot.median",
+      "n_cells": 90,
+      "pinball": 0.020536,
+      "baseline_pinball": 0.018758,
+      "skill_pooled": -0.094763,
+      "pinball_by_quantile": {
+        "q10": 0.016864,
+        "q50": 0.018758,
+        "q90": 0.025986
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.013658,
+        "q50": 0.018758,
+        "q90": 0.023858
+      },
+      "coverage": {
+        "below_q10": 0.355556,
+        "within_q10_q90": 0.611111,
+        "above_q90": 0.033333
+      },
+      "mae_q50": 0.037517,
+      "baseline_mae_q50": 0.037517,
+      "skill": -0.094763,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.004842,
+          "baseline_pinball": 0.005625,
+          "skill": 0.13918
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.014645,
+          "baseline_pinball": 0.016508,
+          "skill": 0.112896
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.042121,
+          "baseline_pinball": 0.034142,
+          "skill": -0.233715
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_spot.B300.spot.median",
+      "n_cells": 90,
+      "pinball": 0.02868,
+      "baseline_pinball": 0.031761,
+      "skill_pooled": 0.097013,
+      "pinball_by_quantile": {
+        "q10": 0.01411,
+        "q50": 0.031761,
+        "q90": 0.040169
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.010494,
+        "q50": 0.031761,
+        "q90": 0.053028
+      },
+      "coverage": {
+        "below_q10": 0.088889,
+        "within_q10_q90": 0.777778,
+        "above_q90": 0.133333
+      },
+      "mae_q50": 0.063522,
+      "baseline_mae_q50": 0.063522,
+      "skill": 0.097013,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.00803,
+          "baseline_pinball": 0.01025,
+          "skill": 0.216557
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.025828,
+          "baseline_pinball": 0.030417,
+          "skill": 0.150864
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.052181,
+          "baseline_pinball": 0.054617,
+          "skill": 0.044588
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_spot.H100_SXM_80GB.spot.median",
+      "n_cells": 90,
+      "pinball": 0.009563,
+      "baseline_pinball": 0.007333,
+      "skill_pooled": -0.303987,
+      "pinball_by_quantile": {
+        "q10": 0.00362,
+        "q50": 0.007333,
+        "q90": 0.017735
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.001467,
+        "q50": 0.007333,
+        "q90": 0.0132
+      },
+      "coverage": {
+        "below_q10": 0.044444,
+        "within_q10_q90": 0.933333,
+        "above_q90": 0.022222
+      },
+      "mae_q50": 0.014667,
+      "baseline_mae_q50": 0.014667,
+      "skill": -0.303987,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.003104,
+          "baseline_pinball": 0.002,
+          "skill": -0.551973
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.006718,
+          "baseline_pinball": 0.006,
+          "skill": -0.119599
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.018866,
+          "baseline_pinball": 0.014,
+          "skill": -0.347584
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_spot.H200.spot.median",
+      "n_cells": 90,
+      "pinball": 0.011746,
+      "baseline_pinball": 0.0118,
+      "skill_pooled": 0.004552,
+      "pinball_by_quantile": {
+        "q10": 0.004857,
+        "q50": 0.0118,
+        "q90": 0.018582
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.00236,
+        "q50": 0.0118,
+        "q90": 0.02124
+      },
+      "coverage": {
+        "below_q10": 0.033333,
+        "within_q10_q90": 0.922222,
+        "above_q90": 0.044444
+      },
+      "mae_q50": 0.0236,
+      "baseline_mae_q50": 0.0236,
+      "skill": 0.004552,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.003079,
+          "baseline_pinball": 0.002708,
+          "skill": -0.137034
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.007927,
+          "baseline_pinball": 0.008817,
+          "skill": 0.100878
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.024232,
+          "baseline_pinball": 0.023875,
+          "skill": -0.014958
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_spot.L40S.spot.median",
+      "n_cells": 90,
+      "pinball": 0.005063,
+      "baseline_pinball": 0.0079,
+      "skill_pooled": 0.359106,
+      "pinball_by_quantile": {
+        "q10": 0.002399,
+        "q50": 0.007155,
+        "q90": 0.005635
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.00158,
+        "q50": 0.0079,
+        "q90": 0.01422
+      },
+      "coverage": {
+        "below_q10": 0.055556,
+        "within_q10_q90": 0.788889,
+        "above_q90": 0.155556
+      },
+      "mae_q50": 0.01431,
+      "baseline_mae_q50": 0.0158,
+      "skill": 0.359106,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.000919,
+          "baseline_pinball": 0.001867,
+          "skill": 0.50771
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.003577,
+          "baseline_pinball": 0.006017,
+          "skill": 0.405495
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.010693,
+          "baseline_pinball": 0.015817,
+          "skill": 0.323922
+        }
+      }
+    },
+    {
+      "series_id": "fastgpu_daily.neocloud_spot.RTX_PRO_6000.spot.median",
+      "n_cells": 90,
+      "pinball": 0.012545,
+      "baseline_pinball": 0.016428,
+      "skill_pooled": 0.236365,
+      "pinball_by_quantile": {
+        "q10": 0.004487,
+        "q50": 0.016428,
+        "q90": 0.01672
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.003286,
+        "q50": 0.016428,
+        "q90": 0.02957
+      },
+      "coverage": {
+        "below_q10": 0.0,
+        "within_q10_q90": 0.811111,
+        "above_q90": 0.188889
+      },
+      "mae_q50": 0.032856,
+      "baseline_mae_q50": 0.032856,
+      "skill": 0.236365,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.004266,
+          "baseline_pinball": 0.004417,
+          "skill": 0.034153
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.009556,
+          "baseline_pinball": 0.01325,
+          "skill": 0.278764
+        },
+        "7": {
+          "n_cells": 30,
+          "pinball": 0.023812,
+          "baseline_pinball": 0.031617,
+          "skill": 0.246845
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+      "n_cells": 89,
+      "pinball": 0.058482,
+      "baseline_pinball": 0.067817,
+      "skill_pooled": 0.137658,
+      "pinball_by_quantile": {
+        "q10": 0.042717,
+        "q50": 0.067928,
+        "q90": 0.0648
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.058335,
+        "q50": 0.067817,
+        "q90": 0.0773
+      },
+      "coverage": {
+        "below_q10": 0.022472,
+        "within_q10_q90": 0.932584,
+        "above_q90": 0.044944
+      },
+      "mae_q50": 0.135856,
+      "baseline_mae_q50": 0.135635,
+      "skill": 0.137658,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.036264,
+          "baseline_pinball": 0.03938,
+          "skill": 0.079125
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.051498,
+          "baseline_pinball": 0.063835,
+          "skill": 0.193257
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.08869,
+          "baseline_pinball": 0.101355,
+          "skill": 0.124961
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.A100_40GB.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.04252,
+      "baseline_pinball": 0.045449,
+      "skill_pooled": 0.064451,
+      "pinball_by_quantile": {
+        "q10": 0.011602,
+        "q50": 0.045449,
+        "q90": 0.070509
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.00909,
+        "q50": 0.045449,
+        "q90": 0.081809
+      },
+      "coverage": {
+        "below_q10": 0.0,
+        "within_q10_q90": 0.764045,
+        "above_q90": 0.235955
+      },
+      "mae_q50": 0.090899,
+      "baseline_mae_q50": 0.090899,
+      "skill": 0.064451,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.012669,
+          "baseline_pinball": 0.012317,
+          "skill": -0.028587
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.035876,
+          "baseline_pinball": 0.03695,
+          "skill": 0.029079
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.080275,
+          "baseline_pinball": 0.088517,
+          "skill": 0.093117
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.A100_SXM_80GB.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.013844,
+      "baseline_pinball": 0.019287,
+      "skill_pooled": 0.282204,
+      "pinball_by_quantile": {
+        "q10": 0.007618,
+        "q50": 0.019287,
+        "q90": 0.014626
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.004504,
+        "q50": 0.019287,
+        "q90": 0.034069
+      },
+      "coverage": {
+        "below_q10": 0.078652,
+        "within_q10_q90": 0.707865,
+        "above_q90": 0.213483
+      },
+      "mae_q50": 0.038573,
+      "baseline_mae_q50": 0.038573,
+      "skill": 0.282204,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.003636,
+          "baseline_pinball": 0.005717,
+          "skill": 0.364043
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.010727,
+          "baseline_pinball": 0.016417,
+          "skill": 0.346554
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.027628,
+          "baseline_pinball": 0.036293,
+          "skill": 0.238757
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.B200.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.034867,
+      "baseline_pinball": 0.025775,
+      "skill_pooled": -0.352723,
+      "pinball_by_quantile": {
+        "q10": 0.020724,
+        "q50": 0.025775,
+        "q90": 0.058101
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.006503,
+        "q50": 0.025775,
+        "q90": 0.045047
+      },
+      "coverage": {
+        "below_q10": 0.044944,
+        "within_q10_q90": 0.764045,
+        "above_q90": 0.191011
+      },
+      "mae_q50": 0.051551,
+      "baseline_mae_q50": 0.051551,
+      "skill": -0.352723,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.008329,
+          "baseline_pinball": 0.009133,
+          "skill": 0.088015
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.022958,
+          "baseline_pinball": 0.02165,
+          "skill": -0.060396
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.074639,
+          "baseline_pinball": 0.047259,
+          "skill": -0.579376
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.B300.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.076971,
+      "baseline_pinball": 0.109969,
+      "skill_pooled": 0.300064,
+      "pinball_by_quantile": {
+        "q10": 0.036644,
+        "q50": 0.10997,
+        "q90": 0.0843
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.029388,
+        "q50": 0.109969,
+        "q90": 0.19055
+      },
+      "coverage": {
+        "below_q10": 0.11236,
+        "within_q10_q90": 0.629213,
+        "above_q90": 0.258427
+      },
+      "mae_q50": 0.21994,
+      "baseline_mae_q50": 0.219938,
+      "skill": 0.300064,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.034208,
+          "baseline_pinball": 0.038078,
+          "skill": 0.101639
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.056976,
+          "baseline_pinball": 0.088958,
+          "skill": 0.359516
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.141893,
+          "baseline_pinball": 0.206074,
+          "skill": 0.311445
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.H100_80GB.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.022033,
+      "baseline_pinball": 0.027895,
+      "skill_pooled": 0.210135,
+      "pinball_by_quantile": {
+        "q10": 0.01121,
+        "q50": 0.027895,
+        "q90": 0.026995
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.010474,
+        "q50": 0.027895,
+        "q90": 0.045316
+      },
+      "coverage": {
+        "below_q10": 0.235955,
+        "within_q10_q90": 0.685393,
+        "above_q90": 0.078652
+      },
+      "mae_q50": 0.05579,
+      "baseline_mae_q50": 0.05579,
+      "skill": 0.210135,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.008195,
+          "baseline_pinball": 0.008862,
+          "skill": 0.075176
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.019765,
+          "baseline_pinball": 0.023728,
+          "skill": 0.167044
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.038695,
+          "baseline_pinball": 0.051895,
+          "skill": 0.254358
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.H100_SXM_80GB.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.034159,
+      "baseline_pinball": 0.044107,
+      "skill_pooled": 0.225543,
+      "pinball_by_quantile": {
+        "q10": 0.019646,
+        "q50": 0.044107,
+        "q90": 0.038724
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.01801,
+        "q50": 0.044107,
+        "q90": 0.070205
+      },
+      "coverage": {
+        "below_q10": 0.123596,
+        "within_q10_q90": 0.640449,
+        "above_q90": 0.235955
+      },
+      "mae_q50": 0.088215,
+      "baseline_mae_q50": 0.088215,
+      "skill": 0.225543,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.013773,
+          "baseline_pinball": 0.015237,
+          "skill": 0.096053
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.035596,
+          "baseline_pinball": 0.044618,
+          "skill": 0.202222
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.053762,
+          "baseline_pinball": 0.073445,
+          "skill": 0.267989
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.H200.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.032105,
+      "baseline_pinball": 0.034348,
+      "skill_pooled": 0.065315,
+      "pinball_by_quantile": {
+        "q10": 0.013779,
+        "q50": 0.034348,
+        "q90": 0.048188
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.00687,
+        "q50": 0.034348,
+        "q90": 0.061827
+      },
+      "coverage": {
+        "below_q10": 0.044944,
+        "within_q10_q90": 0.764045,
+        "above_q90": 0.191011
+      },
+      "mae_q50": 0.068697,
+      "baseline_mae_q50": 0.068697,
+      "skill": 0.065315,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.010647,
+          "baseline_pinball": 0.01175,
+          "skill": 0.093867
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.026957,
+          "baseline_pinball": 0.027467,
+          "skill": 0.018574
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.059628,
+          "baseline_pinball": 0.064845,
+          "skill": 0.080444
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.L4.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.003541,
+      "baseline_pinball": 0.001998,
+      "skill_pooled": -0.772688,
+      "pinball_by_quantile": {
+        "q10": 0.00272,
+        "q50": 0.001998,
+        "q90": 0.005906
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.003081,
+        "q50": 0.001998,
+        "q90": 0.000915
+      },
+      "coverage": {
+        "below_q10": 0.314607,
+        "within_q10_q90": 0.662921,
+        "above_q90": 0.022472
+      },
+      "mae_q50": 0.003996,
+      "baseline_mae_q50": 0.003996,
+      "skill": -0.772688,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.001005,
+          "baseline_pinball": 0.000937,
+          "skill": -0.073251
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.00285,
+          "baseline_pinball": 0.001962,
+          "skill": -0.45303
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.00688,
+          "baseline_pinball": 0.003133,
+          "skill": -1.196089
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.L40S.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.005359,
+      "baseline_pinball": 0.004503,
+      "skill_pooled": -0.190156,
+      "pinball_by_quantile": {
+        "q10": 0.002538,
+        "q50": 0.004503,
+        "q90": 0.009036
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.000948,
+        "q50": 0.004503,
+        "q90": 0.008057
+      },
+      "coverage": {
+        "below_q10": 0.022472,
+        "within_q10_q90": 0.955056,
+        "above_q90": 0.022472
+      },
+      "mae_q50": 0.009006,
+      "baseline_mae_q50": 0.009006,
+      "skill": -0.190156,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.001117,
+          "baseline_pinball": 0.001415,
+          "skill": 0.210776
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.00394,
+          "baseline_pinball": 0.004143,
+          "skill": 0.049027
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.011215,
+          "baseline_pinball": 0.008069,
+          "skill": -0.389942
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.RTX_6000_Ada.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.00955,
+      "baseline_pinball": 0.014697,
+      "skill_pooled": 0.350196,
+      "pinball_by_quantile": {
+        "q10": 0.004048,
+        "q50": 0.014115,
+        "q90": 0.010486
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.002939,
+        "q50": 0.014697,
+        "q90": 0.026454
+      },
+      "coverage": {
+        "below_q10": 0.0,
+        "within_q10_q90": 0.786517,
+        "above_q90": 0.213483
+      },
+      "mae_q50": 0.02823,
+      "baseline_mae_q50": 0.029393,
+      "skill": 0.350196,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.002178,
+          "baseline_pinball": 0.004067,
+          "skill": 0.464422
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.007007,
+          "baseline_pinball": 0.01165,
+          "skill": 0.39852
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.019806,
+          "baseline_pinball": 0.028845,
+          "skill": 0.313346
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.RTX_A6000.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.006814,
+      "baseline_pinball": 0.010596,
+      "skill_pooled": 0.356869,
+      "pinball_by_quantile": {
+        "q10": 0.002755,
+        "q50": 0.010596,
+        "q90": 0.007093
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.002119,
+        "q50": 0.010596,
+        "q90": 0.019072
+      },
+      "coverage": {
+        "below_q10": 0.011236,
+        "within_q10_q90": 0.853933,
+        "above_q90": 0.134831
+      },
+      "mae_q50": 0.021191,
+      "baseline_mae_q50": 0.021191,
+      "skill": 0.356869,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.002594,
+          "baseline_pinball": 0.00275,
+          "skill": 0.056605
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.006335,
+          "baseline_pinball": 0.00835,
+          "skill": 0.24132
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.011676,
+          "baseline_pinball": 0.021034,
+          "skill": 0.444929
+        }
+      }
+    },
+    {
+      "series_id": "gpurentalprices.neocloud_rate_card.RTX_PRO_6000.on_demand.median",
+      "n_cells": 89,
+      "pinball": 0.015645,
+      "baseline_pinball": 0.022303,
+      "skill_pooled": 0.29852,
+      "pinball_by_quantile": {
+        "q10": 0.006634,
+        "q50": 0.022303,
+        "q90": 0.017999
+      },
+      "baseline_pinball_by_quantile": {
+        "q10": 0.006964,
+        "q50": 0.022303,
+        "q90": 0.037643
+      },
+      "coverage": {
+        "below_q10": 0.022472,
+        "within_q10_q90": 0.775281,
+        "above_q90": 0.202247
+      },
+      "mae_q50": 0.044607,
+      "baseline_mae_q50": 0.044607,
+      "skill": 0.29852,
+      "baseline_degenerate": false,
+      "n_cells_filled_from_baseline": 0,
+      "by_horizon": {
+        "1": {
+          "n_cells": 30,
+          "pinball": 0.004124,
+          "baseline_pinball": 0.006125,
+          "skill": 0.326662
+        },
+        "3": {
+          "n_cells": 30,
+          "pinball": 0.012779,
+          "baseline_pinball": 0.0193,
+          "skill": 0.337856
+        },
+        "7": {
+          "n_cells": 29,
+          "pinball": 0.030529,
+          "baseline_pinball": 0.042147,
+          "skill": 0.275655
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,447 @@
+{
+ "n_cells": 1656,
+ "overall": {
+  "skill": 0.2158,
+  "y_above_q50": 0.493,
+  "above_q90": 0.167,
+  "below_q10": 0.097
+ },
+ "by_group": [
+  {
+   "group": "afhubbard|hyperscaler_spot",
+   "n": 192,
+   "skill": 0.018,
+   "y_above_q50": 0.495,
+   "above_q90": 0.094,
+   "below_q10": 0.109,
+   "mean_log_err_q50": 0.003
+  },
+  {
+   "group": "fastgpu_daily|hyperscaler_spot",
+   "n": 84,
+   "skill": 0.072,
+   "y_above_q50": 0.298,
+   "above_q90": 0.202,
+   "below_q10": 0.25,
+   "mean_log_err_q50": 0.006
+  },
+  {
+   "group": "fastgpu_daily|neocloud_rate_card",
+   "n": 462,
+   "skill": 0.219,
+   "y_above_q50": 0.556,
+   "above_q90": 0.162,
+   "below_q10": 0.071,
+   "mean_log_err_q50": 0.005
+  },
+  {
+   "group": "fastgpu_daily|neocloud_spot",
+   "n": 294,
+   "skill": -0.006,
+   "y_above_q50": 0.384,
+   "above_q90": 0.122,
+   "below_q10": 0.116,
+   "mean_log_err_q50": 0.009
+  },
+  {
+   "group": "gpurentalprices|marketplace_ask",
+   "n": 48,
+   "skill": 0.224,
+   "y_above_q50": 0.25,
+   "above_q90": 0.083,
+   "below_q10": 0.167,
+   "mean_log_err_q50": -0.026
+  },
+  {
+   "group": "gpurentalprices|neocloud_rate_card",
+   "n": 576,
+   "skill": 0.277,
+   "y_above_q50": 0.547,
+   "above_q90": 0.219,
+   "below_q10": 0.076,
+   "mean_log_err_q50": 0.017
+  }
+ ],
+ "by_horizon": [
+  {
+   "horizon_days": 1,
+   "n": 552,
+   "skill": 0.069,
+   "y_above_q50": 0.357,
+   "above_q90": 0.161,
+   "below_q10": 0.094,
+   "mean_log_err_q50": 0.001
+  },
+  {
+   "horizon_days": 3,
+   "n": 552,
+   "skill": 0.177,
+   "y_above_q50": 0.495,
+   "above_q90": 0.125,
+   "below_q10": 0.136,
+   "mean_log_err_q50": 0.005
+  },
+  {
+   "horizon_days": 7,
+   "n": 552,
+   "skill": 0.249,
+   "y_above_q50": 0.629,
+   "above_q90": 0.214,
+   "below_q10": 0.062,
+   "mean_log_err_q50": 0.02
+  }
+ ],
+ "by_days_since_change": [
+  {
+   "dsc_bucket": "0-1",
+   "n": 765,
+   "skill": 0.283,
+   "y_above_q50": 0.629,
+   "above_q90": 0.175,
+   "below_q10": 0.092,
+   "mean_log_err_q50": 0.011
+  },
+  {
+   "dsc_bucket": "2-3",
+   "n": 192,
+   "skill": 0.164,
+   "y_above_q50": 0.583,
+   "above_q90": 0.271,
+   "below_q10": 0.083,
+   "mean_log_err_q50": 0.012
+  },
+  {
+   "dsc_bucket": "4-7",
+   "n": 150,
+   "skill": 0.271,
+   "y_above_q50": 0.527,
+   "above_q90": 0.2,
+   "below_q10": 0.147,
+   "mean_log_err_q50": 0.011
+  },
+  {
+   "dsc_bucket": "8-30",
+   "n": 426,
+   "skill": -0.022,
+   "y_above_q50": 0.296,
+   "above_q90": 0.113,
+   "below_q10": 0.124,
+   "mean_log_err_q50": 0.002
+  },
+  {
+   "dsc_bucket": ">30",
+   "n": 123,
+   "skill": 0.021,
+   "y_above_q50": 0.154,
+   "above_q90": 0.098,
+   "below_q10": 0.0,
+   "mean_log_err_q50": 0.01
+  }
+ ],
+ "by_provider_change_7d": [
+  {
+   "prov_bucket": "fewer",
+   "n": 18,
+   "skill": -0.773,
+   "y_above_q50": 0.056,
+   "above_q90": 0.0,
+   "below_q10": 0.111,
+   "mean_log_err_q50": -0.005
+  },
+  {
+   "prov_bucket": "more",
+   "n": 75,
+   "skill": 0.266,
+   "y_above_q50": 0.6,
+   "above_q90": 0.08,
+   "below_q10": 0.08,
+   "mean_log_err_q50": 0.018
+  },
+  {
+   "prov_bucket": "same",
+   "n": 1563,
+   "skill": 0.217,
+   "y_above_q50": 0.493,
+   "above_q90": 0.173,
+   "below_q10": 0.098,
+   "mean_log_err_q50": 0.008
+  }
+ ],
+ "worst_series": [
+  {
+   "series_id": "fastgpu_daily.neocloud_spot.A100_80GB.spot.median",
+   "n": 42,
+   "skill": -Infinity,
+   "y_above_q50": 0.0,
+   "above_q90": 0.0,
+   "below_q10": 0.0,
+   "mean_log_err_q50": 0.0
+  },
+  {
+   "series_id": "gpurentalprices.neocloud_rate_card.L40S.on_demand.median",
+   "n": 48,
+   "skill": -36.416,
+   "y_above_q50": 0.042,
+   "above_q90": 0.0,
+   "below_q10": 0.0,
+   "mean_log_err_q50": 0.0
+  },
+  {
+   "series_id": "afhubbard.hyperscaler_spot.A100_40GB.spot.median",
+   "n": 48,
+   "skill": -4.588,
+   "y_above_q50": 0.938,
+   "above_q90": 0.083,
+   "below_q10": 0.062,
+   "mean_log_err_q50": -0.001
+  },
+  {
+   "series_id": "fastgpu_daily.neocloud_rate_card.L40S.on_demand.median",
+   "n": 42,
+   "skill": -2.752,
+   "y_above_q50": 0.071,
+   "above_q90": 0.0,
+   "below_q10": 0.048,
+   "mean_log_err_q50": 0.001
+  },
+  {
+   "series_id": "fastgpu_daily.neocloud_spot.B200.spot.median",
+   "n": 42,
+   "skill": -1.764,
+   "y_above_q50": 0.0,
+   "above_q90": 0.0,
+   "below_q10": 0.619,
+   "mean_log_err_q50": -0.002
+  },
+  {
+   "series_id": "fastgpu_daily.neocloud_rate_card.H100_SXM_80GB.on_demand.median",
+   "n": 42,
+   "skill": -0.584,
+   "y_above_q50": 0.19,
+   "above_q90": 0.0,
+   "below_q10": 0.024,
+   "mean_log_err_q50": 0.002
+  },
+  {
+   "series_id": "gpurentalprices.neocloud_rate_card.L4.on_demand.median",
+   "n": 48,
+   "skill": -0.33,
+   "y_above_q50": 0.104,
+   "above_q90": 0.021,
+   "below_q10": 0.354,
+   "mean_log_err_q50": -0.005
+  },
+  {
+   "series_id": "fastgpu_daily.neocloud_rate_card.A100_80GB.on_demand.median",
+   "n": 42,
+   "skill": -0.219,
+   "y_above_q50": 0.024,
+   "above_q90": 0.0,
+   "below_q10": 0.095,
+   "mean_log_err_q50": -0.003
+  }
+ ],
+ "best_series": [
+  {
+   "series_id": "fastgpu_daily.neocloud_rate_card.B200.on_demand.median",
+   "n": 42,
+   "skill": 0.375,
+   "y_above_q50": 0.976,
+   "above_q90": 0.238,
+   "below_q10": 0.0,
+   "mean_log_err_q50": 0.026
+  },
+  {
+   "series_id": "gpurentalprices.neocloud_rate_card.RTX_PRO_6000.on_demand.median",
+   "n": 48,
+   "skill": 0.397,
+   "y_above_q50": 0.625,
+   "above_q90": 0.292,
+   "below_q10": 0.0,
+   "mean_log_err_q50": 0.022
+  },
+  {
+   "series_id": "fastgpu_daily.neocloud_spot.RTX_PRO_6000.spot.median",
+   "n": 42,
+   "skill": 0.407,
+   "y_above_q50": 0.643,
+   "above_q90": 0.286,
+   "below_q10": 0.0,
+   "mean_log_err_q50": 0.036
+  },
+  {
+   "series_id": "gpurentalprices.neocloud_rate_card.RTX_A6000.on_demand.median",
+   "n": 48,
+   "skill": 0.423,
+   "y_above_q50": 0.125,
+   "above_q90": 0.021,
+   "below_q10": 0.0,
+   "mean_log_err_q50": 0.021
+  },
+  {
+   "series_id": "gpurentalprices.neocloud_rate_card.B300.on_demand.median",
+   "n": 48,
+   "skill": 0.424,
+   "y_above_q50": 0.812,
+   "above_q90": 0.312,
+   "below_q10": 0.042,
+   "mean_log_err_q50": 0.029
+  }
+ ],
+ "per_model_skill_by_group": [
+  {
+   "group": "afhubbard|hyperscaler_spot",
+   "drift": 0.186,
+   "last_value": -0.0,
+   "leader": 0.17
+  },
+  {
+   "group": "fastgpu_daily|hyperscaler_spot",
+   "drift": -0.0,
+   "last_value": -0.0,
+   "leader": 0.146
+  },
+  {
+   "group": "fastgpu_daily|neocloud_rate_card",
+   "drift": -0.0,
+   "last_value": -0.0,
+   "leader": 0.118
+  },
+  {
+   "group": "fastgpu_daily|neocloud_spot",
+   "drift": -0.0,
+   "last_value": -0.0,
+   "leader": 0.066
+  },
+  {
+   "group": "gpurentalprices|marketplace_ask",
+   "drift": 0.196,
+   "last_value": -0.0,
+   "leader": 0.208
+  },
+  {
+   "group": "gpurentalprices|neocloud_rate_card",
+   "drift": 0.056,
+   "last_value": -0.0,
+   "leader": 0.142
+  }
+ ],
+ "mean_weight_by_group": [
+  {
+   "group": "afhubbard|hyperscaler_spot",
+   "drift": 0.33,
+   "last_value": 0.33,
+   "leader": 0.33
+  },
+  {
+   "group": "fastgpu_daily|hyperscaler_spot",
+   "drift": 0.33,
+   "last_value": 0.33,
+   "leader": 0.33
+  },
+  {
+   "group": "fastgpu_daily|neocloud_rate_card",
+   "drift": 0.33,
+   "last_value": 0.33,
+   "leader": 0.33
+  },
+  {
+   "group": "fastgpu_daily|neocloud_spot",
+   "drift": 0.33,
+   "last_value": 0.33,
+   "leader": 0.33
+  },
+  {
+   "group": "gpurentalprices|marketplace_ask",
+   "drift": 0.33,
+   "last_value": 0.33,
+   "leader": 0.33
+  },
+  {
+   "group": "gpurentalprices|neocloud_rate_card",
+   "drift": 0.33,
+   "last_value": 0.33,
+   "leader": 0.33
+  }
+ ],
+ "candidate_leading_signals": [
+  {
+   "series": "gpurentalprices.neocloud_rate_card.H100_SXM_80GB.on_demand.median",
+   "leader": "gpurentalprices.hyperscaler_list.H100_SXM_80GB.on_demand.median",
+   "lag_days": 2,
+   "corr": -0.952
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.H100_SXM_80GB.on_demand.median",
+   "leader": "gpurentalprices.hyperscaler_spot.H100_SXM_80GB.spot.median",
+   "lag_days": 2,
+   "corr": -0.952
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.RTX_6000_Ada.on_demand.median",
+   "leader": "afhubbard.neocloud_rate_card.RTX_6000_Ada.on_demand.median",
+   "lag_days": 1,
+   "corr": 0.87
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.B300.on_demand.median",
+   "leader": "afhubbard.neocloud_rate_card.B300.on_demand.median",
+   "lag_days": 3,
+   "corr": 0.535
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.B200.on_demand.median",
+   "leader": "afhubbard.hyperscaler_spot.B200.spot.median",
+   "lag_days": 5,
+   "corr": -0.511
+  },
+  {
+   "series": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+   "leader": "gpurentalprices.neocloud_rate_card.H100_80GB.serverless.median",
+   "lag_days": 1,
+   "corr": -0.505
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.RTX_PRO_6000.on_demand.median",
+   "leader": "afhubbard.neocloud_rate_card.RTX_PRO_6000.on_demand.median",
+   "lag_days": 5,
+   "corr": 0.427
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.A100_SXM_80GB.on_demand.median",
+   "leader": "gpurentalprices.hyperscaler_spot.A100_SXM_80GB.spot.median",
+   "lag_days": 5,
+   "corr": 0.379
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.H200.on_demand.median",
+   "leader": "gpurentalprices.hyperscaler_spot.H200.spot.median",
+   "lag_days": 5,
+   "corr": 0.339
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.L4.on_demand.median",
+   "leader": "afhubbard.hyperscaler_spot.L4.spot.median",
+   "lag_days": 3,
+   "corr": 0.314
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.H100_80GB.on_demand.median",
+   "leader": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+   "lag_days": 1,
+   "corr": 0.31
+  },
+  {
+   "series": "gpurentalprices.marketplace_ask.H100_80GB.spot.median",
+   "leader": "gpurentalprices.neocloud_spot.H100_80GB.spot.median",
+   "lag_days": 3,
+   "corr": -0.306
+  },
+  {
+   "series": "gpurentalprices.neocloud_rate_card.A100_40GB.on_demand.median",
+   "leader": "gpurentalprices.hyperscaler_spot.A100_40GB.spot.median",
+   "lag_days": 5,
+   "corr": 0.306
+  }
+ ]
+}

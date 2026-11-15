@@ -1,0 +1,27 @@
+{
+ "_hypothesis": "Leader (window=60, floor=1.0, beta=1.0) outperforms drift notably in fastgpu_daily|neocloud_spot (leader: 0.25, drift: 0.008) and fastgpu_daily|hyperscaler_spot (leader: 0.105, drift: 0.001). However, in afhubbard|hyperscaler_spot, drift (0.174) beats leader (0.115). Mean ensemble (fixed 0.5/0.5) may underweight leader in groups where it is much superior. Prior group-by change to source_class had no effect. Control of leader weight across groups\u2014and potentially series\u2014remains unexplored. -> Using the 'hedge' ensemble with eta=2 (still grouped by 'all') will dynamically upweight the leader where it's stronger (e.g., neocloud_spot) and downweight it where it is weaker (afhubbard|hyperscaler_spot), thus improving pooled skill and possibly tail calibration. Since both models are included, coverage should not decrease. Change: Change combine.method from 'mean' to 'hedge' with eta=2 (combine.group_by stays 'all', all other settings unchanged).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2,
+  "group_by": "all"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

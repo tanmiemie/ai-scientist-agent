@@ -1,0 +1,23 @@
+{
+ "_hypothesis": "In the champion, for 'afhubbard|hyperscaler_spot' (n=372), skill is only 0.008, y_above_q50 is just 0.22 (very low), and both above_q90 (0.07) and below_q10 (0.051) indicate under-dispersion; overall the model is not fitting this group at all. This group currently uses the same calibration as all others via group_by=source_class. -> Calibrating by a finer group, such as gpu_model, will improve calibration (coverage and bias) especially in the worst group 'afhubbard|hyperscaler_spot', which has extreme under-confidence and bias under the current coarser calibration by source_class. Change: Change calibrate.group_by from 'source_class' to 'gpu_model'.",
+ "models": [
+  {
+   "name": "momentum",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "k": 1,
+    "beta": 0.25
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "gpu_model"
+ }
+}

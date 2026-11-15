@@ -1,0 +1,62 @@
+{
+ "weights": {
+  "hyperscaler_spot|h1": {
+   "drift": 0.5278833443107172,
+   "last_value": 0.47211665568928285
+  },
+  "hyperscaler_spot|h3": {
+   "drift": 0.8394903686359403,
+   "last_value": 0.16050963136405974
+  },
+  "hyperscaler_spot|h7": {
+   "drift": 0.9999999999999601,
+   "last_value": 3.991495622188181e-14
+  },
+  "marketplace_ask|h1": {
+   "drift": 0.9999990625958245,
+   "last_value": 9.374041755200204e-07
+  },
+  "marketplace_ask|h3": {
+   "drift": 0.9999999978944326,
+   "last_value": 2.105567324190444e-09
+  },
+  "marketplace_ask|h7": {
+   "drift": 0.9999805576290498,
+   "last_value": 1.94423709502695e-05
+  },
+  "neocloud_rate_card|h1": {
+   "drift": 0.7309876679881612,
+   "last_value": 0.26901233201183883
+  },
+  "neocloud_rate_card|h3": {
+   "drift": 0.9944997215405338,
+   "last_value": 0.0055002784594661985
+  },
+  "neocloud_rate_card|h7": {
+   "drift": 0.9998061601639636,
+   "last_value": 0.00019383983603637754
+  },
+  "neocloud_spot|h1": {
+   "drift": 0.5,
+   "last_value": 0.5
+  },
+  "neocloud_spot|h3": {
+   "drift": 0.5,
+   "last_value": 0.5
+  },
+  "neocloud_spot|h7": {
+   "drift": 0.5,
+   "last_value": 0.5
+  }
+ },
+ "calibration_up": {
+  "all|h1": 0.03224999999999991,
+  "all|h3": 0.060749999999999985,
+  "all|h7": 0.16525000000000012
+ },
+ "calibration_dn": {
+  "all|h1": -0.055250000000000105,
+  "all|h3": 0.025749999999999912,
+  "all|h7": 0.02274999999999995
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Champion coverage_in is 0.7506 vs target 0.80; worst groups (e.g., afhubbard|hyperscaler_spot skill 0.01) and some coverage buckets remain undercovered; previous group_by change was rejected for no skill/cvg gain. More aggressive calibration may further improve coverage. -> Increasing calibrate.gamma from 0.05 to 0.10 (scale fixed at 0.05) will expand intervals, raising coverage toward the 0.80 target without unduly harming skill. Since coverage is under 0.76 and intervals look too narrow, a stronger gamma should help, especially in worst-coverage groups. Change: Set calibrate.gamma to 0.10 instead of 0.05.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.1,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

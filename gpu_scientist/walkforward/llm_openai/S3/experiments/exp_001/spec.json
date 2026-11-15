@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Overall coverage_in is 0.456 (target 0.8), with above_q90 at 0.418 and below_q10 at 0.126, indicating underconfident intervals with too-narrow quantiles. Coverage issues are present across groups and horizons: e.g., 1-day horizon coverage_above_q90 is 0.332, coverage_below_q10 is 0.09. -> Enabling post-hoc quantile calibration with gamma=0.05 (mild inflation) will widen the quantile intervals, increasing coverage toward the target without greatly harming skill, particularly in groups/horizons that are under-covered. Change: Enable calibrate.enabled with calibrate.gamma=0.05 (with default scale=0.05, valid range) and calibrate.group_by=all.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}

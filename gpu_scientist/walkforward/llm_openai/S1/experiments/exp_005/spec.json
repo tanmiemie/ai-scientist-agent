@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "The diagnosis shows that the leader model's signals (from other collectors, lagged 1-3 days) are highly correlated with targets, particularly for neocloud_rate_card series (e.g., corr 0.87 for RTX_6000_Ada at lag 1). Currently, the ensemble does not use these leading signals. -> Adding the leader model (with window=60, default params) to the drift/last_value mean ensemble should improve dev skill, primarily for the gpurentalprices|neocloud_rate_card group and specific worst series (e.g., H100_SXM_80GB, RTX_6000_Ada) that have strong leading correlations. Coverage may increase slightly or remain stable. Change: Add the leader model as a third base model (default params) to the mean ensemble.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "last_value"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.05,
+  "scale": 0.05,
+  "group_by": "all"
+ }
+}
