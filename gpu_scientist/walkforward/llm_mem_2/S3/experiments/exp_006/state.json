@@ -1,0 +1,476 @@
+{
+ "weights": {
+  "afhubbard.hyperscaler_spot.A100_40GB.spot.median|h1": {
+   "drift": 0.9999999993457273,
+   "leader": 6.542727194562962e-10
+  },
+  "afhubbard.hyperscaler_spot.A100_40GB.spot.median|h3": {
+   "drift": 0.994935443185093,
+   "leader": 0.005064556814907064
+  },
+  "afhubbard.hyperscaler_spot.A100_40GB.spot.median|h7": {
+   "drift": 0.9999989298329417,
+   "leader": 1.070167058401827e-06
+  },
+  "afhubbard.hyperscaler_spot.A100_SXM_80GB.spot.median|h1": {
+   "drift": 0.9967189381062942,
+   "leader": 0.0032810618937057657
+  },
+  "afhubbard.hyperscaler_spot.A100_SXM_80GB.spot.median|h3": {
+   "drift": 5.496193974394613e-07,
+   "leader": 0.9999994503806026
+  },
+  "afhubbard.hyperscaler_spot.A100_SXM_80GB.spot.median|h7": {
+   "drift": 0.0037252987009097857,
+   "leader": 0.9962747012990901
+  },
+  "afhubbard.hyperscaler_spot.T4.spot.median|h1": {
+   "drift": 0.050324816441976256,
+   "leader": 0.9496751835580237
+  },
+  "afhubbard.hyperscaler_spot.T4.spot.median|h3": {
+   "drift": 0.019073909297545117,
+   "leader": 0.9809260907024548
+  },
+  "afhubbard.hyperscaler_spot.T4.spot.median|h7": {
+   "drift": 0.00044683379377940933,
+   "leader": 0.9995531662062207
+  },
+  "afhubbard.hyperscaler_spot.V100.spot.median|h1": {
+   "drift": 0.9994193328948224,
+   "leader": 0.0005806671051775905
+  },
+  "afhubbard.hyperscaler_spot.V100.spot.median|h3": {
+   "drift": 1.6054095724109655e-10,
+   "leader": 0.9999999998394591
+  },
+  "afhubbard.hyperscaler_spot.V100.spot.median|h7": {
+   "drift": 7.776547832896235e-12,
+   "leader": 0.9999999999922234
+  },
+  "gpurentalprices.marketplace_ask.H100_80GB.spot.median|h1": {
+   "drift": 1.58806412517217e-07,
+   "leader": 0.9999998411935875
+  },
+  "gpurentalprices.marketplace_ask.H100_80GB.spot.median|h3": {
+   "drift": 0.9999986341949403,
+   "leader": 1.365805059720652e-06
+  },
+  "gpurentalprices.marketplace_ask.H100_80GB.spot.median|h7": {
+   "drift": 1.6220507118656269e-34,
+   "leader": 1.0
+  },
+  "gpurentalprices.neocloud_rate_card.A100_40GB.on_demand.median|h1": {
+   "drift": 0.48231541887761076,
+   "leader": 0.5176845811223892
+  },
+  "gpurentalprices.neocloud_rate_card.A100_40GB.on_demand.median|h3": {
+   "drift": 0.013038315622030157,
+   "leader": 0.9869616843779698
+  },
+  "gpurentalprices.neocloud_rate_card.A100_40GB.on_demand.median|h7": {
+   "drift": 0.004003048686324243,
+   "leader": 0.9959969513136757
+  },
+  "gpurentalprices.neocloud_rate_card.A100_SXM_80GB.on_demand.median|h1": {
+   "drift": 0.009457955574514666,
+   "leader": 0.9905420444254853
+  },
+  "gpurentalprices.neocloud_rate_card.A100_SXM_80GB.on_demand.median|h3": {
+   "drift": 0.0060473652266254735,
+   "leader": 0.9939526347733745
+  },
+  "gpurentalprices.neocloud_rate_card.A100_SXM_80GB.on_demand.median|h7": {
+   "drift": 0.0009691571967595585,
+   "leader": 0.9990308428032405
+  },
+  "gpurentalprices.neocloud_rate_card.B200.on_demand.median|h1": {
+   "drift": 0.4176690029830048,
+   "leader": 0.5823309970169951
+  },
+  "gpurentalprices.neocloud_rate_card.B200.on_demand.median|h3": {
+   "drift": 0.001575811336500988,
+   "leader": 0.998424188663499
+  },
+  "gpurentalprices.neocloud_rate_card.B200.on_demand.median|h7": {
+   "drift": 1.9227134767506054e-05,
+   "leader": 0.9999807728652325
+  },
+  "gpurentalprices.neocloud_rate_card.B300.on_demand.median|h1": {
+   "drift": 0.4120540779983506,
+   "leader": 0.5879459220016494
+  },
+  "gpurentalprices.neocloud_rate_card.B300.on_demand.median|h3": {
+   "drift": 0.35023382374611883,
+   "leader": 0.6497661762538812
+  },
+  "gpurentalprices.neocloud_rate_card.B300.on_demand.median|h7": {
+   "drift": 0.526185401059683,
+   "leader": 0.4738145989403171
+  },
+  "gpurentalprices.neocloud_rate_card.H100_80GB.on_demand.median|h1": {
+   "drift": 0.4371632799021194,
+   "leader": 0.5628367200978807
+  },
+  "gpurentalprices.neocloud_rate_card.H100_80GB.on_demand.median|h3": {
+   "drift": 0.36589579593589,
+   "leader": 0.63410420406411
+  },
+  "gpurentalprices.neocloud_rate_card.H100_80GB.on_demand.median|h7": {
+   "drift": 0.27742151072321186,
+   "leader": 0.7225784892767881
+  },
+  "gpurentalprices.neocloud_rate_card.H100_SXM_80GB.on_demand.median|h1": {
+   "drift": 0.04788832427862057,
+   "leader": 0.9521116757213793
+  },
+  "gpurentalprices.neocloud_rate_card.H100_SXM_80GB.on_demand.median|h3": {
+   "drift": 0.002217333106713609,
+   "leader": 0.9977826668932863
+  },
+  "gpurentalprices.neocloud_rate_card.H100_SXM_80GB.on_demand.median|h7": {
+   "drift": 0.0007820345883239096,
+   "leader": 0.9992179654116762
+  },
+  "gpurentalprices.neocloud_rate_card.H200.on_demand.median|h1": {
+   "drift": 0.5584992965840068,
+   "leader": 0.44150070341599323
+  },
+  "gpurentalprices.neocloud_rate_card.H200.on_demand.median|h3": {
+   "drift": 0.004046030465289329,
+   "leader": 0.9959539695347107
+  },
+  "gpurentalprices.neocloud_rate_card.H200.on_demand.median|h7": {
+   "drift": 0.00020069360443058528,
+   "leader": 0.9997993063955694
+  },
+  "gpurentalprices.neocloud_rate_card.L4.on_demand.median|h1": {
+   "drift": 0.37672027120357376,
+   "leader": 0.6232797287964261
+  },
+  "gpurentalprices.neocloud_rate_card.L4.on_demand.median|h3": {
+   "drift": 0.28730434050910975,
+   "leader": 0.7126956594908902
+  },
+  "gpurentalprices.neocloud_rate_card.L4.on_demand.median|h7": {
+   "drift": 0.20881666188798176,
+   "leader": 0.7911833381120182
+  },
+  "gpurentalprices.neocloud_rate_card.L40S.on_demand.median|h1": {
+   "drift": 0.1377428593731666,
+   "leader": 0.8622571406268335
+  },
+  "gpurentalprices.neocloud_rate_card.L40S.on_demand.median|h3": {
+   "drift": 0.08651935845299583,
+   "leader": 0.9134806415470041
+  },
+  "gpurentalprices.neocloud_rate_card.L40S.on_demand.median|h7": {
+   "drift": 0.12692027233990374,
+   "leader": 0.8730797276600962
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_6000_Ada.on_demand.median|h1": {
+   "drift": 6.037583952326411e-05,
+   "leader": 0.9999396241604767
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_6000_Ada.on_demand.median|h3": {
+   "drift": 1.8677814337469137e-08,
+   "leader": 0.9999999813221857
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_6000_Ada.on_demand.median|h7": {
+   "drift": 2.193867020017834e-15,
+   "leader": 0.9999999999999978
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_A6000.on_demand.median|h1": {
+   "drift": 0.00907361268979635,
+   "leader": 0.9909263873102037
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_A6000.on_demand.median|h3": {
+   "drift": 2.966154743863307e-06,
+   "leader": 0.9999970338452561
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_A6000.on_demand.median|h7": {
+   "drift": 3.600233147893473e-13,
+   "leader": 0.99999999999964
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_PRO_6000.on_demand.median|h1": {
+   "drift": 0.004615904089413625,
+   "leader": 0.9953840959105863
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_PRO_6000.on_demand.median|h3": {
+   "drift": 9.595864400938234e-05,
+   "leader": 0.9999040413559906
+  },
+  "gpurentalprices.neocloud_rate_card.RTX_PRO_6000.on_demand.median|h7": {
+   "drift": 4.314115186993671e-06,
+   "leader": 0.999995685884813
+  },
+  "fastgpu_daily.hyperscaler_spot.A100_80GB.spot.median|h1": {
+   "drift": 9.002683901513673e-05,
+   "leader": 0.9999099731609848
+  },
+  "fastgpu_daily.hyperscaler_spot.A100_80GB.spot.median|h3": {
+   "drift": 5.4092677683487955e-06,
+   "leader": 0.9999945907322316
+  },
+  "fastgpu_daily.hyperscaler_spot.A100_80GB.spot.median|h7": {
+   "drift": 2.2665649493948564e-12,
+   "leader": 0.9999999999977335
+  },
+  "fastgpu_daily.hyperscaler_spot.T4.spot.median|h1": {
+   "drift": 8.75593796922305e-05,
+   "leader": 0.9999124406203078
+  },
+  "fastgpu_daily.hyperscaler_spot.T4.spot.median|h3": {
+   "drift": 1.522830999062549e-12,
+   "leader": 0.9999999999984771
+  },
+  "fastgpu_daily.hyperscaler_spot.T4.spot.median|h7": {
+   "drift": 4.3376735107654983e-07,
+   "leader": 0.999999566232649
+  },
+  "fastgpu_daily.neocloud_rate_card.A100_40GB.on_demand.median|h1": {
+   "drift": 0.05948899649405997,
+   "leader": 0.9405110035059401
+  },
+  "fastgpu_daily.neocloud_rate_card.A100_40GB.on_demand.median|h3": {
+   "drift": 0.06936966851238459,
+   "leader": 0.9306303314876153
+  },
+  "fastgpu_daily.neocloud_rate_card.A100_40GB.on_demand.median|h7": {
+   "drift": 0.0034917461440943354,
+   "leader": 0.9965082538559057
+  },
+  "fastgpu_daily.neocloud_rate_card.A100_80GB.on_demand.median|h1": {
+   "drift": 0.10612005307373597,
+   "leader": 0.8938799469262639
+  },
+  "fastgpu_daily.neocloud_rate_card.A100_80GB.on_demand.median|h3": {
+   "drift": 0.0009277151990393407,
+   "leader": 0.9990722848009607
+  },
+  "fastgpu_daily.neocloud_rate_card.A100_80GB.on_demand.median|h7": {
+   "drift": 9.030339225096391e-07,
+   "leader": 0.9999990969660775
+  },
+  "fastgpu_daily.neocloud_rate_card.B200.on_demand.median|h1": {
+   "drift": 0.004426825598582644,
+   "leader": 0.9955731744014173
+  },
+  "fastgpu_daily.neocloud_rate_card.B200.on_demand.median|h3": {
+   "drift": 8.496590121699756e-06,
+   "leader": 0.9999915034098782
+  },
+  "fastgpu_daily.neocloud_rate_card.B200.on_demand.median|h7": {
+   "drift": 6.899209595247321e-08,
+   "leader": 0.9999999310079041
+  },
+  "fastgpu_daily.neocloud_rate_card.B300.on_demand.median|h1": {
+   "drift": 0.0036623488302275,
+   "leader": 0.9963376511697725
+  },
+  "fastgpu_daily.neocloud_rate_card.B300.on_demand.median|h3": {
+   "drift": 4.6820745676046196e-07,
+   "leader": 0.9999995317925433
+  },
+  "fastgpu_daily.neocloud_rate_card.B300.on_demand.median|h7": {
+   "drift": 2.3667255256915066e-11,
+   "leader": 0.9999999999763327
+  },
+  "fastgpu_daily.neocloud_rate_card.H100_PCIe_80GB.on_demand.median|h1": {
+   "drift": 0.9992046855769879,
+   "leader": 0.0007953144230121308
+  },
+  "fastgpu_daily.neocloud_rate_card.H100_PCIe_80GB.on_demand.median|h3": {
+   "drift": 0.009004235290929257,
+   "leader": 0.9909957647090708
+  },
+  "fastgpu_daily.neocloud_rate_card.H100_PCIe_80GB.on_demand.median|h7": {
+   "drift": 1.52929211813439e-11,
+   "leader": 0.9999999999847071
+  },
+  "fastgpu_daily.neocloud_rate_card.H100_SXM_80GB.on_demand.median|h1": {
+   "drift": 0.46630715973386055,
+   "leader": 0.5336928402661395
+  },
+  "fastgpu_daily.neocloud_rate_card.H100_SXM_80GB.on_demand.median|h3": {
+   "drift": 0.18461143686951106,
+   "leader": 0.8153885631304889
+  },
+  "fastgpu_daily.neocloud_rate_card.H100_SXM_80GB.on_demand.median|h7": {
+   "drift": 0.007948206988981018,
+   "leader": 0.9920517930110191
+  },
+  "fastgpu_daily.neocloud_rate_card.H200.on_demand.median|h1": {
+   "drift": 0.1213443155271577,
+   "leader": 0.8786556844728424
+  },
+  "fastgpu_daily.neocloud_rate_card.H200.on_demand.median|h3": {
+   "drift": 0.0031448406653019545,
+   "leader": 0.996855159334698
+  },
+  "fastgpu_daily.neocloud_rate_card.H200.on_demand.median|h7": {
+   "drift": 0.0018587056207153086,
+   "leader": 0.9981412943792848
+  },
+  "fastgpu_daily.neocloud_rate_card.L40S.on_demand.median|h1": {
+   "drift": 0.006152723632569061,
+   "leader": 0.993847276367431
+  },
+  "fastgpu_daily.neocloud_rate_card.L40S.on_demand.median|h3": {
+   "drift": 2.768586609302056e-06,
+   "leader": 0.9999972314133907
+  },
+  "fastgpu_daily.neocloud_rate_card.L40S.on_demand.median|h7": {
+   "drift": 5.444479132074561e-08,
+   "leader": 0.9999999455552087
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_6000_Ada.on_demand.median|h1": {
+   "drift": 0.1547179626478251,
+   "leader": 0.8452820373521749
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_6000_Ada.on_demand.median|h3": {
+   "drift": 0.04829666995234279,
+   "leader": 0.9517033300476573
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_6000_Ada.on_demand.median|h7": {
+   "drift": 0.0036077032538587937,
+   "leader": 0.9963922967461413
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_A6000.on_demand.median|h1": {
+   "drift": 0.037053196896146785,
+   "leader": 0.9629468031038533
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_A6000.on_demand.median|h3": {
+   "drift": 3.0192847929198358e-06,
+   "leader": 0.999996980715207
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_A6000.on_demand.median|h7": {
+   "drift": 5.006723210074878e-11,
+   "leader": 0.9999999999499327
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_PRO_6000.on_demand.median|h1": {
+   "drift": 0.002977522467439759,
+   "leader": 0.9970224775325603
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_PRO_6000.on_demand.median|h3": {
+   "drift": 3.7308007992998314e-06,
+   "leader": 0.9999962691992006
+  },
+  "fastgpu_daily.neocloud_rate_card.RTX_PRO_6000.on_demand.median|h7": {
+   "drift": 1.7169780434048037e-12,
+   "leader": 0.999999999998283
+  },
+  "fastgpu_daily.neocloud_spot.A100_80GB.spot.median|h1": {
+   "drift": 0.5,
+   "leader": 0.5
+  },
+  "fastgpu_daily.neocloud_spot.A100_80GB.spot.median|h3": {
+   "drift": 0.5,
+   "leader": 0.5
+  },
+  "fastgpu_daily.neocloud_spot.A100_80GB.spot.median|h7": {
+   "drift": 0.5,
+   "leader": 0.5
+  },
+  "fastgpu_daily.neocloud_spot.B200.spot.median|h1": {
+   "drift": 0.023553809487225363,
+   "leader": 0.9764461905127746
+  },
+  "fastgpu_daily.neocloud_spot.B200.spot.median|h3": {
+   "drift": 0.00019085597376339961,
+   "leader": 0.9998091440262367
+  },
+  "fastgpu_daily.neocloud_spot.B200.spot.median|h7": {
+   "drift": 0.001730879773907556,
+   "leader": 0.9982691202260925
+  },
+  "fastgpu_daily.neocloud_spot.B300.spot.median|h1": {
+   "drift": 0.02908781477926059,
+   "leader": 0.9709121852207394
+  },
+  "fastgpu_daily.neocloud_spot.B300.spot.median|h3": {
+   "drift": 3.069567138121401e-07,
+   "leader": 0.9999996930432862
+  },
+  "fastgpu_daily.neocloud_spot.B300.spot.median|h7": {
+   "drift": 1.2703981656862143e-10,
+   "leader": 0.9999999998729602
+  },
+  "fastgpu_daily.neocloud_spot.H100_SXM_80GB.spot.median|h1": {
+   "drift": 0.9341720743094968,
+   "leader": 0.06582792569050322
+  },
+  "fastgpu_daily.neocloud_spot.H100_SXM_80GB.spot.median|h3": {
+   "drift": 0.22304938905654398,
+   "leader": 0.7769506109434561
+  },
+  "fastgpu_daily.neocloud_spot.H100_SXM_80GB.spot.median|h7": {
+   "drift": 0.0007072949920943731,
+   "leader": 0.9992927050079056
+  },
+  "fastgpu_daily.neocloud_spot.H200.spot.median|h1": {
+   "drift": 0.08823043786364229,
+   "leader": 0.9117695621363577
+  },
+  "fastgpu_daily.neocloud_spot.H200.spot.median|h3": {
+   "drift": 0.00013105844497942197,
+   "leader": 0.9998689415550205
+  },
+  "fastgpu_daily.neocloud_spot.H200.spot.median|h7": {
+   "drift": 8.787011749331606e-08,
+   "leader": 0.9999999121298826
+  },
+  "fastgpu_daily.neocloud_spot.L40S.spot.median|h1": {
+   "drift": 8.791531547619177e-06,
+   "leader": 0.9999912084684524
+  },
+  "fastgpu_daily.neocloud_spot.L40S.spot.median|h3": {
+   "drift": 1.606007070219579e-08,
+   "leader": 0.9999999839399293
+  },
+  "fastgpu_daily.neocloud_spot.L40S.spot.median|h7": {
+   "drift": 9.866627270512578e-14,
+   "leader": 0.9999999999999013
+  },
+  "fastgpu_daily.neocloud_spot.RTX_PRO_6000.spot.median|h1": {
+   "drift": 0.22571698268258597,
+   "leader": 0.7742830173174141
+  },
+  "fastgpu_daily.neocloud_spot.RTX_PRO_6000.spot.median|h3": {
+   "drift": 0.012300805772067526,
+   "leader": 0.9876991942279324
+  },
+  "fastgpu_daily.neocloud_spot.RTX_PRO_6000.spot.median|h7": {
+   "drift": 1.6510333599160287e-10,
+   "leader": 0.9999999998348967
+  }
+ },
+ "calibration_up": {
+  "hyperscaler_spot|h1": 0.0029999999999999133,
+  "hyperscaler_spot|h3": -0.001000000000000098,
+  "hyperscaler_spot|h7": -0.014000000000000075,
+  "marketplace_ask|h1": 0.0069999999999999785,
+  "marketplace_ask|h3": 0.002999999999999986,
+  "marketplace_ask|h7": 0.009999999999999983,
+  "neocloud_rate_card|h1": 0.020999999999999814,
+  "neocloud_rate_card|h3": -0.006000000000000167,
+  "neocloud_rate_card|h7": -1.0755285551056204e-16,
+  "neocloud_spot|h1": 0.003999999999999948,
+  "neocloud_spot|h3": 0.0009999999999999575,
+  "neocloud_spot|h7": 0.07000000000000003
+ },
+ "calibration_dn": {
+  "hyperscaler_spot|h1": 0.017999999999999933,
+  "hyperscaler_spot|h3": 0.04399999999999994,
+  "hyperscaler_spot|h7": 0.045999999999999985,
+  "marketplace_ask|h1": -0.003000000000000001,
+  "marketplace_ask|h3": -0.02700000000000002,
+  "marketplace_ask|h7": -0.030000000000000023,
+  "neocloud_rate_card|h1": -0.06900000000000016,
+  "neocloud_rate_card|h3": 0.08399999999999978,
+  "neocloud_rate_card|h7": 0.03499999999999982,
+  "neocloud_spot|h1": -0.09100000000000008,
+  "neocloud_spot|h3": -0.06400000000000007,
+  "neocloud_spot|h7": -0.06000000000000008
+ }
+}

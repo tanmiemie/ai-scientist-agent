@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is low at 0.456 (target 0.80); truth is above q90 in 42% and below q10 in 13% (should be 10% each if calibrated). Skill: dev 0.0697, geomean 0.0606. Best groups are fastgpu_daily|neocloud_spot (skill 0.008) and fastgpu_daily|hyperscaler_spot (0.001). -> Calibrating the drift model using online interval correction (gamma=0.5, scale=0.01, default group_by=instrument_class) will increase coverage closer to the 0.80 target, reduce probabilities of truth above q90/below q10 toward 10%, with only a small increase in pinball loss. Change: Enable interval calibration using gamma 0.5 and scale 0.01, per instrument_class.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

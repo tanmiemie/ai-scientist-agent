@@ -1,0 +1,52 @@
+{
+ "id": "exp_001",
+ "spec": {
+  "_hypothesis": "Overall skill 0.0474; coverage_in 0.454958; coverage_above_q90 0.420515; coverage_below_q10 0.124527. The interval coverage is far too low (should target 0.80), and is under-dispersed at both tails. By horizon: coverage at 1d is only 0.32, at 3d is 0.475, at 7d is 0.601 -- all much too low. The mean_log_err_q50 is near zero, so there's not a big median bias; the core problem is narrow intervals. By group, only fastgpu_daily|hyperscaler_spot and afhubbard|hyperscaler_spot are significantly off in skill, but coverage is bad everywhere. -> Enabling interval calibration (default gamma=0.5, scale=0.01, grouped by instrument_class) will widen intervals and push coverage closer to the 0.80 target, reducing skill due to increased average pinball loss, but addressing the most pressing issue: gross undercoverage. Change: Enable calibration with default gamma=0.5, scale=0.01, group_by=instrument_class.",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.16315,
+  "skill_median_of_series": 0.11176,
+  "skill_geomean": 0.066227,
+  "coverage_in": 0.789553,
+  "coverage_above_q90": 0.118849,
+  "coverage_below_q10": 0.091597,
+  "share_series_positive": 0.722222,
+  "by_horizon": {
+   "1": 0.057227,
+   "3": 0.0512,
+   "7": 0.240616
+  },
+  "n_cells": 2642,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.230443,
+  "skill_median_of_series": 0.239894,
+  "skill_geomean": 0.064013,
+  "coverage_in": 0.846924,
+  "coverage_above_q90": 0.067239,
+  "coverage_below_q10": 0.085837,
+  "share_series_positive": 0.727273,
+  "by_horizon": {
+   "1": 0.158942,
+   "3": 0.27372,
+   "7": 0.2236
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

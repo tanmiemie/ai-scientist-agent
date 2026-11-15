@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "In the champion, calibration is grouped by source_class. For groups like afhubbard|hyperscaler_spot (n=384, skill=0.117, above_q90=0.06, below_q10=0.06), both coverage tails are too low. For fastgpu_daily|hyperscaler_spot (n=180, above_q90=0.133, below_q10=0.294), below_q10 is much too high. -> Calibrating by a finer grouping could adapt intervals to distinctive error/coverage patterns by series_id, fixing severe under- or over-coverage found in small groups like fastgpu_daily|hyperscaler_spot (coverage below q10 is 0.294 instead of near 0.10). Change: Set calibrate.group_by to series_id instead of source_class.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

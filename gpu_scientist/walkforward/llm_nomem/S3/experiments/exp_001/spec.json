@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Overall coverage_in is 0.456 (much too low; target is 0.80), with extreme quantile coverage also far off (q90: 0.418, q10: 0.126). -> Adding calibration with a moderate step size will increase interval width and coverage, improving coverage_in, above_q90, and below_q10 toward the target (0.80, 0.10, 0.10) with minimal sacrifice to skill except in already well-covered groups. Change: Enable calibration (gamma 0.5, scale 0.01; the default product) grouped by instrument_class.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

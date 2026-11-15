@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage by horizon is low at 1d (0.32), 3d (0.475), and 7d (0.601); overall coverage_in improved from 0.45 to 0.79 with instrument_class calibration. Previous exp_002 using gpu_model for group_by overfit (coverage_in dropped to 0.702); exp_003 with group_by source_class also caused a slight dev coverage drop (0.763) and failed holdout. Strength of calibration is still at gamma=0.5, scale=0.01 (product: 0.005). -> The champion's calibration (gamma=0.5, scale=0.01 = 0.005) increased interval width enough to reach coverage targets, but may be slightly too aggressive, as skill_pooled is moderately high. Reducing calibration strength (gamma=0.25, scale=0.01 = 0.0025) by half, while keeping group_by = instrument_class, should tighten intervals and improve skill_pooled with minimal loss in coverage, especially at longer horizons where intervals may now be wider than required. Change: Reduce calibrate.gamma from 0.5 to 0.25 (scale fixed at 0.01)",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "The champion achieves 0.1631 pooled skill with 0.79 coverage, via empirical-drift and calibration by instrument_class. But among base model skills by group, drift performs poorly (e.g., -0.03 and ~0 on fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot, respectively). The diagnosis shows strong leading signals (e.g., for fastgpu_daily.neocloud_spot.B200.spot.median, gpurentalprices.neocloud_rate_card.B200.serverless.median at lag=3, corr=-0.97). The leader model, which can use cross-collector signals, is missing. -> Adding a leader model will improve skill for series that have strong leaders (esp. fastgpu and gpurentalprices neocloud series with high lagged correlations), without materially harming coverage, since calibration remains enabled. Combining drift and leader with a simple mean will allow learning from both sources. Change: Add leader model alongside drift; combine by mean.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

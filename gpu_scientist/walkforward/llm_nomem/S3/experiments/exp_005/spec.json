@@ -1,0 +1,22 @@
+{
+ "_hypothesis": "Coverage for fastgpu_daily|hyperscaler_spot is too wide (above_q90=13.3%, below_q10=29.4%), skill is weak (0.147), and mean_log_err shows mild down-bias (-0.018). This is the only group with major over-coverage and high percent below q10; by base model skill, drift is not working (0.001 skill). -> Drift fails for fastgpu_daily|hyperscaler_spot due to lack of reversion and potentially sudden spot price jumps. Including step_hazard in a hedge ensemble will allow faster adjustment to new jumps and likely cut excessive underestimation, raising skill and narrowing intervals for this group, without degrading others. Change: Add step_hazard to models and use hedge combine (eta=2.0, group_by=instrument_class).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "step_hazard"
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "instrument_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "id": "exp_002",
+ "spec": {
+  "_hypothesis": "Coverage in afhubbard|hyperscaler_spot is 0.06 above q90 and 0.049 below q10 (too narrow), while coverage in fastgpu_daily|neocloud_rate_card is 0.095 above q90 and 0.112 below q10 (slightly wide). -> Calibrating by source_class instead of instrument_class will better capture calibration differences like the undercoverage in afhubbard|hyperscaler_spot and the slight overcoverage in fastgpu_daily|neocloud_rate_card. This could improve interval coverage uniformity across groups and slightly reduce over/under coverage deviations. Change: Change calibrate.group_by from instrument_class to source_class.",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.18236,
+  "skill_median_of_series": 0.159148,
+  "skill_geomean": 0.11649,
+  "coverage_in": 0.7824,
+  "coverage_above_q90": 0.123616,
+  "coverage_below_q10": 0.093984,
+  "share_series_positive": 0.805556,
+  "by_horizon": {
+   "1": 0.093389,
+   "3": 0.147635,
+   "7": 0.218639
+  },
+  "n_cells": 3341,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.107343,
+  "skill_median_of_series": 0.225661,
+  "skill_geomean": 0.161869,
+  "coverage_in": 0.719599,
+  "coverage_above_q90": 0.085837,
+  "coverage_below_q10": 0.194564,
+  "share_series_positive": 0.727273,
+  "by_horizon": {
+   "1": 0.123141,
+   "3": 0.058246,
+   "7": 0.12785
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

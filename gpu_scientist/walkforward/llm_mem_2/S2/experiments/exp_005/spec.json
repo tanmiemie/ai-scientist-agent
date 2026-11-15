@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "champion calibrate.group_by=instrument_class obtains coverage_in 0.790 (dev). Exp_002 (gpu_model) and exp_003 (source_class) overfit: both raised skill but dropped coverage below target (to 0.702/0.763). Exp_004 reduced gamma to 0.25 (same group) and slightly boosted skill, but also reduced coverage below the target (0.758). Champion's coverage is closest to ideal, but the skill is not highest among available models. -> The 'composition' model outperformed 'drift' in all but the smallest groups when examined as a base model (dev skill: drift 0.073 vs composition 0.101 in gpurentalprices|neocloud_rate_card; drift 0.023 vs composition 0.074 in fastgpu_daily|neocloud_rate_card, etc.). Using 'composition' in place of 'drift' in the champion pipeline (calibrate by instrument_class) should raise skill_pooled, potentially above 0.17 (from 0.163), while keeping coverage near 0.79. Change: Replace the model in the champion pipeline: use 'composition' (window=60, all defaults) instead of 'drift'. Keep calibrate settings fixed (enabled: true, group_by: instrument_class, gamma: 0.5, scale: 0.01).",
+ "models": [
+  {
+   "name": "composition",
+   "params": {
+    "window": 60,
+    "k_up": 1.0,
+    "k_dn": 1.0,
+    "floor": 1.0,
+    "k": 1,
+    "beta": 0.25,
+    "rho": 0.3,
+    "thresh": 0.05,
+    "k_rev": 3
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

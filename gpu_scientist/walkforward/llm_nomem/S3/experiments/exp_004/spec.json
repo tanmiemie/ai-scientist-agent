@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage for fastgpu_daily|hyperscaler_spot is poor: above_q90=0.133, below_q10=0.294 (should be \u22480.10 each). Mean_log_err_q50 is slightly negative (-0.018), suggesting slight downward bias in medians for this group. -> Changing calibration group_by from source_class to all will enable the online calibration to better correct the coverage issue for the small 'fastgpu_daily|hyperscaler_spot' group, reducing excess below-q10 coverage (from 0.294 to near 0.10) and slightly improving skill for this group, without harming well-calibrated groups. Change: Set calibrate.group_by from source_class to all",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "all"
+ }
+}

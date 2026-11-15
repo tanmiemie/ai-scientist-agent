@@ -1,0 +1,33 @@
+{
+ "_hypothesis": "dev skill for fastgpu_daily|neocloud_spot (0.235) and fastgpu_daily|neocloud_rate_card (0.196) is much worse than afhubbard|hyperscaler_spot (0.024); in both, drift alone is very poor on its own (0.008 and 0.05), while leader does much better (0.25 and 0.166). -> Replacing drift with the momentum model (uses price directionality and is similar but more responsive than drift) should improve ensemble skill in the fastgpu_daily subgroups, especially for 'neocloud_spot' and 'neocloud_rate_card', as these show high episodic jumps and outperforming leader models. Change: Switch drift for momentum as first model (momentum default params); keep leader and rest unchanged.",
+ "models": [
+  {
+   "name": "momentum",
+   "params": {
+    "window": 60,
+    "k_up": 1.0,
+    "k_dn": 1.0,
+    "floor": 1.0,
+    "k": 1,
+    "beta": 0.5
+   }
+  },
+  {
+   "name": "leader",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "beta": 1.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

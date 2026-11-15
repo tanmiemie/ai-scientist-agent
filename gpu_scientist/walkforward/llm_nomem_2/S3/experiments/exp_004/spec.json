@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "coverage for fastgpu_daily|neocloud_rate_card is 0.095 above q90, 0.112 below q10 (target 0.10 each); mean_log_err_q50 is 0.004; skill is 0.19 (worst among all major groups except fastgpu_daily|neocloud_spot). -> Calibration by instrument_class is not correcting miscalibration in fastgpu_daily|neocloud_rate_card, which has low skill and slightly underwide intervals. Calibrating separately by source_id (enabling finer-grained correction) will increase interval coverage toward target and may slightly improve skill. Change: Change calibrate.group_by from instrument_class to source_id.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_id"
+ }
+}

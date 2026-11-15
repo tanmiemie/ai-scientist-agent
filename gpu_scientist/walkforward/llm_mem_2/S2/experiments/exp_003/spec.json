@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration is by instrument_class (champion), but gpu_model grouping (exp_002) overfit: skill_pooled rose 0.021 to 0.1841 but coverage_in fell by 0.087 to 0.702. -> Calibrating by source_class, instead of instrument_class, may sidestep overfitting seen with gpu_model while still improving coverage calibration for classes such as neocloud_rate_card (where above_q90=0.135, below_q10=0.069) and hyperscaler_spot (where both tails are too low). Stronger calibration at a coarser but relevant class may produce more consistent 80% coverage across source classes, ideally without overshrinking intervals. Change: Change calibrate.group_by from 'instrument_class' to 'source_class'.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

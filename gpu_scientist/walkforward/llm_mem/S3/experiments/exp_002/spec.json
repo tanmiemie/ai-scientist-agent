@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "The champion's coverage is very close to target (0.8016 vs 0.80) with nearly perfect quantile calibration (above_q90: 0.1081, below_q10: 0.0904) and most groups are near 0.10 as desired. However, skill is much worse on longer horizons: skill is 0.082 at horizon 1, 0.104 at 3, and 0.237 at 7. Series with many days since the last change (>30 days: skill -0.008), or in buckets 'fastgpu_daily|neocloud_spot' (0.239), are notably weak. Meanwhile, the champion uses instrument_class for calibration grouping. All drift weights are 1, so grouping doesn't affect model averaging, but should affect calibration.  -> Grouping calibration by series_id instead of instrument_class will allow finer-grained interval correction, benefiting the weak 'worst series' (e.g., those with skill < 0) and series where mean log error bias persists. Most impact should be on series like fastgpu_daily.neocloud_rate_card.H100_SXM_80GB.on_demand.median (skill -0.901), but overall pooled metrics might stay similar due to small n. Change: Change calibrate.group_by from instrument_class to series_id",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

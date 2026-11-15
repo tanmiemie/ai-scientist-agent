@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "By horizon: skill for 7d is 0.237 (much worse than 1d: 0.082, 3d: 0.104). By series: 'afhubbard|hyperscaler_spot' is much better (0.049) than others; its coverage is low for q10/q90. By dsc_bucket: worst skill for recent price changes (0-1d: 0.222, >30d: -0.008). -> The calibration step size may be too slow to correct for systematic bias especially for faster-changing groups and long horizons (e.g., 7d skill and coverage lag behind). Increasing scale from 0.01 to 0.02, holding gamma fixed, should accelerate coverage correction (up to boundary of overfitting), especially for groups with rapid changes and longer horizons. Change: Increase calibrate.scale from 0.01 to 0.02 (gamma unchanged at 0.5).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.02,
+  "group_by": "instrument_class"
+ }
+}

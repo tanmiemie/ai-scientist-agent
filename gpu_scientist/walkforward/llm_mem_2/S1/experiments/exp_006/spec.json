@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration coverage is systematically too high in fastgpu_daily|hyperscaler_spot (above_q90 0.262, below_q10 0.202) and fastgpu_daily|neocloud_spot (above_q90 0.255, below_q10 0.163), yet the overall champion calibration is applied pool-wide. Previous attempts to increase wideness (gamma/scale) led to worse skill and did not substantially reduce the excess outlier coverage where most needed. Calibration group tuning is untried. -> Using calibration grouped by series_id will allow calibration to respond specifically to the worst over/undercalibrated series (like fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot), yielding better coverage for those series (closer to 0.10 at q90/q10) without widening intervals for already well-calibrated series, thus improving pooled skill or reducing coverage misses. Change: Set calibrate.group_by to series_id (previously not set, so defaulted to instrument_class); all other champion settings unchanged.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.3,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

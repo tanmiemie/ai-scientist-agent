@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Champion coverage_in = 0.758 (target 0.80). Coverage_above_q90 at 0.1516 and below_q10 at 0.09 indicate mild miscalibration, slightly underconfident in the upper tail. Drift model alone, calibrated per instrument_class, dominates every group (mean ensemble weight = 1 everywhere). -> Lowering calibrate.gamma from 0.5 to 0.25 (with scale = 0.01) will tighten interval adaptation, reducing overshooting in the tail coverage (above_q90 and below_q10), and increase overall coverage closer to the 0.80 target, particularly in groups where coverage_above_q90 exceeds 0.15. Change: Set calibrate.gamma to 0.25 (from 0.5) in otherwise unchanged champion spec.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

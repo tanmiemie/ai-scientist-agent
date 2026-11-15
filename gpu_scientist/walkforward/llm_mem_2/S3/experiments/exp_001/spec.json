@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is too low (overall 0.456; q90=0.418, q10=0.126), far from the target 0.80. All series use drift only, and over-confident tails are evident across nearly every group and horizon (esp. q90 coverage: 0.332 at 1d, 0.494 at 7d vs 0.90 desired). -> Enabling interval calibration with a small but nonzero update should increase the tail coverage (especially above q90), helping to approach the 0.80 target, with minimal risk of degrading point or median skill. Calibration should not harm the skill as long as adjustments are moderate. Change: Enable online calibration with gamma=0.5, scale=0.01 (default: gamma*scale=0.005) and group_by=instrument_class (default).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

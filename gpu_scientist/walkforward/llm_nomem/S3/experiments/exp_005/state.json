@@ -1,0 +1,92 @@
+{
+ "weights": {
+  "hyperscaler_spot|h1": {
+   "drift": 4.885066451320847e-10,
+   "step_hazard": 0.9999999995114933
+  },
+  "hyperscaler_spot|h3": {
+   "drift": 7.318148636308762e-16,
+   "step_hazard": 0.9999999999999992
+  },
+  "hyperscaler_spot|h7": {
+   "drift": 2.891515394869596e-07,
+   "step_hazard": 0.9999997108484605
+  },
+  "marketplace_ask|h1": {
+   "drift": 2.5148039347622984e-07,
+   "step_hazard": 0.9999997485196066
+  },
+  "marketplace_ask|h3": {
+   "drift": 1.0,
+   "step_hazard": 8.501231198632682e-19
+  },
+  "marketplace_ask|h7": {
+   "drift": 5.447471078127944e-26,
+   "step_hazard": 1.0
+  },
+  "neocloud_rate_card|h1": {
+   "drift": 2.423980975248493e-21,
+   "step_hazard": 1.0
+  },
+  "neocloud_rate_card|h3": {
+   "drift": 3.706681632175981e-43,
+   "step_hazard": 1.0
+  },
+  "neocloud_rate_card|h7": {
+   "drift": 4.810348862216969e-103,
+   "step_hazard": 1.0
+  },
+  "neocloud_spot|h1": {
+   "drift": 9.783651884948431e-09,
+   "step_hazard": 0.9999999902163481
+  },
+  "neocloud_spot|h3": {
+   "drift": 6.742375819005876e-22,
+   "step_hazard": 1.0
+  },
+  "neocloud_spot|h7": {
+   "drift": 2.1189522019230485e-42,
+   "step_hazard": 1.0
+  }
+ },
+ "calibration_up": {
+  "afhubbard|hyperscaler_spot|h1": -0.0010000000000000698,
+  "afhubbard|hyperscaler_spot|h3": 0.0029999999999999532,
+  "afhubbard|hyperscaler_spot|h7": -0.01900000000000005,
+  "gpurentalprices|marketplace_ask|h1": 0.0019999999999999827,
+  "gpurentalprices|marketplace_ask|h3": 0.002999999999999986,
+  "gpurentalprices|marketplace_ask|h7": -1.734723475976807e-17,
+  "gpurentalprices|neocloud_rate_card|h1": -0.001000000000000128,
+  "gpurentalprices|neocloud_rate_card|h3": 0.03599999999999988,
+  "gpurentalprices|neocloud_rate_card|h7": 0.08499999999999996,
+  "fastgpu_daily|hyperscaler_spot|h1": 0.003999999999999991,
+  "fastgpu_daily|hyperscaler_spot|h3": 0.010999999999999984,
+  "fastgpu_daily|hyperscaler_spot|h7": 0.03,
+  "fastgpu_daily|neocloud_rate_card|h1": 0.016999999999999918,
+  "fastgpu_daily|neocloud_rate_card|h3": 0.0029999999999999376,
+  "fastgpu_daily|neocloud_rate_card|h7": 0.05500000000000002,
+  "fastgpu_daily|neocloud_spot|h1": 0.013999999999999947,
+  "fastgpu_daily|neocloud_spot|h3": 0.02099999999999996,
+  "fastgpu_daily|neocloud_spot|h7": 0.06500000000000003
+ },
+ "calibration_dn": {
+  "afhubbard|hyperscaler_spot|h1": -0.006000000000000042,
+  "afhubbard|hyperscaler_spot|h3": 0.0029999999999999237,
+  "afhubbard|hyperscaler_spot|h7": 0.030999999999999986,
+  "gpurentalprices|marketplace_ask|h1": -0.003000000000000001,
+  "gpurentalprices|marketplace_ask|h3": -0.03200000000000002,
+  "gpurentalprices|marketplace_ask|h7": -0.030000000000000023,
+  "gpurentalprices|neocloud_rate_card|h1": -0.02100000000000018,
+  "gpurentalprices|neocloud_rate_card|h3": 0.045999999999999805,
+  "gpurentalprices|neocloud_rate_card|h7": 0.03499999999999988,
+  "fastgpu_daily|hyperscaler_spot|h1": 0.01899999999999999,
+  "fastgpu_daily|hyperscaler_spot|h3": 0.06100000000000001,
+  "fastgpu_daily|hyperscaler_spot|h7": 0.08000000000000004,
+  "fastgpu_daily|neocloud_rate_card|h1": -0.013000000000000077,
+  "fastgpu_daily|neocloud_rate_card|h3": 0.05299999999999999,
+  "fastgpu_daily|neocloud_rate_card|h7": 0.06500000000000002,
+  "fastgpu_daily|neocloud_spot|h1": -0.1160000000000001,
+  "fastgpu_daily|neocloud_spot|h3": -0.03400000000000007,
+  "fastgpu_daily|neocloud_spot|h7": -0.010000000000000071
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "By 'series group': skill in 'afhubbard|hyperscaler_spot' is 0.053 (best), but 'fastgpu_daily|neocloud_spot' is 0.211 (worst) and 'gpurentalprices|neocloud_rate_card' is 0.169 but q10/q90 coverage is too wide/narrow in several groups. Further, coverage overall is slightly low (0.789 vs target 0.80), and gamma * scale = 0.005 (min step). Champion calibrates by instrument_class. -> Calibrating by 'series_id' instead of 'instrument_class' will allow finer-grained interval correction that may improve coverage (from 0.7895 up to or just above 0.80) and may help on series with negative skill by better adapting intervals to idiosyncratic volatility. Change: Change calibrate.group_by from 'instrument_class' to 'series_id'. All else (gamma/scale) the same.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

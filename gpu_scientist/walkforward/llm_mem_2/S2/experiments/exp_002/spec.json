@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage is now at 0.7896 (up from 0.45) using calibrate (gamma=0.5, scale=0.01, group_by=instrument_class) on drift, with skill_pooled up to 0.1631 from 0.0474. However, there are still signs of over-dispersed intervals on some instrument_class subgroups (e.g. gpurentalprices|neocloud_rate_card: coverage_below_q10=0.069, above_q90=0.135), while fastgpu_daily|hyperscaler_spot shows coverage_below_q10=0.138, above_q90=0.138. This suggests some calibration heterogeneity at finer granularity. By gpu_model may match the idiosyncrasy in series coverage more closely. -> Calibrating intervals by gpu_model (rather than instrument_class) will improve interval coverage for clusters that remain miscalibrated (e.g. gpurentalprices|neocloud_rate_card and fastgpu_daily|hyperscaler_spot), by accounting for hardware-specific variance, and may yield a small skill improvement (>0.005), without degrading pooled coverage. Change: Set calibrate.group_by to gpu_model (was instrument_class).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "gpu_model"
+ }
+}

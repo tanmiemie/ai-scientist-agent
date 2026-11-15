@@ -1,0 +1,51 @@
+{
+ "id": "exp_004",
+ "spec": {
+  "_hypothesis": "DEV overall coverage is 0.758 (vs target 0.80). Above q90 is 0.151 (should be 0.10), below q10 is 0.08998 (nearly right), and coverage is particularly too high for fastgpu_daily|hyperscaler_spot (above_q90 0.214, below_q10 0.179) and fastgpu_daily|neocloud_spot (above_q90 0.228, below_q10 0.163). Previous increase of calibration scale from 0.01 to 0.02 hurt skill, likely overcompensating. Default calibration gamma*scale=0.005; previous lesson is that nudging these parameters has impact. -> Current calibration is slightly too timid to push above q90 coverage (0.151, target 0.10) down while also improving overall coverage, especially in fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot. Reducing calibration step size (gamma from 0.5 to 0.3, keeping scale at 0.01) will apply corrections more gradually, potentially making the intervals less wide overall and bringing the upper tail in line, improving overfitting risk exhibited in exp_002. Change: Reduce calibration gamma from 0.5 to 0.3 (scale remains 0.01)",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.3,
+   "scale": 0.01
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.226413,
+  "skill_median_of_series": 0.174251,
+  "skill_geomean": -0.013613,
+  "coverage_in": 0.733092,
+  "coverage_above_q90": 0.175121,
+  "coverage_below_q10": 0.091787,
+  "share_series_positive": 0.722222,
+  "by_horizon": {
+   "1": 0.070143,
+   "3": 0.088893,
+   "7": 0.302809
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.156976,
+  "skill_median_of_series": 0.136339,
+  "skill_geomean": 0.044716,
+  "coverage_in": 0.827586,
+  "coverage_above_q90": 0.075051,
+  "coverage_below_q10": 0.097363,
+  "share_series_positive": 0.722222,
+  "by_horizon": {
+   "1": 0.084776,
+   "3": 0.078066,
+   "7": 0.231337
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}
