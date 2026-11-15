@@ -8,6 +8,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 export PYTHONDONTWRITEBYTECODE=1
 PY="${PYTHON:-python3}"
+"$PY" -c "import pandas, numpy, matplotlib, tabulate, duckdb" 2>/dev/null || {
+  echo "missing Python packages for $PY; run: $PY -m pip install duckdb pandas numpy pyarrow matplotlib tabulate" >&2; exit 1; }
 
 proposer=(--proposer heuristic)
 if [[ "${1:-}" == "--llm" ]]; then
