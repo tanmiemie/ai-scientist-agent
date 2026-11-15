@@ -1,0 +1,65 @@
+{
+ "id": "exp_008",
+ "spec": {
+  "_hypothesis": "DEVIN_NEXT.md task A: when the GetDeploying weekly median for the same GPU and pricing mode sits above our last value, our series tends to move up within 7 days, and vice versa. DEV EDA: Spearman(log gap, exp_007 residual) +0.11 overall, +0.17 at h=7. DEV sweep (scratch/dev_sweep_aggregator*.py): shifting all three quantiles lowered DEV in all 40 settings (the median must stay on the last value for step series); moving only the interval edge on the gap's side raised DEV; beta_agg=0.1, cap=0.1 is the best setting that raises all three DEV metrics (pooled, median, geomean).",
+  "models": [
+   {
+    "name": "aggregator",
+    "params": {
+     "window": 60,
+     "floor": 1.0,
+     "k": 1,
+     "beta": 0.25,
+     "rho": 0.0,
+     "signal": "gap",
+     "apply": "tail",
+     "beta_agg": 0.1,
+     "cap": 0.1,
+     "lag": 0,
+     "col": "median_usd_per_gpu_hour"
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.196402,
+  "skill_median_of_series": 0.185642,
+  "skill_geomean": 0.131984,
+  "coverage_in": 0.79269,
+  "coverage_above_q90": 0.112715,
+  "coverage_below_q10": 0.094595,
+  "share_series_positive": 0.833333,
+  "by_horizon": {
+   "1": 0.055719,
+   "3": 0.153975,
+   "7": 0.248438
+  },
+  "n_cells": 3256,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.102129,
+  "skill_median_of_series": 0.18033,
+  "skill_geomean": 0.065395,
+  "coverage_in": 0.762094,
+  "coverage_above_q90": 0.091451,
+  "coverage_below_q10": 0.146455,
+  "share_series_positive": 0.764706,
+  "by_horizon": {
+   "1": 0.047242,
+   "3": 0.103677,
+   "7": 0.113711
+  },
+  "n_cells": 1509,
+  "n_problems": 0
+ }
+}
