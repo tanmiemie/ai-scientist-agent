@@ -27,6 +27,7 @@ import config as C
 from report import _diff
 
 N_REVIEWS, KEEP_VOTES, TEMPERATURE = 5, 3, 0.1
+MAX_ATTEMPTS = 3  # per review: invalid replies are retried, never counted as votes
 ITEMS = {
     "leakage_risk": "the experiment could use information not available at the forecast origin "
                     "(future truth, later data vintages, HOLDOUT used for choices, look-ahead in features)",
@@ -67,10 +68,11 @@ def _forecast(exp_dir: Path, eid: str) -> pd.DataFrame | None:
     return None
 
 
-def _width(fc: pd.DataFrame | None, win) -> float | None:
-    if fc is None:
+def _width(fc: pd.DataFrame | None, origins) -> float | None:
+    """Mean log(q90/q10) over the origins the archived report was scored on (its own scope, not the current env)."""
+    if fc is None or not origins:
         return None
-    f = fc[fc.origin_date.between(*pd.to_datetime(list(win)))]
+    f = fc[fc.origin_date.isin(pd.to_datetime(list(origins)))]
     f = f[(f.q10 > 0) & (f.q90 > 0)]
     return round(float(np.log(f.q90 / f.q10).mean()), 5) if len(f) else None
 
@@ -113,9 +115,11 @@ def evidence(exp_dir: Path, eid: str) -> dict:
     base = (a.baseline_pinball * a.n_cells).groupby(a.group).sum()
     ev["dev_skill_by_group"] = {g: {"this": round(1 - grp.total[g] / base[g], 4),
                                     "champion": round(1 - grp.total_champ[g] / base[g], 4)} for g in grp.index}
+    fc_this, fc_champ = _forecast(exp_dir, eid), _forecast(exp_dir, champ["id"])
     ev["mean_log_interval_width_q90_over_q10"] = {
-        w: {"this": _width(_forecast(exp_dir, eid), o), "champion": _width(_forecast(exp_dir, champ["id"]), o)}
-        for w, o in (("dev", C.DEV_ORIGINS), ("holdout", C.HOLDOUT_ORIGINS))}
+        w: {"this": _width(fc_this, _report(exp_dir, eid, w)["scope"]["origins"]),
+            "champion": _width(fc_champ, _report(exp_dir, champ["id"], w)["scope"]["origins"])}
+        for w in ("dev", "holdout")}
     ev["rejected_earlier_in_ledger"] = [
         {"id": x["id"], "hypothesis": x["hypothesis"][:300], "lesson": (x.get("lesson") or x.get("reason") or "")[:300]}
         for x in recs[:recs.index(r)] if not x["accepted"]]
@@ -142,17 +146,40 @@ def _chat(provider: str, model: str, system: str, user: str) -> str:
 
 
 def _parse(txt: str) -> dict:
+    """Strict checklist parse; raises ValueError unless every item has a bool flag, str evidence, int severity 1-3."""
     m = re.search(r"\{.*\}", txt, re.S)
-    items = (json.loads(m.group(0)) if m else {}).get("items", {})
-    return {k: {"flag": bool(items.get(k, {}).get("flag", False)),
-                "evidence": str(items.get(k, {}).get("evidence", "")),
-                "severity": int(items.get(k, {}).get("severity", 1) or 1)} for k in ITEMS}
+    if not m:
+        raise ValueError("no JSON object in reply")
+    items = json.loads(m.group(0)).get("items")
+    if not isinstance(items, dict):
+        raise ValueError("missing 'items'")
+    out = {}
+    for k in ITEMS:
+        it = items.get(k)
+        if not isinstance(it, dict):
+            raise ValueError(f"missing item {k}")
+        flag, ev, sev = it.get("flag"), it.get("evidence"), it.get("severity")
+        if not isinstance(flag, bool) or not isinstance(ev, str) or isinstance(sev, bool) \
+                or not isinstance(sev, int) or not 1 <= sev <= 3:
+            raise ValueError(f"invalid item {k}: {it!r}"[:200])
+        out[k] = {"flag": flag, "evidence": ev, "severity": sev}
+    return out
+
+
+def _one_review(provider: str, model: str, user: str) -> dict:
+    err = None
+    for _ in range(MAX_ATTEMPTS):
+        try:
+            return _parse(_chat(provider, model, SYSTEM, user))
+        except (ValueError, json.JSONDecodeError) as e:
+            err = e
+    raise RuntimeError(f"no valid checklist after {MAX_ATTEMPTS} attempts: {err}")
 
 
 def review(exp_dir: Path, eid: str, provider: str, model: str) -> dict:
     ev = evidence(exp_dir, eid)
     user = "CHECKLIST:\n" + json.dumps(ITEMS, indent=1) + "\n\nEVIDENCE:\n" + json.dumps(ev, indent=1, default=str)
-    runs = [_parse(_chat(provider, model, SYSTEM, user)) for _ in range(N_REVIEWS)]
+    runs = [_one_review(provider, model, user) for _ in range(N_REVIEWS)]  # all 5 valid, or no review.json
     agg = {}
     for k in ITEMS:
         votes = [x[k] for x in runs if x[k]["flag"]]
