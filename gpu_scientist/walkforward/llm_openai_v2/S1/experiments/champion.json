@@ -1,0 +1,52 @@
+{
+ "id": "exp_003",
+ "spec": {
+  "_hypothesis": "Coverage overall is 0.76 (vs 0.80 target). By series group, afhubbard|hyperscaler_spot is worst (coverage above q90: 8.3%, below q10: 3.6%, truth above q50: 26%), with skill 0.066 (lowest positive among groups). This group consistently shows both narrow intervals and under-coverage. All groups use the same calibrate.group_by=instrument_class. Test finer calibration split for groups with systematic bias. -> Switching calibrate.group_by from instrument_class to source_class will improve coverage for groups with systematically under/over-dispersed intervals (e.g., afhubbard|hyperscaler_spot), as calibration will adapt interval width and median shift separately for each source_class. This directly addresses the clear under-coverage and bias seen in these groups. Change: Set calibrate.group_by to source_class (was instrument_class).",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.19798,
+  "skill_median_of_series": 0.142165,
+  "skill_geomean": -0.041305,
+  "coverage_in": 0.718599,
+  "coverage_above_q90": 0.184179,
+  "coverage_below_q10": 0.097222,
+  "share_series_positive": 0.694444,
+  "by_horizon": {
+   "1": 0.075422,
+   "3": 0.100023,
+   "7": 0.253657
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.148669,
+  "skill_median_of_series": 0.116546,
+  "skill_geomean": 0.030399,
+  "coverage_in": 0.838742,
+  "coverage_above_q90": 0.072008,
+  "coverage_below_q10": 0.089249,
+  "share_series_positive": 0.666667,
+  "by_horizon": {
+   "1": 0.061132,
+   "3": 0.120741,
+   "7": 0.196969
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}

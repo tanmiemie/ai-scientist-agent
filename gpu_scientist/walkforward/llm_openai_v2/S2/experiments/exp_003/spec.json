@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration improved overall dev skill (0.1631 vs 0.0474 uncalibrated) and coverage (0.79 vs 0.45), but diagnosis shows above_q90 is still consistently high in fastgpu_daily|neocloud_spot (0.161) and gpurentalprices|neocloud_rate_card (0.135), and coverage in the tails is not yet evenly distributed. Previous attempt at tighter grouping (calibration by series_id) led to overfitting and worsened skill/coverage. Current calibration uses scale=0.01 (smallest allowed). Gamma (calibration learning rate) is at moderate 0.5. Increasing it could make calibration react more quickly to systematic errors by group, potentially improving tail coverage just enough\u2014without the overfitting risk seen at series-level grouping, since grouping remains at instrument_class. -> Increasing calibrate.gamma to 1.0 (from 0.5) will allow the interval correction to adjust more responsively, closing the gap between actual and nominal tail coverages in persistent-miss groups (especially fastgpu_daily|neocloud_spot and gpurentalprices|neocloud_rate_card), without substantial skill loss since we avoid overfitting from series_id grouping. Change: Set calibrate.gamma to 1.0 (keeping group_by=instrument_class and scale=0.01 unchanged).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 1.0,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

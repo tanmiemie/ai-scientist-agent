@@ -102,3 +102,20 @@ Refused and wasted proposals
 - 3 accepted-by-validation specs were no-ops (identical DEV and GATE to 4 decimals): S1 exp_002 `calibrate.group_by=series_id` (the catalog meta has no `series_id` key, so `online.group_key` maps every series to `"None"`, i.e. one global group) and S3 exp_004 / exp_006 `combine.group_by` = source_class / source_id with `method=mean` (mean weights do not depend on the group). Suggested follow-ups, not done here (core files): put the parameter ranges/defaults in the prompt, make `series_id` a real group key, and reject `combine.group_by` changes under `mean`.
 
 API calls: 32 in the walk-forward (S1 16, S2 3, S3 13; each iteration = 1 proposal + 1 lesson, plus 1 per refused proposal) and 2 in the smoke test, 34 in total. The smoke test (1 iteration from the exp_004 champion) proposed `calibrate.group_by` source_class → gpu_model, citing "afhubbard|hyperscaler_spot (n=372), skill is only 0.008"; it was rejected (DEV +0.0015, holdout −0.0711), the same overfit as exp_005. `submission_final/` is unchanged.
+
+## LLM proposer v2 (after PR #4: ranges in the prompt, no-op refusal)
+Same check as above, rerun with `python walkforward.py --proposer llm --provider openai --iters 6 --run llm_openai_v2` (OpenAI `gpt-4.1`). Selection used DEV + GATE only; TEST was scored afterwards. Run: `walkforward/llm_openai_v2/`.
+
+| slice | seed TEST | heuristic gain | LLM v1 gain | LLM v2 final TEST | LLM v2 gain | v2 champion |
+|---|---|---|---|---|---|---|
+| S1 | +0.1452 | +0.0486 | +0.0853 | +0.2023 | +0.0571 | exp_003: drift + calibration by `source_class` |
+| S2 | +0.0216 | +0.0857 | 0 | +0.0875 | +0.0660 | exp_001: drift + default calibration |
+| S3 | +0.0774 | −0.0336 | +0.0286 | +0.0789 | +0.0015 | exp_006: drift + leader (mean) + calibration |
+| mean | | +0.0335 (2/3) | +0.0380 (2/3) | | **+0.0415 (3/3)** | |
+
+- **PR #4 fixed the failure that cost S2 its whole run in v1.** All 18 iterations ran and no proposal failed the range check. The only refusals were 2 repeats in S1 (iteration 4): the LLM re-proposed the exp_001 spec and the new no-op check caught it.
+- The search was narrower than in v1. 14 of the 18 experiments are calibration tweaks: `gamma`, `scale`, or `group_by` among instrument_class / source_class / gpu_model / series_id / all. Only 3 try a second model (momentum ×2, leader ×1), and the base model was never swapped. S3 exp_006, drift + leader, was accepted in both v1 and v2.
+- **New no-op class.** S3 exp_003 (`gamma=0.25`) and exp_004 (`scale=0.005`) gave identical DEV and GATE. The calibration step in `online.py` uses only the product `gamma*scale`, so the two specs are the same model. The no-op check compares normalized settings, not this product, so it missed them. Suggested follow-up in `autoresearch.normalize`: canonicalize to `gamma*scale`, or expose just one step-size parameter.
+- S2 exp_005 put the momentum parameters at the top level of the model entry instead of under `params`. The validator accepted it, and it ran with momentum defaults (the values happened to be the defaults).
+- The 3/3 improvement and +0.0415 mean come from one run of a non-deterministic proposer over 3 overlapping-in-time slices. v1 → v2 is +0.0035 in mean gain, which is noise-level. The real change is that no slice was lost to invalid proposals.
+- API calls: 38. That is 18 proposals + 18 lessons + 2 refused repeats (S1 14, S2 12, S3 12). The key came only from the environment. `submission_final/` and `experiments_final/` are unchanged.
