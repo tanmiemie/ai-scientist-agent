@@ -60,8 +60,16 @@ class Panel:
         return self._meta[sid]
 
     def upto(self, sid: str, origin: pd.Timestamp) -> pd.Series:
+        """Daily as-of history up to the last day actually collected on or before the origin.
+        It never forward-fills past that day: whether a later row exists must not change the
+        history (that leaked; see tests/test_no_lookahead.py), and live, at the cutoff, there is
+        no later row either."""
         s = self.daily.get(sid)
-        return s.loc[:origin] if s is not None else pd.Series(dtype=float)
+        if s is None:
+            return pd.Series(dtype=float)
+        idx = self._raw_by[sid].index
+        seen = idx[idx <= origin]
+        return s.loc[:seen.max()] if len(seen) else s.iloc[:0]
 
     def raw_upto(self, sid: str, origin: pd.Timestamp) -> pd.DataFrame:
         return self._raw_by[sid].loc[:origin]

@@ -4,12 +4,10 @@ For each origin, every raw value dated after it (in every series, so peers are c
 multiplied by 3, or those rows are deleted; the Panel is rebuilt and online.run must give
 bit-identical forecasts for the run that ends at that origin.
 
-Known issue (test_trailing_fill_depends_on_future_rows, xfail): data.Panel forward-fills each series
-up to its last raw row. If a series has no row on the origin but has one later, the history gains
-forward-filled days up to the origin; deleting the later rows removes them. Values are unchanged
-but the history is one or more days longer, which moves drift quantiles and days-since-change.
-This affects about 4% of (headline series, DEV/HOLDOUT origin) pairs, all gpurentalprices. The fix
-belongs in data.py, which the overnight rules do not allow editing."""
+Regression (test_trailing_fill_depends_on_future_rows): data.Panel used to forward-fill each series up
+to its last raw row, so a row after the origin lengthened the history of series with a gap on the
+origin (about 4% of pairs, all gpurentalprices). Panel.upto now stops at the last collected day on
+or before the origin, so gap series are included in the delete mode too."""
 import json
 
 import pandas as pd
@@ -66,7 +64,7 @@ def gap_series(panel, origin, sids):
 @pytest.mark.parametrize("origin", ORIGINS)
 def test_no_lookahead(panel, built, series, tmp_path, origin, mode):
     bad = tampered_panel(built, tmp_path, origin, mode)
-    sids = series if mode == "x3" else sorted(set(series) - gap_series(panel, origin, series))
+    sids = series
     assert len(sids) >= 4
     for name, spec in SPECS.items():
         a, b = forecast(spec, panel, origin, sids), forecast(spec, bad, origin, sids)
@@ -74,8 +72,6 @@ def test_no_lookahead(panel, built, series, tmp_path, origin, mode):
         pd.testing.assert_frame_equal(a, b, check_exact=True, obj=f"{name} @ {origin} ({mode})")
 
 
-@pytest.mark.xfail(strict=True, reason="data.Panel forward-fills to the last raw row, so the existence of a "
-                   "row after the origin lengthens the history; fix belongs in data.py (not editable overnight)")
 def test_trailing_fill_depends_on_future_rows(panel, built, tmp_path):
     origin = "2026-10-30"
     sids = sorted(gap_series(panel, origin, panel.series_ids()))
