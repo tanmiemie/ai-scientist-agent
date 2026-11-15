@@ -1,0 +1,52 @@
+{
+ "id": "exp_007",
+ "spec": {
+  "_hypothesis": "pooled 0.178 vs geomean 0.087: quiet series score much worse -> One calibration offset per group over-widens low-volatility series; a smaller step per update should help quiet series without losing coverage. Change: calibrate.scale 0.01 -> 0.005",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.005,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.192583,
+  "skill_median_of_series": 0.130463,
+  "skill_geomean": 0.154624,
+  "coverage_in": 0.705857,
+  "coverage_above_q90": 0.189492,
+  "coverage_below_q10": 0.104651,
+  "share_series_positive": 0.861111,
+  "by_horizon": {
+   "1": 0.07732,
+   "3": 0.13441,
+   "7": 0.247521
+  },
+  "n_cells": 2322,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.279467,
+  "skill_median_of_series": 0.307227,
+  "skill_geomean": 0.075511,
+  "coverage_in": 0.873103,
+  "coverage_above_q90": 0.04,
+  "coverage_below_q10": 0.086897,
+  "share_series_positive": 0.757576,
+  "by_horizon": {
+   "1": 0.147097,
+   "3": 0.258434,
+   "7": 0.30681
+  },
+  "n_cells": 725,
+  "n_problems": 0
+ }
+}

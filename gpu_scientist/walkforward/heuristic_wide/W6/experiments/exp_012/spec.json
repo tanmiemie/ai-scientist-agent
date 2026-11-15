@@ -1,0 +1,20 @@
+{
+ "_hypothesis": "champion uses a 90-day window -> A 120-day window trades reactivity for stability of the change distribution. Change: trend_tail.window -> 120",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "window": 120
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

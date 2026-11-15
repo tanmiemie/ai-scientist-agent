@@ -102,3 +102,26 @@ Refused and wasted proposals
 - 3 accepted-by-validation specs were no-ops (identical DEV and GATE to 4 decimals): S1 exp_002 `calibrate.group_by=series_id` (the catalog meta has no `series_id` key, so `online.group_key` maps every series to `"None"`, i.e. one global group) and S3 exp_004 / exp_006 `combine.group_by` = source_class / source_id with `method=mean` (mean weights do not depend on the group). Suggested follow-ups, not done here (core files): put the parameter ranges/defaults in the prompt, make `series_id` a real group key, and reject `combine.group_by` changes under `mean`.
 
 API calls: 32 in the walk-forward (S1 16, S2 3, S3 13; each iteration = 1 proposal + 1 lesson, plus 1 per refused proposal) and 2 in the smoke test, 34 in total. The smoke test (1 iteration from the exp_004 champion) proposed `calibrate.group_by` source_class → gpu_model, citing "afhubbard|hyperscaler_spot (n=372), skill is only 0.008"; it was rejected (DEV +0.0015, holdout −0.0711), the same overfit as exp_005. `submission_final/` is unchanged.
+
+## Wider walk-forward (6 TEST weeks, heuristic proposer, 12 iterations; `DEVIN_OVERNIGHT.md` task 2)
+`walkforward_wide.py` (a copy of `walkforward.py`; the original is unchanged). DEV always starts 2026-09-15, GATE is the 7 days before TEST, TEST is 7 days. Selection used DEV + GATE only, and TEST was scored after selection. Run: `walkforward/heuristic_wide/`.
+
+| slice | TEST week | seed TEST | final TEST | gain |
+|---|---|---|---|---|
+| W1 | 09-29..10-05 | +0.0120 | +0.1330 | +0.1209 |
+| W2 | 10-03..10-09 | +0.0715 | +0.0765 | +0.0050 |
+| W3 | 10-10..10-16 | +0.1452 | +0.2186 | +0.0734 |
+| W4 | 10-14..10-20 | +0.0336 | +0.1076 | +0.0740 |
+| W5 | 10-17..10-23 | +0.0216 | +0.0819 | +0.0604 |
+| W6 | 10-24..10-30 | +0.0774 | +0.0632 | −0.0141 |
+
+Mean gain +0.0533. 5 of 6 slices improved. Exact one-sided sign test p = 7/64 = 0.109.
+- **TEST weeks overlap** (W1/W2 share 3 days; W3/W4/W5 share 3–4 days each), so the six slices are not independent. The sign-test p-value assumes they are, so it is optimistic. Even so, it does not reach 0.05.
+- Almost all of the gain comes from the first one or two acceptances: online calibration, and in W1 trend_tail. The later acceptances (iterations 7–9 in W2, W4, W5, W6) passed DEV and GATE but lowered TEST in W2, W4 and W5. This is the same small-gain overfitting seen in the earlier ledger. A larger `MIN_DEV_GAIN`, or a rule requiring the gain on more than one DEV sub-window, would likely help, but choosing either from these TEST numbers would be TEST selection, so it is not done here.
+- W1 has only 7 DEV days (09-15..09-21), so its large gain rests on a thin DEV window.
+
+## Overnight summary
+- PR #5 (task 3): pytest suite for no-lookahead, determinism, edge ties and submission validity, plus `run_tests.sh`. Result: 13 passed, 1 strict xfail, which records a `data.Panel` trailing forward-fill look-ahead (fix belongs in `data.py`).
+- PR #6 (run requested before task 2): LLM proposer v2 walk-forward after PR #4. Mean TEST gain +0.0415, 3/3 slices improved, no invalid proposals, 38 API calls. New no-op class: only `gamma*scale` matters.
+- PR #7 (task 6): `demo.sh`, the 2-iteration live demo. Clean clone runs in 23 s with the heuristic proposer and 31 s with `--llm`; it checks the Python prerequisites first.
+- This PR (task 2): `walkforward_wide.py` over 6 TEST weeks. Mean gain +0.0533, 5/6 slices improved, sign test p = 0.109 (overlapping weeks).

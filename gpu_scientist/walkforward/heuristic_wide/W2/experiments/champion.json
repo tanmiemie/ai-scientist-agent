@@ -1,0 +1,55 @@
+{
+ "id": "exp_009",
+ "spec": {
+  "_hypothesis": "champion uses a 60-day window -> A 30-day window trades reactivity for stability of the change distribution. Change: drift.window -> 30",
+  "models": [
+   {
+    "name": "drift",
+    "params": {
+     "window": 30
+    }
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "source_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.098285,
+  "skill_median_of_series": 0.055635,
+  "skill_geomean": -0.031739,
+  "coverage_in": 0.719346,
+  "coverage_above_q90": 0.20436,
+  "coverage_below_q10": 0.076294,
+  "share_series_positive": 0.625,
+  "by_horizon": {
+   "1": 0.144076,
+   "3": 0.043095,
+   "7": 0.111314
+  },
+  "n_cells": 1101,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.257897,
+  "skill_median_of_series": 0.132679,
+  "skill_geomean": 0.146086,
+  "coverage_in": 0.719434,
+  "coverage_above_q90": 0.151866,
+  "coverage_below_q10": 0.1287,
+  "share_series_positive": 0.722222,
+  "by_horizon": {
+   "1": 0.049739,
+   "3": 0.144915,
+   "7": 0.358131
+  },
+  "n_cells": 777,
+  "n_problems": 0
+ }
+}
