@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "truth above q90 in 22% of dev cells -> Upper floor of 1.5 typical moves widens the upper edge where no recent rise exists. Change: trend_tail.floor -> 1.5",
+ "models": [
+  {
+   "name": "trend_tail",
+   "params": {
+    "floor": 1.5
+   }
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

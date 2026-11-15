@@ -1,0 +1,18 @@
+{
+ "_hypothesis": "champion model drift has dev skill 0.199, coverage 0.73 -> Replacing drift by vol_tail (recent-window, step-aware) should fit posted prices better. Change: primary model drift -> vol_tail",
+ "models": [
+  {
+   "name": "vol_tail",
+   "params": {}
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "source_class"
+ }
+}

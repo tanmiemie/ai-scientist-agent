@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "same pooled/geomean gap -> Calibrating by instrument class pools rate cards across collectors, which may suit step-like series better. Change: calibrate.group_by -> instrument_class",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

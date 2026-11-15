@@ -1,0 +1,43 @@
+{
+ "weights": {},
+ "calibration_up": {
+  "afhubbard|hyperscaler_spot|h1": -0.011000000000000036,
+  "afhubbard|hyperscaler_spot|h3": -0.004000000000000035,
+  "afhubbard|hyperscaler_spot|h7": -0.012500000000000027,
+  "gpurentalprices|marketplace_ask|h1": 0.0022499999999999916,
+  "gpurentalprices|marketplace_ask|h3": 0.00024999999999999415,
+  "gpurentalprices|marketplace_ask|h7": 0.0037499999999999916,
+  "gpurentalprices|neocloud_rate_card|h1": 0.0069999999999999524,
+  "gpurentalprices|neocloud_rate_card|h3": 0.025499999999999946,
+  "gpurentalprices|neocloud_rate_card|h7": 0.12250000000000005,
+  "fastgpu_daily|hyperscaler_spot|h1": -0.009500000000000007,
+  "fastgpu_daily|hyperscaler_spot|h3": 0.0014999999999999914,
+  "fastgpu_daily|hyperscaler_spot|h7": 0.018500000000000003,
+  "fastgpu_daily|neocloud_rate_card|h1": 0.007749999999999965,
+  "fastgpu_daily|neocloud_rate_card|h3": 0.018249999999999975,
+  "fastgpu_daily|neocloud_rate_card|h7": 0.06425000000000004,
+  "fastgpu_daily|neocloud_spot|h1": -0.0007500000000000191,
+  "fastgpu_daily|neocloud_spot|h3": 0.007749999999999986,
+  "fastgpu_daily|neocloud_spot|h7": 0.06475000000000004
+ },
+ "calibration_dn": {
+  "afhubbard|hyperscaler_spot|h1": 0.00399999999999998,
+  "afhubbard|hyperscaler_spot|h3": 0.013499999999999986,
+  "afhubbard|hyperscaler_spot|h7": 0.009999999999999981,
+  "gpurentalprices|marketplace_ask|h1": -0.0027500000000000033,
+  "gpurentalprices|marketplace_ask|h3": 0.0002499999999999974,
+  "gpurentalprices|marketplace_ask|h7": -0.01375000000000001,
+  "gpurentalprices|neocloud_rate_card|h1": -0.023000000000000104,
+  "gpurentalprices|neocloud_rate_card|h3": -0.0120000000000001,
+  "gpurentalprices|neocloud_rate_card|h7": -0.03000000000000007,
+  "fastgpu_daily|hyperscaler_spot|h1": 0.007999999999999998,
+  "fastgpu_daily|hyperscaler_spot|h3": 0.013999999999999995,
+  "fastgpu_daily|hyperscaler_spot|h7": 0.02850000000000001,
+  "fastgpu_daily|neocloud_rate_card|h1": -0.029750000000000026,
+  "fastgpu_daily|neocloud_rate_card|h3": 0.020749999999999977,
+  "fastgpu_daily|neocloud_rate_card|h7": 0.04925000000000001,
+  "fastgpu_daily|neocloud_spot|h1": -0.04575000000000004,
+  "fastgpu_daily|neocloud_spot|h3": -0.03225000000000003,
+  "fastgpu_daily|neocloud_spot|h7": -0.01775000000000003
+ }
+}
