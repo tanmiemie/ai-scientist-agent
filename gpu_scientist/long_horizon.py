@@ -136,6 +136,45 @@ def ccir_check() -> dict:
     return out
 
 
+# ---------- Model-implied value (discounted cash flow), per GPU, whole-node basis ----------
+# V = sum_{t=1..T} (8760*u*p_t - C)/(1+r)^t + end_value/(1+r)^T. A posted per-GPU-hour price pays for the
+# whole node share (CPU, network, storage), so V is compared with the node resale per GPU, not the bare module.
+DCF = {"util": 0.70, "rate": 0.15, "end_value": 0.0,
+       "life_end_year": {"H100": 2030.9, "A100": 2029.9}}  # A100: CoreWeave contract runs into 2029
+
+
+def dcf_value(g: str, scen: str, start_year: float = 2026.9, util: float | None = None,
+              rate: float | None = None) -> float:
+    u = DCF["util"] if util is None else util
+    r = DCF["rate"] if rate is None else rate
+    T = DCF["life_end_year"][g] - start_year
+    a0 = RENTAL_ANCHOR[g] * (1 + RENTAL_RATE[g][scen]) ** (start_year - 2026.9)
+    v, t = 0.0, 0
+    while t < T - 1e-9:
+        step = min(1.0, T - t)
+        p_t = max(a0 * (1 + RENTAL_RATE[g][scen]) ** (t + step / 2), CASH_FLOOR[g])
+        cash = step * 8760 * (u * p_t - CASH_FLOOR[g])
+        v += max(cash, 0.0) / (1 + r) ** (t + step)
+        t += step
+    return v + DCF["end_value"] / (1 + r) ** T
+
+
+def dcf_table() -> dict:
+    out = {}
+    for g in ("H100", "A100"):
+        out[g] = {"node_resale_per_gpu_now": NODE_PER_GPU[g],
+                  "model_value_now": {sc: int(round(dcf_value(g, sc), -2)) for sc in ("low", "base", "high")},
+                  "model_value_2028": {sc: int(round(dcf_value(g, sc, 2028.9), -2)) for sc in ("low", "base", "high")},
+                  "base_now_util_65_85": [int(round(dcf_value(g, "base", util=x), -2)) for x in (0.65, 0.85)]}
+        # discount rate at which the base case equals today's node resale
+        lo, hi = 0.0, 3.0
+        for _ in range(60):
+            mid = (lo + hi) / 2
+            lo, hi = (mid, hi) if dcf_value(g, "base", rate=mid) > NODE_PER_GPU[g] else (lo, mid)
+        out[g]["implied_rate_base"] = round((lo + hi) / 2, 2)
+    return out
+
+
 def path(anchor: float, rate: float, floor: float | None = None) -> dict:
     out = {ANCHOR: round(anchor, 2)}
     for label, n in YEARS.items():
@@ -177,6 +216,7 @@ def build() -> dict:
     res["pack_tests"] = pack_tests()
     res["ccir_check"] = ccir_check()
     res["electricity_sensitivity"] = electricity_sensitivity()
+    res["dcf"] = {"assumptions": DCF, "values": dcf_table()}
     return res
 
 

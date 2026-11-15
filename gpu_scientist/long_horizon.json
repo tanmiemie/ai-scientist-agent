@@ -205,5 +205,54 @@
       "floor_after_3y_at_+5pct": 0.257,
       "floor_if_power_doubles": 0.292
     }
+  },
+  "dcf": {
+    "assumptions": {
+      "util": 0.7,
+      "rate": 0.15,
+      "end_value": 0.0,
+      "life_end_year": {
+        "H100": 2030.9,
+        "A100": 2029.9
+      }
+    },
+    "values": {
+      "H100": {
+        "node_resale_per_gpu_now": 24400,
+        "model_value_now": {
+          "low": 17900,
+          "base": 33200,
+          "high": 46700
+        },
+        "model_value_2028": {
+          "low": 3500,
+          "base": 15500,
+          "high": 27700
+        },
+        "base_now_util_65_85": [
+          30200,
+          42200
+        ],
+        "implied_rate_base": 0.34
+      },
+      "A100": {
+        "node_resale_per_gpu_now": 11900,
+        "model_value_now": {
+          "low": 7200,
+          "base": 13500,
+          "high": 18100
+        },
+        "model_value_2028": {
+          "low": 500,
+          "base": 4000,
+          "high": 6900
+        },
+        "base_now_util_65_85": [
+          12200,
+          17500
+        ],
+        "implied_rate_base": 0.24
+      }
+    }
   }
 }

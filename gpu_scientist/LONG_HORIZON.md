@@ -93,7 +93,26 @@ Both anchors sit between the marketplace and neocloud medians, which is what a "
 
 So the price of electricity barely moves the view: even a doubling lifts the H100 floor by 7 cents, still below every scenario. What matters is whether power is available, through grid queues and rack density (assumption B), not its price. The CPI index is a household measure; data centres buy at commercial and industrial rates, so it is a direction signal only.
 
-## 6. What would change the view
+## 6. From rent to resale: a model-implied value
+
+A GPU is worth the cash it will still earn. In `long_horizon.py`:
+
+V = Σ_{t=1..T} (8760 · u · p_t − C) / (1 + r)^t + end value / (1 + r)^T
+
+with p_t the scenario rent path, u = 70% paid utilisation, C the cash floor from 4C, r = 15% a year, no end value, and the remaining life running to late 2030 for H100 and to late 2029 for A100 (the CoreWeave contract). A posted per-GPU-hour price also pays for the CPU, network and storage around the GPU, so V is compared with the **whole-node resale per GPU**, not the bare module. This is a model-implied value, not an observed resale price.
+
+| per GPU, whole node | resale now (realized) | model value now: low / base / high | model value Nov 2028: low / base / high |
+|---|---|---|---|
+| H100 | $24,400 | $17,900 / $33,200 / $46,700 | $3,500 / $15,500 / $27,700 |
+| A100 | $11,900 | $7,200 / $13,500 / $18,100 | $500 / $4,000 / $6,900 |
+
+What this says:
+
+- **The resale market is more cautious than our base rent path.** Realized node prices sit between the low and base model values. Matching the base path to today's node prices takes a discount rate of about 34% for H100 and 24% for A100, against the 15% we assumed. So buyers of used GPUs either expect rents to fall faster than our base or demand a large premium for illiquidity, warranty and obsolescence risk. Either way it supports forecasting resale separately (H2) and keeping resale declines steeper than rent declines.
+- **Utilisation is the swing input.** At 65% the H100 base value is $30,200; at 85% it is $42,200. There is no public utilisation source.
+- **Our 2028 resale scenarios hang together.** Converting the 2028 base model value from node to module at today's ratio gives about $9,100 for H100 (our resale base: $8,000) and about $1,800 for A100 (our base: $2,600). The A100 resale base may be slightly generous.
+
+## 7. What would change the view
 
 | Signal | Moves us toward | Where to watch |
 |---|---|---|
@@ -107,11 +126,12 @@ So the price of electricity barely moves the view: even a doubling lifts the H10
 | Hyperscalers shortening GPU useful lives again | low (resale) | 10-K filings |
 | Grid and data-centre power delays worsening | high | utility interconnection queues |
 
-## 7. Limits
+## 8. Limits
 
 - This is a scenario argument, not a fitted forecast; it cannot be backtested on a 13-week panel.
 - The capability units are composite, unverified ratios built from MLPerf results; the A100 → H100 step uses 2023 rounds with early H100 software.
 - Resale data is thin (American Compute flags limited samples, liquidity grade B–C), and the resale index is restatable.
+- The model-implied value attributes all node revenue to the GPU's share of the node and ignores platform, sales and financing costs; it is not a verified resale price.
 - Hypothesis tests on the pack use one year of weekly medians; reserved and spot medians rest on 5–14 providers, so their year-on-year changes are noisy. On-demand medians use 39–46 providers.
 - The age curve uses approximate ages (A100 5.9, H100 3.9, H200 2.3, B200 1.6 years) and mixes the capability differences that make newer chips dearer.
 - Several sources (ComputeLabs, CCIR, Ornn) have commercial interests in GPU financing or price data; company statements are not independently verified.
