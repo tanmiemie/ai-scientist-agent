@@ -209,7 +209,7 @@ HOLDOUT by collector (pooled skill): afhubbard (4 series) +0.2386 → +0.2525, f
 
 ## LLM-written models (`DEVIN_NEXT.md` task E, `walkforward/llm_coder/`)
 
-`python walkforward.py --proposer llm --provider openai --iters 6 --coder allow --run llm_coder` (gpt-4.1, 18/18 iterations). Gate counts from `coder_report.py` (`walkforward/llm_coder/CODER_REPORT.md`); `llm_openai_v2` (same slices and seed, no coder) as reference.
+`python walkforward.py --proposer llm --provider openai --iters 6 --coder always --run llm_coder` (gpt-4.1, 18/18 iterations). Gate counts from `coder_report.py` (`walkforward/llm_coder/CODER_REPORT.md`); `llm_openai_v2` (same slices and seed, no coder) as reference.
 
 | slice | seed TEST | final TEST | gain | v2 gain | accepted (all LLM-written models) |
 |---|---|---|---|---|---|
