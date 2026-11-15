@@ -67,7 +67,10 @@ def _key_inputs():
         st.caption("For the LLM proposer. Kept in your browser session only, passed to the runs you start and never "
                    "written to disk.")
         for p in missing:
-            st.text_input(f"{PROVIDER[p]} API key", type="password", key=f"user_key_{p}")
+            # Widget state is dropped on other pages, so the key lives under a plain session key.
+            st.text_input(f"{PROVIDER[p]} API key", type="password", key=f"_w_user_key_{p}",
+                          value=st.session_state.get(f"user_key_{p}", ""),
+                          on_change=lambda p=p: st.session_state.update({f"user_key_{p}": st.session_state[f"_w_user_key_{p}"]}))
 
 
 def _status_bar():
