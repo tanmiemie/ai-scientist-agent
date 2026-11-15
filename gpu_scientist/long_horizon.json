@@ -175,5 +175,35 @@
         "H100": 12
       }
     }
+  },
+  "ccir_check": {
+    "H100": {
+      "anchor": 3.0,
+      "between_marketplace_and_neocloud": true
+    },
+    "A100": {
+      "anchor": 1.65,
+      "between_marketplace_and_neocloud": true
+    },
+    "a100_over_h100_by_tier": {
+      "hyperscaler": 0.4,
+      "neocloud": 0.63,
+      "marketplace": 0.42,
+      "neocloud_interruptible": 0.56
+    }
+  },
+  "electricity_sensitivity": {
+    "H100": {
+      "electricity_usd_per_hr": 0.073,
+      "share_of_floor": 0.21,
+      "floor_after_3y_at_+5pct": 0.361,
+      "floor_if_power_doubles": 0.423
+    },
+    "A100": {
+      "electricity_usd_per_hr": 0.042,
+      "share_of_floor": 0.17,
+      "floor_after_3y_at_+5pct": 0.257,
+      "floor_if_power_doubles": 0.292
+    }
   }
 }

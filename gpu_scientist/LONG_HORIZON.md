@@ -44,7 +44,7 @@ Each assumption below was first written as a hypothesis and checked against our 
 |---|---|---|---|
 | H1 | The price gap between generations today equals how fast one GPU's price falls over time | Pack, Nov 2026: across A100, H100, H200 and B200, rent falls 25–26% per year of age in every pricing mode (on-demand, 1- and 12-month reserved, spot). Over the same year the A100 itself moved between -32% and +23%, and the H100 between -16% and +33%, depending on the mode. CCIR's cross-section gives -21% per year of age (Sep 2026); Dilikoglu's gives 33–45%, and both say it is not a time series. | **Rejected.** The cross-section is an upper bound on the decline, not the decline itself. |
 | H2 | Rental and resale move together | A100 resale fell about 35% over the year (American Compute) while posted A100 on-demand rent rose 23% (pack). In 2025, H100 rents fell while H100 resale rose. | **Rejected.** They are forecast separately. |
-| H3 | Older GPUs drift down to performance parity | A100 ÷ H100 price is now 0.47–0.55 depending on the mode (pack), between parity on compute (0.41, MLPerf units) and on memory bandwidth (0.61). It fell in three of four modes over the year (on-demand 0.51 → 0.47, 12-month 0.82 → 0.55). CCIR finds rents per unit of memory bandwidth almost flat across generations. | **Partly supported.** A100 is converging on compute parity but is priced closer to bandwidth. That is why A100's base decline (-15%/yr) is steeper than H100's (-12%). |
+| H3 | Older GPUs drift down to performance parity | A100 ÷ H100 price is now 0.47–0.55 depending on the mode (pack), between parity on compute (0.41, MLPerf units) and on memory bandwidth (0.61). It fell in three of four modes over the year (on-demand 0.51 → 0.47, 12-month 0.82 → 0.55). CCIR finds rents per unit of memory bandwidth almost flat across generations. | **Partly supported.** A100 is converging on compute parity but is priced closer to bandwidth. CCIR's 14 Nov print splits it by provider tier: 0.63 at neoclouds (bandwidth parity), 0.42 on marketplaces and 0.40 at hyperscalers (compute parity). That is why A100's base decline (-15%/yr) is steeper than H100's (-12%): neocloud A100 prices have the most room to fall. |
 | H4 | Posted prices are what deals clear at | Ornn's transacted A100 index is $1.02–1.10 against our posted midpoint of $1.65; for H100 it is $2.96–3.19 against $3.00. In early 2026 Ornn ran 25–30% below Silicon Data's posted-rate index. | **Rejected for A100, close for H100.** Our view is on posted prices (the competition's measure); transacted A100 rent is about a third lower. |
 | H5 | The market already expects a steep decline | Silicon Data's 36-month forwards (3 Sep 2026): H100 -12.3% and A100 -24.9% in total, about -4% and -9% a year. The forward curve is ordered by chip age, and B200's is flat. | **Rejected.** The market prices a slow decline; our base case is more bearish than the forward (see below). |
 
@@ -54,7 +54,7 @@ Each assumption below was first written as a hypothesis and checked against our 
 
 **B. Power and buildings slow the slide.** Air-cooled A100 racks draw about 6.5 kW, in halls built for about 20 kW per rack; GB200/GB300 racks draw 120–140 kW. Per unit of power, air-cooled chips rent at $4.49–5.75 per kW-hour against $6.85–7.03 for liquid-cooled Blackwell (CCIR). This is the reason given for CoreWeave's A100-to-2029 contract.
 
-**C. Rent has a floor.** Below cash operating cost (power at PUE 1.3 and $0.08/kWh, colocation around $150 per kW-month, a share of network and staff) an owner turns the GPU off rather than renting it. We put this at about $0.35/hr for H100 (700 W) and $0.25/hr for A100 (400 W). The low scenarios stay above it. The BLS electricity price index is the input to watch.
+**C. Rent has a floor.** Below cash operating cost (power at PUE 1.3 and $0.08/kWh, colocation around $150 per kW-month, a share of network and staff) an owner turns the GPU off rather than renting it. We put this at about $0.35/hr for H100 (700 W) and $0.25/hr for A100 (400 W). The low scenarios stay above it. Electricity is only about a fifth of that floor (about $0.07/hr for H100, $0.04 for A100); see section 5.
 
 **D. Resale falls faster than rent, because remaining life shrinks (H2).** A buyer pays for the cash a GPU will still earn. Today a used node sells for about 1.5–1.6 years of net rental cash (H100: $24,400 per GPU against about $15,300 a year at 70% utilisation; A100: $11,900 against $7,900). In the base case for 2028 that multiple falls to about 1.1–1.2 years. Utilisation is the weakest input: there is no public source, operators report 85–90%, and 65% is a common bearish figure.
 
@@ -73,7 +73,27 @@ Each assumption below was first written as a hypothesis and checked against our 
 
 **F. What the rates mean for financing.** Dilikoglu's one-megawatt model finds that, after a 3-year contract, the market rent can fall 28% a year (6-year book life), 31% (5-year) or 37% (4-year) before post-contract value drops below book value. Our base case is well inside all three; our low case crosses the 6- and 5-year thresholds. So the depreciation fight (hyperscalers and CoreWeave at 6 years, Nebius at 5, Burry at 2–3) is really a fight about which of our scenarios happens. The retirement record supports long lives: Azure's K80, P100 and P40 each ran 7–9 years, and the V100 about 7.5.
 
-## 5. What would change the view
+## 5. Cross-checks: provider tiers and electricity
+
+**Our anchors against CCIR's provider tiers.** CCIR's daily print for 14 Nov 2026 (posted asks, guaranteed on-demand, US and Europe, panel medians), in USD per GPU-hour:
+
+| | hyperscaler | neocloud | marketplace | neocloud interruptible | our anchor |
+|---|---|---|---|---|---|
+| H100 | 11.25 | 3.37 | 2.60 | 2.15 | 3.00 |
+| A100 | 4.45 | 2.12 | 1.08 | 1.20 | 1.65 |
+
+Both anchors sit between the marketplace and neocloud medians, which is what a "market midpoint" should do. Hyperscaler list prices are three to four times higher and are a separate market; using them would inflate every number here. The A100 marketplace median ($1.08) is close to Ornn's transacted A100 index ($1.02–1.10), which supports reading the transacted A100 market as marketplace-priced (H4).
+
+**Electricity.** The BLS CPI electricity index rose 4.4% in the 12 months to September 2026, after 5.1% in the year before, and rose 0.9% in October alone. At our assumptions (PUE 1.3, $0.08/kWh) electricity is about $0.07/hr for an H100 and $0.04 for an A100, a fifth or less of the cash floor.
+
+| | electricity $/hr | share of floor | floor now | after 3 years at +5%/yr | if power price doubles |
+|---|---|---|---|---|---|
+| H100 | 0.073 | 21% | 0.35 | 0.36 | 0.42 |
+| A100 | 0.042 | 17% | 0.25 | 0.26 | 0.29 |
+
+So the price of electricity barely moves the view: even a doubling lifts the H100 floor by 7 cents, still below every scenario. What matters is whether power is available, through grid queues and rack density (assumption B), not its price. The CPI index is a household measure; data centres buy at commercial and industrial rates, so it is a direction signal only.
+
+## 6. What would change the view
 
 | Signal | Moves us toward | Where to watch |
 |---|---|---|
@@ -87,7 +107,7 @@ Each assumption below was first written as a hypothesis and checked against our 
 | Hyperscalers shortening GPU useful lives again | low (resale) | 10-K filings |
 | Grid and data-centre power delays worsening | high | utility interconnection queues |
 
-## 6. Limits
+## 7. Limits
 
 - This is a scenario argument, not a fitted forecast; it cannot be backtested on a 13-week panel.
 - The capability units are composite, unverified ratios built from MLPerf results; the A100 → H100 step uses 2023 rounds with early H100 software.
@@ -102,6 +122,7 @@ Each assumption below was first written as a hypothesis and checked against our 
 - GetDeploying weekly GPU price medians (CC BY 4.0), in our pack as `aggregator_medians.csv`; capability units from the pack's `capability/capability_units.csv` (MLPerf results, Apache-2.0 repositories).
 - [American Compute, H100 appraisal](https://www.amcompute.com/appraisals/h100), [A100 appraisal](https://www.amcompute.com/appraisals/a100), [A100 SXM4 80GB](https://www.amcompute.com/appraisals/a100-sxm4-80gb) (October 2026 Rack Report).
 - [Dilikoglu Research, what an old GPU is worth (29 Oct 2026)](https://dilikogluresearch.com/reports/old-gpu-worth-2026-10-29); [CCIR, GPU age curve (Sep 2026)](https://ccir.io/research/gpu-age-curve); [ComputeLabs, nine years of A100s](https://www.computelabs.ai/research/nine-years-of-a100s-a-review-of-how-long-gpus-earn); [Compute and LLM dashboard, rental prices and forward curves](https://kadentato.github.io/Compute-and-LLM-Dashboard/compute/prices-full.html); [Ornn GPU indices](https://data.ornn.com/analytics/gpu).
+- [CCIR daily print, 14 Nov 2026](https://ccir.io/); [BLS, CPI for September 2026 (electricity +4.4% over 12 months)](https://www.bls.gov/opub/ted/2026/prices-for-gasoline-increased-34-2-percent-over-the-year-ended-september-2026.htm); BLS CPI release for October 2026 (10 Nov 2026).
 - [CloudZero, H100 cost (Ornn OCPI, B200 spot)](https://www.cloudzero.com/blog/h100-gpu-cost); IntuitionLabs articles on data-center GPU prices and H100 rental prices (2026).
 - [Akash, A100 guide (Aug 2026)](https://akash.network/bits/nvidia-a100-gpu-guide-2026-specs-benchmarks-pricing/); [GPUNex, buying and selling GPUs 2026](https://www.gpunex.com/blog/buying-selling-gpus-2026); [Hashrate Index, used GPU market](https://hashrateindex.com/blog/used-gpu-market-pricing-deprecation-secondary-ai/).
 - [Tom's Hardware, CoreWeave A100 contract into 2029](https://www.tomshardware.com/tech-industry/coreweave-ceo-mike-intrator-says-it-has-signed-an-a100-contract-running-into-2029); [Benzinga](https://www.benzinga.com/node/61145901).
