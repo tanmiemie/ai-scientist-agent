@@ -132,3 +132,30 @@ def test_sandbox_refuses_without_network_namespace(monkeypatch):
     monkeypatch.delenv("GPU_CODER_ALLOW_NETNS_FALLBACK", raising=False)
     assert "refusing to run generated code" in coder.sandbox({"job": "smoke"})["error"]
     assert "refusing to run generated code" in coder.lookahead_test("x")["error"]
+
+
+
+def test_guard_scorer_exception_needs_the_real_interpreter(tmp_path):
+    import subprocess
+    import sys
+    probe = r"""
+import os, sys
+sys.path.insert(0, os.getcwd())
+import config as C, sandbox_guard
+sandbox_guard.install(write_dirs=[sys.argv[1]])
+import subprocess
+argv = [sys.executable, "-B", str(C.STARTER / "scorer.py"), "--tier", "x"]
+for name, kw in [("other_executable", {"executable": "/bin/sh"}), ("cwd", {"cwd": "/"}), ("env", {"env": {}})]:
+    try:
+        subprocess.run(argv, capture_output=True, **kw); print(name + ":allowed")
+    except PermissionError:
+        print(name + ":blocked")
+os.environ["PYTHONPATH"] = sys.argv[1]
+try:
+    subprocess.run(argv, capture_output=True); print("changed_env:allowed")
+except PermissionError:
+    print("changed_env:blocked")
+"""
+    p = subprocess.run([sys.executable, "-c", probe, str(tmp_path)], cwd=C.ROOT, capture_output=True, text=True)
+    assert p.returncode == 0, p.stderr
+    assert p.stdout.split() == ["other_executable:blocked", "cwd:blocked", "env:blocked", "changed_env:blocked"]

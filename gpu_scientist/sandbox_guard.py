@@ -62,6 +62,7 @@ def install(write_dirs=(), read_dirs=()):
     reads = [r for r in reads if r]
 
     scorer = _norm(C.STARTER / "scorer.py")
+    env_at_install = dict(os.environ)
     outputs = {"--out", "--per-cell", "--forecast"}
 
     def scorer_call(argv) -> bool:
@@ -79,7 +80,8 @@ def install(write_dirs=(), read_dirs=()):
         return True
 
     def hook(event, args):
-        if event == "subprocess.Popen" and scorer_call(args[1]):
+        if event == "subprocess.Popen" and args[0] in (None, sys.executable) and args[2] is None \
+                and args[3] is None and dict(os.environ) == env_at_install and scorer_call(args[1]):
             return
         if event.startswith(_BLOCK):
             raise SandboxViolation(f"{event} is not allowed for generated models")
