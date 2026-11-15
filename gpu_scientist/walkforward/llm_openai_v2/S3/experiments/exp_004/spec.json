@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage_in is close to target (0.802), but y_above_q50 is persistently high in fastgpu_daily|neocloud_rate_card (0.545) and gpurentalprices|neocloud_rate_card (0.591), as well as for 7-day horizon (0.597) and dsc_bucket=0-1 (0.628). Overall mean_log_err_q50 is positive (0.003 to 0.019) in these slices, suggesting systematic underprediction. Reducing calibrate.scale should narrow intervals, potentially correcting interval overshoot and bias. -> Lowering calibrate.scale from 0.01 to 0.005 (keeping gamma=0.5, group_by=instrument_class) will bring y_above_q50 closer to 0.5\u2014reducing persistent up-bias in some groups\u2014without substantially harming coverage_in. Since scale controls per-step adjustment, smaller scale should result in finer interval corrections, helping center the median. Change: calibrate.scale from 0.01 to 0.005",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "instrument_class"
+ }
+}

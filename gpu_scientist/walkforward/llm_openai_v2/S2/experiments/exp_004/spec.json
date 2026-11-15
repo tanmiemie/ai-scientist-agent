@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage still slightly below target (0.7896 vs 0.80), but skill suffered when gamma was increased to 1.0 (exp_003), and sharply dropped coverage when calibrating by series_id (exp_002). Within the champion, some groups (e.g. fastgpu_daily|hyperscaler_spot: above_q90/below_q10 both 0.138) still have heavy tails, and group fastgpu_daily|neocloud_spot has high above_q90 (0.161). -> Lowering calibrate.scale from 0.01 to 0.005 (halving the calibration step size) will maintain the skill gains from calibration, while making calibration updates less aggressive, which may bring tail coverage (esp. above_q90, below_q10) closer to the 0.10 target in dev\u2014especially for groups like fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot with over-widespread tails. Change: calibrate.scale from 0.01 to 0.005",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "instrument_class"
+ }
+}

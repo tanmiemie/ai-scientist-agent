@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Enabling calibration with gamma=0.5, scale=0.01, group_by=instrument_class took dev coverage_in from 45.6% to 80.2% and improved skill_pooled. However, skill is still notably worse (0.1787) for fastgpu_daily|neocloud_spot (0.239) than other groups, with q50 above in 42.5% of points (vs 50% for a calibrated/median-unbiased forecast). Coverage above q90 is also high for this group (0.135 vs 0.11 overall). -> Calibration bias (median log error +0.011) in fastgpu_daily|neocloud_spot suggests that using a more granular group_by (e.g., series_id) for interval correction will improve coverage targeting (particularly better centering of q50 and reduction in overall skill_pooled for this group), without sacrificing coverage_in elsewhere. Change: Change calibrate.group_by from instrument_class to series_id.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

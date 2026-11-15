@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration with gamma=0.5, scale=0.01, group_by=instrument_class yields coverage close to target (0.80), but shows persistent bias for fastgpu_daily|neocloud_spot (y_above_q50=0.425), and elevated y_above_q50 for horizons 7 (0.597) and dsc_bucket=0-1 (0.628), suggesting systematic underprediction in these slices. -> Lowering gamma will slow the calibration's adaptation, reducing swings, which may reduce persistent overprediction at horizon=7 and dsc_bucket=0-1 (where y_above_q50 is as high as 0.597 and 0.628) while maintaining coverage, possibly improving skill for long horizons and after price jumps. Change: Reduce calibrate.gamma from 0.5 to 0.25 (all else equal).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

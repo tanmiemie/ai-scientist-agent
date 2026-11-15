@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "In the champion, coverage_in is 0.7896 (target 0.8). Reducing scale from 0.01 to 0.005 (exp_004) increased skill a little (+0.0368) but made coverage worse (0.758). Increasing gamma to 1.0 (exp_003) reduced skill sharply (0.0137). Calibration by series_id (exp_002) reduced both skill and coverage. Momentum+drift mean (exp_005) did not improve skill. In group fastgpu_daily|neocloud_spot, above_q90 remains high (0.161) and in gpurentalprices|neocloud_rate_card, above_q90 is 0.135, both with low below_q10: the tails remain asymmetric. Coverage by horizon is notably worst at 7d (above_q90=0.125, below_q10=0.092). -> Enabling calibration grouped by 'all' (i.e., global calibration) will help equalize tail coverage, particularly in groups where one instrument_class contains series with consistently high above_q90 and low below_q10. This may raise overall coverage_in closer to the 0.8 target, at a potential minor cost in skill on difficult series, but improving tail symmetry and calibration. Change: Set calibrate.group_by from 'instrument_class' to 'all'.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "all"
+ }
+}

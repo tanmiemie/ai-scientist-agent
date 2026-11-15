@@ -1,0 +1,52 @@
+{
+ "id": "exp_001",
+ "spec": {
+  "_hypothesis": "Overall coverage is just 0.45 (target 0.8); above q90 much too high across groups (e.g. 0.54 in neocloud_rate_card). For group gpurentalprices|neocloud_rate_card, above_q90 is 0.503 and below_q10 is 0.073 (should be ~0.10). -> Enabling calibration with conservative steps (gamma=0.5, scale=0.01, grouped by instrument_class) will increase interval coverage\u2014raising coverage_in, while balancing above_q90 and below_q10 closer to 0.10\u2014without significant overfitting, as the intervals are too narrow across the board. Change: Enable calibrate (gamma=0.5, scale=0.01, group_by=instrument_class).",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.16315,
+  "skill_median_of_series": 0.11176,
+  "skill_geomean": 0.066227,
+  "coverage_in": 0.789553,
+  "coverage_above_q90": 0.118849,
+  "coverage_below_q10": 0.091597,
+  "share_series_positive": 0.722222,
+  "by_horizon": {
+   "1": 0.057227,
+   "3": 0.0512,
+   "7": 0.240616
+  },
+  "n_cells": 2642,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.230773,
+  "skill_median_of_series": 0.240919,
+  "skill_geomean": 0.064115,
+  "coverage_in": 0.846924,
+  "coverage_above_q90": 0.067239,
+  "coverage_below_q10": 0.085837,
+  "share_series_positive": 0.727273,
+  "by_horizon": {
+   "1": 0.159018,
+   "3": 0.27372,
+   "7": 0.224167
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}
