@@ -2,8 +2,7 @@
 # Download the GPU price data pack from this repo's GitHub release, verify it and unpack it next to gpu_scientist/
 # (where config.py looks by default). Usage: bash get_pack.sh [dest_dir]
 set -euo pipefail
-cd "$(dirname "$0")"
-DEST="$(cd "${1:-..}" && pwd)"
+DEST="$(cd "${1:-$(dirname "$0")/..}" && pwd)"
 NAME=gpu-price-pack-v0.1.1-handover
 ZIP="${NAME}_pack-only.zip"
 SHA=f0b52af28c52545732208bcc4905facd9b941aa5779da683e1d9884c283b7c7c
