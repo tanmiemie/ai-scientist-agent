@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration coverage is low overall: only 45.6% in, vs desired ~80%. Bias is visible: e.g. above q90 is 41.8% overall, 52.6% in fastgpu_daily|neocloud_rate_card. This suggests intervals are too narrow. Enabling interval calibration should expand them toward target. The champion uses no calibration. -> Enabling interval calibration with default settings (gamma=0.5, scale=0.01, group_by=instrument_class) will increase overall coverage toward 0.8 and reduce bias/imbalance in tails (coverage_above_q90 and coverage_below_q10 both toward 10%). Interval width will grow, so skill may degrade, but coverage will become more appropriate. Change: Enable calibration with default gamma, scale, and group_by.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "_hypothesis": "Base drift skill on 'fastgpu_daily|hyperscaler_spot' is quite poor (-0.03), and worse for 'fastgpu_daily|neocloud_spot' (0.0). Calibration by instrument_class can't fully compensate, as above_q90 is still too high in these. These groups may benefit from including a more adaptive model capturing sharp moves. Momentum has not yet been attempted. -> Adding 'momentum' (window=60, k_up=1.0, k_dn=1.0, floor=1.0, k=1, beta=0.5) and averaging with 'drift' will improve skill in 'fastgpu_daily|hyperscaler_spot' and 'fastgpu_daily|neocloud_spot', where drift alone is weak and sudden price moves are common, without compromising skill in better-calibrated groups. Change: Add 'momentum' as a second model and switch combine.method to 'mean'.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "window": 60,
+   "k_up": 1.0,
+   "k_dn": 1.0,
+   "floor": 1.0,
+   "k": 1,
+   "beta": 0.5
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

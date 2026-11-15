@@ -10,3 +10,4 @@ gpu_scientist/experiments*/**/*.csv
 gpu_scientist/experiments*/**/*.csv.gz
 gpu_scientist/walkforward/**/report_*.json
 gpu_scientist/replay/
+gpu_scientist/demo_run/

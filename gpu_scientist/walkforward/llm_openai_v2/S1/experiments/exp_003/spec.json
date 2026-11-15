@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage overall is 0.76 (vs 0.80 target). By series group, afhubbard|hyperscaler_spot is worst (coverage above q90: 8.3%, below q10: 3.6%, truth above q50: 26%), with skill 0.066 (lowest positive among groups). This group consistently shows both narrow intervals and under-coverage. All groups use the same calibrate.group_by=instrument_class. Test finer calibration split for groups with systematic bias. -> Switching calibrate.group_by from instrument_class to source_class will improve coverage for groups with systematically under/over-dispersed intervals (e.g., afhubbard|hyperscaler_spot), as calibration will adapt interval width and median shift separately for each source_class. This directly addresses the clear under-coverage and bias seen in these groups. Change: Set calibrate.group_by to source_class (was instrument_class).",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "source_class"
+ }
+}

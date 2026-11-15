@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Calibration coverage is now 0.76 (up from 0.46), with much improved skill, but truth is above q50 only 44% of the time (should be 50%), and above q90 and below q10 rates are 15% and 9% (target: 10% each). Intervals are still a little too narrow at higher horizons (7d: y_above_q50=0.6, above_q90=0.18, below_q10=0.07). -> Setting calibrate.gamma=1.0 (from 0.5) will make the interval correction adapt faster, matching local miscalibration (e.g., from sudden jumps or slow drifts). This should increase coverage at high horizons and for worst series, possibly at a small cost to noise/overfitting for very stable groups. Change: Increase calibrate.gamma from 0.5 to 1.0; all else as current champion.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 1.0,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

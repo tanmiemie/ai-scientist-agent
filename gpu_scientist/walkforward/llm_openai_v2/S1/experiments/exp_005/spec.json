@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "champion calibration uses group_by=source_class (skill_pooled=0.198, coverage_in=0.719), but group_by=instrument_class (exp_001) gave higher coverage (0.758) but lower skill (0.178), and both single-group (gpu_model, exp_004) and single-group (instrument_class) had drawbacks. Hybrid groupings haven't been tried; many miscalibrated series are under-covered within their source_class, suggesting more granular yet not too fine grouping may correct. -> Calibrating by group_by=series_id (most granular allowed) will increase coverage toward target (0.80) for under-covered series (e.g., afhubbard|hyperscaler_spot: above_q90=0.078, below_q10=0.042, y_above_q50=0.26), at the probable cost of reduced skill due to noisier adjustment, but may help worst-off groups. Change: Switch calibrate.group_by: 'series_id' instead of 'source_class'.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}
