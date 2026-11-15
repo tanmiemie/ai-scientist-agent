@@ -20,6 +20,7 @@ import data
 import diagnose
 import evaluate
 import online
+import provenance
 
 
 def next_id() -> str:
@@ -54,6 +55,8 @@ def run(spec: dict, hypothesis: str, parent: str | None = None, eid: str | None 
     t0 = dt.datetime.now()
     fc, per_model, state = online.run(spec, panel, origins, sids, C.HORIZONS)
     fc.to_csv(out / "forecast_all.csv", index=False)
+    prov = provenance.record(series_csv, out / "forecast_all.csv")
+    provenance.archive(out / "forecast_all.csv")   # immutable, committed copy of every forecast
     per_model.to_csv(out / "per_model.csv.gz", index=False)
     (out / "state.json").write_text(json.dumps(state, indent=1))
 
@@ -77,7 +80,7 @@ def run(spec: dict, hypothesis: str, parent: str | None = None, eid: str | None 
     rec = {"id": eid, "time_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "parent": a.parent,
            "hypothesis": a.hypothesis, "spec": spec, "dev": dev, "holdout": hold,
            "champion_before": champ["id"] if champ else None, "accepted": accepted, "reason": reason,
-           "lesson": None, "runtime_s": round((dt.datetime.now() - t0).total_seconds(), 1)}
+           "lesson": None, "provenance": prov, "runtime_s": round((dt.datetime.now() - t0).total_seconds(), 1)}
     with open(C.EXPERIMENTS / "ledger.jsonl", "a") as f:
         f.write(json.dumps(rec, default=str) + "\n")
     if accepted:

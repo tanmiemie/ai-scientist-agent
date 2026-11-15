@@ -14,3 +14,4 @@ gpu_scientist/experiments_app/
 # Walk-forward runs launched from the app
 gpu_scientist/walkforward/app_*/
 gpu_scientist/demo_run/
+!gpu_scientist/experiments*/**/forecast_all.csv.gz

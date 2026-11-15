@@ -17,6 +17,7 @@ import pandas as pd
 import config as C
 import data
 import online
+import provenance
 
 
 def main():
@@ -55,6 +56,8 @@ def main():
     cols = ["series_id", "origin_date", "horizon_days", "q10", "q50", "q90", "target_date", "team_id", "method_note"]
     valid = fc.loc[fc.index.isin(valid.index), cols] if "_row" in valid.columns else valid[cols]
     valid.to_csv(path, index=False)
+    man = {"file": path.name, "champion": src, "rows": int(len(valid)), **provenance.record(series_csv, path)}
+    (C.SUBMISSION / "MANIFEST.json").write_text(json.dumps(man, indent=1))
     (C.SUBMISSION / "submission_state.json").write_text(json.dumps({"spec_from": src, "spec": spec, "state": state}, indent=1))
     print(f"wrote {path}: {len(valid)} rows, {valid.series_id.nunique()} series, origin {C.CUTOFF}, spec from {src}")
 
