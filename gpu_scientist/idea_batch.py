@@ -93,6 +93,10 @@ class BatchProposer(LLMProposer):
                            "champion": ctx["champion"], "history_most_recent_last": ctx["history"],
                            "seed_ideas": self.seed_ideas}, indent=1)
         user += "\n\nDIAGNOSIS OF THE CHAMPION (DEV):\n" + ctx["diagnosis_md"]
+        if ctx.get("outside"):
+            o = ctx["outside"]
+            user += (f"\n\nOUTSIDE EVIDENCE (Exa, published on or before {o['cutoff']}; newest found this turn, "
+                     f"then the evidence memory):\n" + json.dumps(o["memory_for_prompt"], indent=1))
         if feedback:
             user += (f"\n\nNo idea of your previous batch could run: {feedback}\n"
                      f"Write a new batch of {N_IDEAS} valid, untried experiments.")

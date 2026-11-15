@@ -63,3 +63,16 @@ def test_rank_survives_non_numeric_scores():
     out = rank([bad, good], set(), False)
     assert [r["index"] for r in out] == [1, 0]
     assert out[1]["total"] == 0.0
+
+
+def test_batch_prompt_includes_exa_evidence(monkeypatch):
+    import idea_batch
+    seen = []
+    p = idea_batch.BatchProposer.__new__(idea_batch.BatchProposer)
+    p.heavy, p.seed_ideas = False, []
+    monkeypatch.setattr(p, "_json", lambda system, user: seen.append(user) or {})
+    monkeypatch.setattr(p, "_record", lambda *a: None)
+    ctx = {"champion": {"id": "exp_000"}, "history": [], "diagnosis_md": "", "tried": set(),
+           "outside": {"cutoff": "2026-10-01", "memory_for_prompt": [{"title": "EXA_MARKER"}]}}
+    p.propose(ctx)
+    assert seen and all("EXA_MARKER" in u for u in seen)
