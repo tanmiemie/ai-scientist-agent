@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Champion has coverage_in 0.758 (target 0.8) and good pooled skill (0.1778), but some groups show notable undercoverage, especially fastgpu_daily|hyperscaler_spot (above_q90 0.214, below_q10 0.179) and fastgpu_daily|neocloud_spot (above_q90 0.228, below_q10 0.163). Previous attempt to increase calibration granularity (series_id, exp_002) sharply reduced coverage, implying the existing group_by (instrument_class) is a tolerable level of pooling. In the champion, the product of gamma (0.5) and scale (0.01) controls the step size (0.005) for recalibration. No test of a lower step size (slower/steadier correction) or a higher one (faster, noisier) exists. It is unknown whether more aggressive or more conservative updates improve coverage or skill. -> Decreasing the recalibration step size (e.g., gamma to 0.25, holding scale at 0.01, so step = 0.0025) will reduce overcorrection noise and possibly improve interval coverage, particularly in groups that show too-high hit rates in the tails (fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot), potentially trading some responsiveness for better calibration and robust skill. Change: Reduce calibrate.gamma from 0.5 to 0.25 (step size is now 0.0025 from 0.005). DEV sweep of calibrate.gamma: 0.1->+0.2155, 0.25->+0.2359, 1.0->+0.0351; chose 0.25.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

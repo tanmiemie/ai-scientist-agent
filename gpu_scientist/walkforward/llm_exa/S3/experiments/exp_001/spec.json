@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "DEV: coverage_in = 0.456 (well under target 0.80), coverage_above_q90 = 0.418 (should be 0.10 if well calibrated), coverage_below_q10 = 0.126 (should be 0.10). All base models have weight 1 only for themselves (single drift model). -> The champion's quantile intervals are too narrow, dramatically under-covering (45.6% vs target 80%), indicating the drift model's uncertainty estimate is much too small. Enabling interval calibration with modest step size (gamma=0.5, scale=0.01) should quickly widen the intervals and bring empirical coverage closer to target, especially in series with extreme undercoverage. Pinball loss may temporarily worsen, but gross undercoverage should improve substantially. Change: Enable online interval calibration with gamma=0.5, scale=0.01, grouped by instrument_class. DEV sweep of calibrate.scale: 0.005->+0.2026, 0.01->+0.1786, 0.02->+0.0470, 0.03->-0.1176; chose 0.005.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "instrument_class"
+ }
+}

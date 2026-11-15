@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "In the champion, calibrate.group_by = instrument_class (6 groups). Coverage_in = 0.778, below 0.80 target. Attempts to change group_by to source_id (exp_003) or to make scale smaller/larger did not help, and results by series group show that most groups (except afhubbard|hyperscaler_spot, fastgpu_daily|hyperscaler_spot, and gpurentalprices|marketplace_ask) have above_q90 and below_q10 far from the 0.10 ideal. The group fastgpu_daily|neocloud_rate_card and gpurentalprices|neocloud_rate_card are large, at 990 and 1068 n, and their above_q90, below_q10 are both off from ideal calibration. Since series_id is even more granular than source_id, and intervals are appearing too narrow or off-calibrated in some series, try calibrating per series_id. -> Calibrating online interval width by series_id (the finest grouping) will allow the calibration step to fully adapt to local signal noise and drift conditions, particularly helpful for the groups with systematic miscalibration (e.g. gpurentalprices|neocloud_rate_card, fastgpu_daily|neocloud_rate_card). This finer adaptation should bring overall coverage_in closer to the 0.80 target (from 0.778), and reduce excess above_q90 or below_q10. Change: Change calibrate.group_by from instrument_class to series_id.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "series_id"
+ }
+}

@@ -48,7 +48,11 @@ def spec_summary(spec: dict) -> str:
     if comb["method"] != "single":
         txt += f" · {comb['method']}" + (f" η={comb['eta']} by {comb['group_by']}" if comb["method"] == "hedge" else "")
     cal = s["calibrate"]
-    txt += f" · calibrated by {cal['group_by']} (γ={cal['gamma']}, scale={cal['scale']})" if cal["enabled"] else " · no calibration"
+    if cal["enabled"]:
+        step = cal.get("step", float(cal.get("gamma", 0.5)) * float(cal.get("scale", 0.01)))
+        txt += f" · calibrated by {cal['group_by']} (step={step:g})"
+    else:
+        txt += " · no calibration"
     return txt
 
 

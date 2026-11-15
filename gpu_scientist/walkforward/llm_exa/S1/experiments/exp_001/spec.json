@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "The DEV coverage is very poor: overall coverage_in 0.463 (well below the 0.8 target), with coverage_above_q90 0.414 and coverage_below_q10 0.123\u2014most notably, on almost every group and horizon the 90% and 10% quantiles are hit far too often. The skill is positive but mediocre across groups, and mean_log_err_q50 is consistently positive (intervals too narrow and/or shifted up). -> Since the intervals are much too narrow (coverage below 0.5 everywhere), enabling online conformal recalibration should significantly increase coverage, particularly for outlying series and longer horizons, with only a modest or neutral effect on pinball loss (both too-narrow and too-wide intervals hurt loss). Change: Enable online recalibration using default gamma=0.5, scale=0.01, group_by=instrument_class.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

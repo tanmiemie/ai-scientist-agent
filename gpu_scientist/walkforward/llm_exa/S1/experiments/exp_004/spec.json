@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot have above_q90 at 0.262 and 0.262 and below_q10 at 0.202 and 0.163, respectively, showing consistent undercoverage. Coverage_in drops with more aggressive calibration (see exp_002, group_by=series_id; exp_003, smaller gamma), suggesting group granularity and step-size both matter. DEV coverage_in remains at 0.72, short of the 0.80 target. -> Calibrating by a coarser class\u2014gpu_model instead of instrument_class\u2014will increase coverage toward target 0.80, especially in groups with undercoverage (e.g., fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot), as recalibration will pool information across more series and smooth out local overconfidence. While skill might not improve, this will address persistent undercoverage in volatile groups. Change: Change calibrate.group_by from instrument_class to gpu_model.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "gpu_model"
+ }
+}

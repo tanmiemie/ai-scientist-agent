@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "DEV diagnosis: coverage_in 0.758 (target 0.8), with all series using only drift as a model and calibration grouped by instrument_class (champion). 'fastgpu_daily|hyperscaler_spot' and 'fastgpu_daily|neocloud_spot' have especially high above_q90 (0.214, 0.228) and below_q10 (0.179, 0.163), suggesting misspecified tails for these groupings. -> Calibrating by 'series_id' (rather than 'instrument_class') will improve coverage (closer to 0.8) and skill especially for series/groups with excessive tail hits (above_q90 > 0.18 or below_q10 > 0.16), for example fastgpu_daily|hyperscaler_spot and fastgpu_daily|neocloud_spot. This is because their error distributions may not align with the broader instrument_class aggregation, so series_id granularity should yield more accurate online conformal adjustment. Change: Set calibrate.group_by to 'series_id' instead of 'instrument_class'.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

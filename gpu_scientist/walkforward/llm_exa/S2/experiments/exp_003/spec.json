@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "coverage_in = 0.562 (target = 0.80), coverage above_q90 = 0.33, below_q10 = 0.11: intervals are too narrow across almost all groups. vol_tail.hi_clip is at the maximum (2.0), m=15 (raising m to 20 had no effect in exp_002). -> The champion's coverage shortfall persists despite wide intervals from vol_tail; direct post-hoc interval calibration can correct systematic undercoverage. Enabling calibration with calibrate.enabled=true and a standard step size should raise coverage toward the 0.80 target, likely improving especially in high-undercoverage series and groups. Change: Enable interval calibration with calibrate.enabled=true (default gamma=0.5, scale=0.01, group_by=instrument_class). DEV sweep of calibrate.gamma: 0.25->+0.2072, 0.5->+0.1672, 1.0->+0.0615, 2.0->-0.2645; chose 0.25.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "lookback": 30,
+    "m": 15,
+    "lo_clip": 0.5,
+    "hi_clip": 2.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}
