@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "The worst-miscalibrated group (afhubbard|hyperscaler_spot) has tight intervals\u2014coverage_above_q90 0.065, below_q10 0.055 (both under 0.10 target), skill 0.145\u2014suggesting overcorrection. Calibrate.group_by = instrument_class lumps it with other classes, possibly oversmoothing online adjustments. Attempts to increase or decrease calibration granularity or scale (exp_002-005) reduced skill or coverage. Calibrate.scale remains at 0.005 in the champion. -> Changing calibrate.group_by from instrument_class to source_class will better capture heterogeneity in calibration needs between hyperscaler_spot, neocloud_rate_card, neocloud_spot, marketplace_ask, etc. This may improve both skill and interval calibration, especially for groups with unique volatility patterns such as afhubbard|hyperscaler_spot (now undercovered) and gpurentalprices groups (now overcovered). Change: Change calibrate.group_by from instrument_class to source_class.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.005,
+  "group_by": "source_class"
+ }
+}

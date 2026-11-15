@@ -1,0 +1,25 @@
+{
+ "_hypothesis": "coverage_in = 0.562 (target = 0.80), above_q90 = 0.33, below_q10 = 0.11 (too narrow intervals). vol_tail is allowed m=10.0 (default 10.0, champion 15) and lo_clip/hi_clip (allowed up to 2.0, at max). The quickest way to further widen intervals across the board is to increase vol_tail.m. -> Increasing vol_tail.m from 15 to 20 will widen the predicted intervals, increasing coverage closer to the 0.80 target, especially reducing the excess above_q90 rate (currently 33%) and below_q10 rate (currently 11%) without degrading skill more than -0.005. Change: Increase vol_tail.m from 15 (champion) to 20. DEV sweep of models.1.params.m: 10->+0.1312, 20->+0.1314; chose 20.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "lookback": 30,
+    "m": 20,
+    "lo_clip": 0.5,
+    "hi_clip": 2.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

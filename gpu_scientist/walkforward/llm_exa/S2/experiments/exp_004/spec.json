@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "Enabling calibration with gamma=0.25, scale=0.01, group_by=instrument_class raised dev coverage_in to 0.772 (+0.21 vs champion) and dev skill_pooled to 0.207 (+0.076) but failed the holdout gate (holdout skill -0.019). -> High coverage gain with interval calibration is promising, but generalization was poor\u2014likely due to group_by being set to 'instrument_class' on a small number of large, heterogeneous groups with variable shift and coverage needs. Using 'series_id' should limit overfitting while adjusting intervals more locally, addressing the champion's worst coverage gaps (esp. for e.g. neocloud_rate_card A100/H100 series) and supporting heterogeneous dynamics observed in the diagnosis. Change: Set calibrate.group_by from instrument_class to series_id. DEV sweep of calibrate.group_by: series_id->+0.1517; chose series_id.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail",
+   "params": {
+    "window": 60,
+    "floor": 1.0,
+    "lookback": 30,
+    "m": 15,
+    "lo_clip": 0.5,
+    "hi_clip": 2.0
+   }
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.25,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

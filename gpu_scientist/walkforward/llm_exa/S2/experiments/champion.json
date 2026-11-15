@@ -1,0 +1,63 @@
+{
+ "id": "exp_004",
+ "spec": {
+  "_hypothesis": "Enabling calibration with gamma=0.25, scale=0.01, group_by=instrument_class raised dev coverage_in to 0.772 (+0.21 vs champion) and dev skill_pooled to 0.207 (+0.076) but failed the holdout gate (holdout skill -0.019). -> High coverage gain with interval calibration is promising, but generalization was poor\u2014likely due to group_by being set to 'instrument_class' on a small number of large, heterogeneous groups with variable shift and coverage needs. Using 'series_id' should limit overfitting while adjusting intervals more locally, addressing the champion's worst coverage gaps (esp. for e.g. neocloud_rate_card A100/H100 series) and supporting heterogeneous dynamics observed in the diagnosis. Change: Set calibrate.group_by from instrument_class to series_id. DEV sweep of calibrate.group_by: series_id->+0.1517; chose series_id.",
+  "models": [
+   {
+    "name": "drift"
+   },
+   {
+    "name": "vol_tail",
+    "params": {
+     "window": 60,
+     "floor": 1.0,
+     "lookback": 30,
+     "m": 15,
+     "lo_clip": 0.5,
+     "hi_clip": 2.0
+    }
+   }
+  ],
+  "combine": {
+   "method": "mean"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.25,
+   "scale": 0.01,
+   "group_by": "series_id"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.151748,
+  "skill_median_of_series": 0.13994,
+  "skill_geomean": 0.153792,
+  "coverage_in": 0.649886,
+  "coverage_above_q90": 0.25246,
+  "coverage_below_q10": 0.097653,
+  "share_series_positive": 0.888889,
+  "by_horizon": {
+   "1": 0.09721,
+   "3": 0.157045,
+   "7": 0.160186
+  },
+  "n_cells": 2642,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.195533,
+  "skill_median_of_series": 0.263381,
+  "skill_geomean": 0.158468,
+  "coverage_in": 0.733906,
+  "coverage_above_q90": 0.158798,
+  "coverage_below_q10": 0.107296,
+  "share_series_positive": 0.757576,
+  "by_horizon": {
+   "1": 0.16386,
+   "3": 0.241281,
+   "7": 0.178177
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}
