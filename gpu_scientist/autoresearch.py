@@ -105,6 +105,8 @@ def normalize(spec: dict) -> dict:
     cal = {**CAL_DEFAULTS, **s.get("calibrate", {})}
     if not cal["enabled"]:
         cal = {"enabled": False}
+    else:   # online.py only uses gamma * scale, so specs with the same product are the same model
+        cal = {"enabled": True, "step": round(float(cal["gamma"]) * float(cal["scale"]), 12), "group_by": cal["group_by"]}
     return {"models": models, "combine": comb, "calibrate": cal}
 
 
@@ -151,6 +153,7 @@ Ranges and defaults (a value outside a range is refused):
   combine.eta in (0, 10], default 2.0 (hedge only: how fast weights follow recent loss)
   calibrate.gamma in (0, 3], default 0.5 (step size of the online interval correction)
   calibrate.scale in (0, 0.05], default 0.01 (log-price units per step; 0.01 is about 1%)
+  Only the product gamma * scale matters: changing one while keeping the product is no change.
   calibrate.group_by / combine.group_by: one of """ + ", ".join(GROUPS) + """ (default instrument_class)
 Settings that have no effect (eta or group_by without hedge, calibration settings with enabled
 false, extra models under single) make the spec identical to the champion and are refused.
