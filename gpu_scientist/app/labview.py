@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 
 import pandas as pd
 import streamlit as st
@@ -10,6 +11,7 @@ import streamlit as st
 import autoresearch as AR
 import config as C
 import lab
+import pack
 import store
 import ui
 
@@ -27,18 +29,71 @@ MODEL_HELP = {
 }
 
 
+KEY_ENV = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}
+PROVIDER = {"openai": "OpenAI", "anthropic": "Anthropic"}
+
+
+@st.cache_resource
+def _pack_lock() -> threading.Lock:
+    return threading.Lock()
+
+
+def _fetch_pack():
+    with _pack_lock():
+        if store.pack_ready():
+            return
+        bar = st.progress(0.0, text="Downloading the data pack (about 285 MB)…")
+        try:
+            pack.fetch(lambda f: bar.progress(min(f, 1.0), text=f"Downloading the data pack… {f:.0%}"))
+        except Exception as e:  # noqa: BLE001
+            st.error(f"Could not fetch the data pack: {e}")
+            return
+        finally:
+            bar.empty()
+    st.rerun()
+
+
+def _api_key(provider: str) -> str | None:
+    """The server's key if it has one, else a key the visitor typed (kept in their session only)."""
+    env = KEY_ENV[provider]
+    return os.environ.get(env) or st.session_state.get(f"user_key_{provider}") or None
+
+
+def _key_inputs():
+    missing = [p for p in KEY_ENV if not os.environ.get(KEY_ENV[p])]
+    if not missing:
+        return
+    with st.popover("Use your own API key", icon=":material/key:"):
+        st.caption("For the LLM proposer. Kept in your browser session only, passed to the runs you start and never "
+                   "written to disk.")
+        for p in missing:
+            # Widget state is dropped on other pages, so the key lives under a plain session key.
+            st.text_input(f"{PROVIDER[p]} API key", type="password", key=f"_w_user_key_{p}",
+                          value=st.session_state.get(f"user_key_{p}", ""),
+                          on_change=lambda p=p: st.session_state.update({f"user_key_{p}": st.session_state[f"_w_user_key_{p}"]}))
+
+
 def _status_bar():
     ready = store.pack_ready()
+    if not ready and pack.downloadable() and os.environ.get("GPU_PACK_AUTO_DOWNLOAD"):
+        _fetch_pack()
     h = st.container(horizontal=True)
     with h:
         st.badge("data pack found" if ready else "data pack missing", color="green" if ready else "red",
                  icon=":material/database:", help=str(C.PACK))
-        for env, name in (("OPENAI_API_KEY", "OpenAI"), ("ANTHROPIC_API_KEY", "Anthropic")):
-            ok = bool(os.environ.get(env))
-            st.badge(f"{name} key {'set' if ok else 'not set'}", color="green" if ok else "gray", icon=":material/key:")
+        for provider in KEY_ENV:
+            src = "server" if os.environ.get(KEY_ENV[provider]) else "yours" if _api_key(provider) else None
+            st.badge(f"{PROVIDER[provider]} key {'set (' + src + ')' if src else 'not set'}",
+                     color="green" if src else "gray", icon=":material/key:")
+        _key_inputs()
     if not ready:
         st.warning(f"Runs need the data pack at `{C.PACK}` (or set `GPU_PACK`). You can still browse and design specs.")
-    return ready
+        if pack.downloadable() and st.button("Download the data pack (285 MB)", icon=":material/download:"):
+            _fetch_pack()
+    if lab.at_capacity():
+        st.info(f"{lab.MAX_RUNNING} jobs are running on this server, the most it allows at once. "
+                "New runs can start when one finishes.", icon=":material/hourglass_top:")
+    return ready and not lab.at_capacity()
 
 
 def _workspace() -> "store.Path | None":
@@ -173,10 +228,17 @@ def _designer(w, ready: bool):
             path = sp / f"{pd.Timestamp.now():%Y%m%d_%H%M%S}.json"
             path.write_text(json.dumps({"_hypothesis": hyp, **spec}, indent=1))
             args = ["run_experiment.py", "--spec", str(path), "--hypothesis", hyp] + (["--parent", champ["id"]] if champ else [])
-            lab.start("experiment", args, w, f"manual experiment in {w.name}")
-            st.toast("Experiment started", icon=":material/science:")
+            _start("experiment", args, w, f"manual experiment in {w.name}", None, "Experiment started", ":material/science:")
         with st.expander("Spec JSON"):
             st.json(spec)
+
+
+def _start(kind, args, w, title, extra_env, toast, icon):
+    try:
+        lab.start(kind, args, w, title, extra_env)
+        st.toast(toast, icon=icon)
+    except RuntimeError as e:
+        st.error(str(e))
 
 
 def _autoloop(w, ready: bool):
@@ -198,10 +260,10 @@ def _autoloop(w, ready: bool):
     seed = c6.selectbox("Seed spec", specs, index=specs.index(AR.SEED_SPEC.name) if AR.SEED_SPEC.name in specs else 0,
                         key="al_seed", disabled=has_champ, help="Only used when the workspace has no champion yet.")
     heavy = st.checkbox("Let the proposer use heavy pretrained models", key="al_heavy")
-    key_env = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}.get(provider or "")
-    missing_key = prop == "llm" and not os.environ.get(key_env)
+    key = _api_key(provider) if prop == "llm" else None
+    missing_key = prop == "llm" and not key
     if missing_key:
-        st.warning(f"{key_env} is not set in the app's environment; restart the app with it to use the LLM proposer.")
+        st.warning(f"No {PROVIDER[provider]} key: add yours with **Use your own API key** at the top of the page.")
     running = lab.busy(w)
     if running:
         st.caption("A job is already running in this workspace; wait for it or stop it below.")
@@ -213,8 +275,8 @@ def _autoloop(w, ready: bool):
             args += ["--provider", provider] + (["--model", model] if model else [])
         if heavy:
             args.append("--allow-heavy")
-        lab.start("autoresearch", args, w, f"{iters} iterations, {prop}{' ' + (model or provider) if prop == 'llm' else ''} in {w.name}")
-        st.toast("Autonomous run started", icon=":material/rocket_launch:")
+        _start("autoresearch", args, w, f"{iters} iterations, {prop}{' ' + (model or provider) if prop == 'llm' else ''} in {w.name}",
+               {KEY_ENV[provider]: key} if key else None, "Autonomous run started", ":material/rocket_launch:")
 
 
 def _walkforward(ready: bool):
@@ -226,17 +288,18 @@ def _walkforward(ready: bool):
     name = c3.text_input("Run name", value=f"{prop}_{pd.Timestamp.now():%m%d_%H%M}", key=f"wf_name_{prop}",
                          help="Saved as walkforward/app_<name>/ (git-ignored).")
     run = "app_" + lab.slug(name).replace("-", "_").removeprefix("app_")
-    missing_key = prop == "llm" and not os.environ.get("OPENAI_API_KEY")
+    key = _api_key("openai") if prop == "llm" else None
+    missing_key = prop == "llm" and not key
     if missing_key:
-        st.warning("OPENAI_API_KEY is not set in the app's environment.")
+        st.warning("No OpenAI key: add yours with **Use your own API key** at the top of the page.")
     exists = (C.ROOT / "walkforward" / run).exists()
     if exists:
         st.error("A run with this name already exists.")
     if st.button("Start walk-forward", type="primary", icon=":material/timeline:", key="wf_go",
                  disabled=not ready or missing_key or exists or not name):
-        lab.start("walkforward", ["walkforward.py", "--proposer", prop, "--iters", str(iters), "--run", run],
-                  None, f"walk-forward {run}")
-        st.toast("Walk-forward started", icon=":material/timeline:")
+        _start("walkforward", ["walkforward.py", "--proposer", prop, "--iters", str(iters), "--run", run],
+               None, f"walk-forward {run}", {"OPENAI_API_KEY": key} if key else None,
+               "Walk-forward started", ":material/timeline:")
 
 
 @st.fragment(run_every=2)

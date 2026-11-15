@@ -10,6 +10,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import threading
 import uuid
 from pathlib import Path
 
@@ -56,9 +57,24 @@ def busy(workspace: Path) -> bool:
     return any(j["running"] and j.get("workspace") == str(workspace) for j in jobs())
 
 
+MAX_RUNNING = int(os.environ.get("GPU_LAB_MAX_JOBS", "0"))   # 0 = no limit; set on shared hosts
+_START_LOCK = threading.Lock()   # sessions share this process: check-then-register must be atomic
+
+
+def at_capacity() -> bool:
+    return MAX_RUNNING > 0 and sum(j["running"] for j in jobs()) >= MAX_RUNNING
+
+
 def start(kind: str, args: list[str], workspace: Path | None, title: str, extra_env: dict | None = None) -> str:
+    with _START_LOCK:
+        return _start(kind, args, workspace, title, extra_env)
+
+
+def _start(kind: str, args: list[str], workspace: Path | None, title: str, extra_env: dict | None) -> str:
     if workspace is not None and busy(workspace):
         raise RuntimeError(f"a job is already running in {workspace.name}")
+    if at_capacity():
+        raise RuntimeError(f"{MAX_RUNNING} jobs are already running on this server; try again when one finishes")
     JOBS.mkdir(parents=True, exist_ok=True)
     jid = f"{dt.datetime.now():%Y%m%d-%H%M%S}-{slug(kind)}-{uuid.uuid4().hex[:6]}"
     log = JOBS / f"{jid}.log"

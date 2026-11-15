@@ -49,6 +49,22 @@ submission) and, in **Lab**, design an experiment by hand, launch `autoresearch.
 the log live. Lab runs go to `experiments_app/` and `walkforward/app_*/` (git-ignored), never the tracked ledgers.
 The results pages work without the data pack; Lab needs it.
 
+### Public deploy on Streamlit Community Cloud
+
+At [share.streamlit.io](https://share.streamlit.io), **Create app → Deploy a public app from GitHub**:
+
+- Repository `tanmiemie/ai-scientist-agent`, branch `devin/gpu-scientist-handoff`, main file `gpu_scientist/app/main.py`
+- Advanced settings → Python 3.12, and Secrets:
+  ```toml
+  GPU_PACK_AUTO_DOWNLOAD = "1"   # first visit to Lab fetches the data pack from the release (~1 min)
+  GPU_LAB_MAX_JOBS = "2"         # at most 2 runs at once on the shared server
+  ```
+
+Leave `OPENAI_API_KEY` out so strangers can't spend your credits: visitors who want the LLM proposer paste their own
+key under **Use your own API key** (kept in their session, passed only to their runs). The rule-based proposer needs
+no key. The server's disk is wiped when the app restarts or sleeps, so Lab workspaces are temporary. Without a
+pack, Lab also shows a **Download the data pack** button. A run peaks at about 170 MB of memory.
+
 ## Autonomous loop (no human in it)
 
 `autoresearch.py` closes the research loop. Each iteration it reads the ledger (with lessons) and the
