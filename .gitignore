@@ -10,3 +10,6 @@ gpu_scientist/experiments*/**/*.csv
 gpu_scientist/experiments*/**/*.csv.gz
 gpu_scientist/walkforward/**/report_*.json
 gpu_scientist/replay/
+gpu_scientist/experiments_app/
+# Walk-forward runs launched from the app
+gpu_scientist/walkforward/app_*/
