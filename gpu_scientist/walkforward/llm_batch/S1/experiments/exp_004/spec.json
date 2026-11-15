@@ -1,0 +1,26 @@
+{
+ "_hypothesis": "Skill collapses and y_above_q50 goes to extreme (0.056) for provider-loss cases (prov_bucket='fewer', n=18). -> Provider-count shifts are poorly captured by drift; using the composition model's provider-aware mechanism will lessen pronounced under-prediction after such changes. Change: Switch to using the composition model (defaults) with calibration per instrument_class.",
+ "models": [
+  {
+   "name": "composition",
+   "window": 60,
+   "k_up": 1.0,
+   "k_dn": 1.0,
+   "floor": 1.0,
+   "k": 1,
+   "beta": 0.25,
+   "rho": 0.3,
+   "thresh": 0.05,
+   "k_rev": 3
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

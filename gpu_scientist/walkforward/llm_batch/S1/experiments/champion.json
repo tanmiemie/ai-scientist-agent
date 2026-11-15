@@ -1,0 +1,52 @@
+{
+ "id": "exp_001",
+ "spec": {
+  "_hypothesis": "Coverage_in is 0.463 (well below 0.80), and afhubbard|hyperscaler_spot has y_above_q50 0.26 and coverage_above_q90 = 0.151. Coverage far too low, with uneven miss by group. -> Per-instrument_class calibration will let each major group adjust its intervals independently, better matching coverage to local volatility and error. Change: Set calibrate.enabled=true and calibrate.group_by=instrument_class; use (gamma=0.5, scale=0.01), the default.",
+  "models": [
+   {
+    "name": "drift"
+   }
+  ],
+  "combine": {
+   "method": "single"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.01,
+   "group_by": "instrument_class"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.177809,
+  "skill_median_of_series": 0.145108,
+  "skill_geomean": -0.113369,
+  "coverage_in": 0.758454,
+  "coverage_above_q90": 0.15157,
+  "coverage_below_q10": 0.089976,
+  "share_series_positive": 0.638889,
+  "by_horizon": {
+   "1": 0.040453,
+   "3": 0.044111,
+   "7": 0.250451
+  },
+  "n_cells": 1656,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.144176,
+  "skill_median_of_series": 0.110077,
+  "skill_geomean": 0.00427,
+  "coverage_in": 0.841785,
+  "coverage_above_q90": 0.063895,
+  "coverage_below_q10": 0.09432,
+  "share_series_positive": 0.666667,
+  "by_horizon": {
+   "1": 0.066002,
+   "3": 0.059346,
+   "7": 0.224315
+  },
+  "n_cells": 986,
+  "n_problems": 0
+ }
+}

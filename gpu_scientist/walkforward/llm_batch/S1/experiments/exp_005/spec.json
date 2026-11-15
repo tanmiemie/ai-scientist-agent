@@ -1,0 +1,17 @@
+{
+ "_hypothesis": "Coverage_in at 0.758 overall, but serious series-by-series miscoverage (see worst series table) suggests that calibrate.group_by=series_id has not been tried and can correct persistent series-specific miss. -> Per-series calibration gives each time series power to adjust intervals independently, fixing systematic local errors that a coarser group misses. Change: Switch calibrate.group_by from instrument_class to series_id.",
+ "models": [
+  {
+   "name": "drift"
+  }
+ ],
+ "combine": {
+  "method": "single"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

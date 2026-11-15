@@ -1,0 +1,73 @@
+{
+ "_source": "Hypothesis menu of RESEARCH_PROTOCOL.md, one entry per bullet. Starting points for the batch proposer (idea_batch.py), not a script.",
+ "ideas": [
+  {
+   "id": "momentum_after_change",
+   "title": "Momentum after a change",
+   "diagnosis_signal": "misses by days since the last price change: truth above q50 far more often 0-1 days after a change",
+   "change": "shift the median or upper edge up when the series changed in the last 1-2 days",
+   "tools": [
+    "models: momentum (beta, k, k_up, k_dn, window, floor)"
+   ]
+  },
+  {
+   "id": "per_series_calibration",
+   "title": "Per-series calibration or volatility-scaled offsets",
+   "diagnosis_signal": "interval misses concentrated in a few series or groups; coverage far from 0.80 by group",
+   "change": "calibrate per smaller group, or scale interval offsets by each series' own volatility (exp_002 lowered geomean)",
+   "tools": [
+    "calibrate.group_by",
+    "calibrate.gamma",
+    "calibrate.scale",
+    "models: vol_tail (per-series volatility-aware band, lookback, m)"
+   ]
+  },
+  {
+   "id": "group_specific_models",
+   "title": "Group-specific models",
+   "diagnosis_signal": "the per-model skill table shows which base model wins in which group",
+   "change": "combine base models with weights that follow recent loss within each group",
+   "tools": [
+    "combine.method=hedge",
+    "combine.group_by",
+    "combine.eta"
+   ]
+  },
+  {
+   "id": "leading_signals",
+   "title": "Leading signals from other collectors",
+   "diagnosis_signal": "candidate leading signals: the same GPU in another collector moving 1-4 days earlier",
+   "change": "use the leader series' recent move to shift the forecast; check the correlation is not driven by a handful of steps",
+   "tools": [
+    "models: leader"
+   ]
+  },
+  {
+   "id": "provider_mix",
+   "title": "Provider-mix effects",
+   "diagnosis_signal": "misses by provider-count changes: medians move when providers enter or leave",
+   "change": "react to changes in ctx.raw().n_providers",
+   "tools": [
+    "models: composition (rho, thresh, k_rev: partial reversion after a provider-count change)"
+   ]
+  },
+  {
+   "id": "median_trend",
+   "title": "Trend in the median",
+   "diagnosis_signal": "bias: the median is systematically below or above the truth",
+   "change": "shift the median by a share of the recent mean log change",
+   "tools": [
+    "models: drift, trend_tail (median_shift)"
+   ]
+  },
+  {
+   "id": "pooled_quantile_regression",
+   "title": "Pooled quantile regression",
+   "diagnosis_signal": "misses depend on days since change, recent volatility, class and horizon in a shared way",
+   "change": "a pooled quantile-regression model across series with those features, trained only on rows before the origin",
+   "tools": [
+    "needs a new model file; not available to a spec-only proposer"
+   ]
+  }
+ ]
+}

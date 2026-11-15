@@ -1,0 +1,23 @@
+{
+ "_hypothesis": "For 1343 dev cells with 0-1 days since last price change: skill is 0.06 (much higher loss), y_above_q50 is 0.611 (strong under-prediction), and above_q90 is 0.557 (far too often under the true price after changes). -> Adding a momentum model with higher beta should better react to sharp moves immediately after price changes, reducing under-estimation spikes in these cells. Change: Add a high-beta momentum model to the ensemble (combine: mean), to amplify short-run trend-following right after changes.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "window": 60,
+   "beta": 1.0,
+   "k": 1,
+   "k_up": 1.0,
+   "k_dn": 1.0,
+   "floor": 1.0
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": false
+ }
+}

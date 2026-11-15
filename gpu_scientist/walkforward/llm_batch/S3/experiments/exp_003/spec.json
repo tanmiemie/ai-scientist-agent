@@ -1,0 +1,27 @@
+{
+ "_hypothesis": "afhubbard|hyperscaler_spot has worst skill (-1.096) and momentum underperforms drift (0.041 vs 0.174), so single shared weights likely penalize this group. -> Group-level model weighting (hedge by source_class) will downweight momentum where it fails, notably improving afhubbard|hyperscaler_spot skill, and may help others. Change: Switch combine.method to hedge and group_by to source_class, eta 2.0.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "params": {
+    "window": 60,
+    "beta": 0.5,
+    "k": 1
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

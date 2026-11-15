@@ -1,0 +1,63 @@
+{
+ "id": "exp_003",
+ "spec": {
+  "_hypothesis": "At 7-day horizon: y_above_q50 is 0.577 (truth above median too often), above_q90 is 0.364 (should be ~0.10 if calibrated); group coverage (in) is only 0.63 (target 0.80); dev_geomean skill 0.1687 is much higher than pooled skill 0.1642, suggesting interval width/placement gaps by series. -> Setting calibrate.enabled=true with group_by=series_id will directly tune coverage in each series, potentially bringing aggregate coverage closer to the 0.80 target and lowering excessive upper tail misses on hard series/horizons. Change: Enable calibration and group it by series_id with default gamma and scale. DEV sweep of calibrate.scale: 0.005->+0.1744, 0.01->+0.1734, 0.02->+0.1669; chose 0.005.",
+  "models": [
+   {
+    "name": "drift"
+   },
+   {
+    "name": "momentum",
+    "window": 60,
+    "beta": 1.0,
+    "k": 1,
+    "k_up": 1.0,
+    "k_dn": 1.0,
+    "floor": 1.0
+   }
+  ],
+  "combine": {
+   "method": "hedge",
+   "eta": 2.0,
+   "group_by": "instrument_class"
+  },
+  "calibrate": {
+   "enabled": true,
+   "gamma": 0.5,
+   "scale": 0.005,
+   "group_by": "series_id"
+  }
+ },
+ "dev": {
+  "skill_pooled": 0.174452,
+  "skill_median_of_series": 0.168241,
+  "skill_geomean": 0.170234,
+  "coverage_in": 0.648372,
+  "coverage_above_q90": 0.220288,
+  "coverage_below_q10": 0.13134,
+  "share_series_positive": 0.972222,
+  "by_horizon": {
+   "1": 0.085034,
+   "3": 0.177315,
+   "7": 0.191198
+  },
+  "n_cells": 2642,
+  "n_problems": 0
+ },
+ "holdout": {
+  "skill_pooled": 0.215646,
+  "skill_median_of_series": 0.213738,
+  "skill_geomean": 0.195875,
+  "coverage_in": 0.752504,
+  "coverage_above_q90": 0.125894,
+  "coverage_below_q10": 0.121602,
+  "share_series_positive": 0.787879,
+  "by_horizon": {
+   "1": 0.168513,
+   "3": 0.235343,
+   "7": 0.215895
+  },
+  "n_cells": 699,
+  "n_problems": 0
+ }
+}

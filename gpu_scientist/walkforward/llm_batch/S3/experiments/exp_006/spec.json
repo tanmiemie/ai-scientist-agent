@@ -1,0 +1,27 @@
+{
+ "_hypothesis": "In fastgpu_daily|hyperscaler_spot, y_above_q50=0.228 and below_q10=0.289: systematic underprediction, worst 0-1 days after price change (y_above_q50=0.596, below_q10=0.152). -> The 60-day momentum window is too slow for abrupt changes, causing persistent low-side interval misses after jumps. A more aggressive post-change momentum (higher beta) will better capture these fast moves. Change: Increase momentum.beta from 0.5 to 1.0 (higher post-change weight).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "params": {
+    "window": 60,
+    "beta": 1.0,
+    "k": 1
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "_hypothesis": "Worst series see infinite or huge negative skill and y_above_q50 near zero (e.g., neocloud_spot/B200, various A100/L40S); but exp_005 with series_id-wide calibration collapsed coverage. -> Introduce vol_tail alongside drift, then hedge by instrument_class\u2014lets models attend to group volatility patterns without pure localization to each series, which previously overfit. Change: Add vol_tail to drift, combine with hedge (group_by=instrument_class, eta=2.0).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "vol_tail",
+   "window": 60,
+   "floor": 1.0,
+   "lookback": 30,
+   "m": 10.0,
+   "lo_clip": 0.5,
+   "hi_clip": 2.0
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "instrument_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}

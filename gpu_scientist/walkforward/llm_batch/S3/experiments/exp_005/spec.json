@@ -1,0 +1,27 @@
+{
+ "_hypothesis": "In fastgpu_daily|hyperscaler_spot, y_above_q50 is only 0.228 and below_q10 is 0.289\u2014far too many low quantile misses, especially just after price changes (dsc_bucket 0-1: y_above_q50 0.596, below_q10 0.152). -> Shortening the momentum window will make it more sensitive to recent jumps, catching up after price changes, likely reducing below_q10 and raising q50 hits in fastgpu_daily|hyperscaler_spot and early horizons. Change: Reduce the momentum window from 60 to 20 days (other params unchanged).",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "params": {
+    "window": 20,
+    "beta": 0.5,
+    "k": 1
+   }
+  }
+ ],
+ "combine": {
+  "method": "hedge",
+  "eta": 2.0,
+  "group_by": "source_class"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "series_id"
+ }
+}

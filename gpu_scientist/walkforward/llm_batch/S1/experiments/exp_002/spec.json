@@ -1,0 +1,26 @@
+{
+ "_hypothesis": "Diagnosis: after price change, y_above_q50=0.596 (truth above median far too often). -> Combining drift and momentum with mean will upweight forecasts after changes, counteracting post-change underprediction. Calibration then adapts to group coverage, so any increase in post-change accuracy should reflect in dev skill. Change: Add momentum (default params) as second model, combine with drift by mean.",
+ "models": [
+  {
+   "name": "drift"
+  },
+  {
+   "name": "momentum",
+   "window": 60,
+   "beta": 0.5,
+   "k": 1,
+   "k_up": 1.0,
+   "k_dn": 1.0,
+   "floor": 1.0
+  }
+ ],
+ "combine": {
+  "method": "mean"
+ },
+ "calibrate": {
+  "enabled": true,
+  "gamma": 0.5,
+  "scale": 0.01,
+  "group_by": "instrument_class"
+ }
+}
