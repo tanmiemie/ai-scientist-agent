@@ -501,7 +501,7 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
             continue
         if gates:
             _coder().copy_attempts(i + 1, rec["id"])     # every attempt stays with the experiment
-            if not rec["accepted"]:
+            if not rec["accepted"] and isinstance(prop.get("new_model"), dict):
                 _coder().discard(prop["new_model"]["name"])   # only accepted models stay in <experiments>/models
         lesson = proposer.lesson(rec, ctx)
         ledger.lesson(rec["id"], lesson)
