@@ -1,0 +1,10 @@
+{
+ "file": "forecast_2026-11-06.csv",
+ "champion": "exp_007",
+ "rows": 111,
+ "created_utc": "2026-11-15T17:24:18+00:00",
+ "pack_version": "v0.1.1-handover (data cutoff 2026-11-06 23:59:59 UTC; frozen 2026-11-09)",
+ "series_sha256": "c0c0c3c7883dda942d5485aa11dfbe817731390eda8f314346f9484dac21c5cd",
+ "code_commit": "f03bc2d6eced9ef0496613df2d4a3d45a5eb88bd",
+ "forecast_sha256": "27c15a50047705b41cf9cd8b1319ca0f404c1d43bdf4ea4c4acd5222633212fb"
+}
