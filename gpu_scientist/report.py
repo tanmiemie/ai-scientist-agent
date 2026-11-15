@@ -117,6 +117,25 @@ def build(exp_dir: Path | None = None) -> Path:
         for r in rejected:
             L.append(f"- **{r['id']}**: {(r.get('lesson') or r.get('reason') or '').strip()}")
         L.append("")
+    log = exp_dir / "autoresearch_log.jsonl"
+    if log.exists():
+        ents = [json.loads(l) for l in log.read_text().splitlines() if l.strip()]
+        ents = [e for e in ents if e.get("exa")]
+        if ents:
+            L += ["## Outside evidence (Exa)", "",
+                  "Each iteration searched the web with Exa before proposing, for a method and for dated "
+                  "market news published on or before the run's cutoff. What the proposer said it used:", "",
+                  "| experiment | kept | source the proposer relied on | found this turn |", "|---|---|---|---|"]
+            for e in ents:
+                found = e["exa"].get("found_this_turn", [])
+                kinds = ", ".join(f"{k} {sum(r['kind'] == k for r in found)}" for k in ("method", "market"))
+                L.append(f"| {e.get('id')} | {'yes' if e.get('accepted') else 'no'} | "
+                         f"{e.get('source_url') or 'none'} | {kinds} |")
+            mem = exp_dir / "evidence.jsonl"
+            if mem.exists():
+                n = sum(1 for l in mem.read_text().splitlines() if l.strip())
+                L += ["", f"Evidence memory: {n} dated sources in `{exp_dir.name}/evidence.jsonl`."]
+            L.append("")
     L += ["## Champion by horizon", "", "| horizon | DEV skill | HOLDOUT skill |", "|---|---|---|"]
     for k in ("1", "3", "7"):
         L.append(f"| {k} day | {_f(champ['dev']['by_horizon'].get(k))} | {_f(champ['holdout']['by_horizon'].get(k))} |")

@@ -115,6 +115,7 @@ def spec_hash(spec: dict) -> str:
 
 
 # ---------------------------------------------------------------- context the proposer sees
+USE_EXA = False    # set by --exa: outside evidence from exa_scout.py each iteration
 NO_MEMORY = False  # set by --no-memory: the proposer sees no past hypotheses or lessons (ablation)
 
 
@@ -167,8 +168,13 @@ Reply with JSON only:
 {"observation": "<the number(s) you act on>", "hypothesis": "<what you expect and why>",
  "change": "<the one change vs the champion>", "expected_effect": "<which groups/metric should move>",
  "spec": {...},
+ "source_url": <url or null>,
  "sweep": {"param": "<dotted path in spec, e.g. models.0.params.window or calibrate.gamma>",
            "values": [<2 to 5 values>]}}
+If OUTSIDE EVIDENCE (web results found by Exa, dated on or before this run's cutoff) is given, you may
+build on it: a method to borrow, or market context that explains a pattern in the diagnosis. Put the URL
+you relied on in "source_url" (or null if none), and still express the idea with the allowed models
+and parameters. Never treat a web claim as a result: the experiment tests it.
 "sweep" is optional: use it when the right value of one numeric parameter is unknown. Each value is
 scored on DEV only; only the best one is run as the experiment and meets the HOLDOUT gate."""
 
@@ -211,6 +217,10 @@ class LLMProposer:
         user = json.dumps({"allowed_models_and_default_params": allowed_models(self.heavy),
                            "champion": ctx["champion"], "history_most_recent_last": ctx["history"]}, indent=1)
         user += "\n\nDIAGNOSIS OF THE CHAMPION (DEV):\n" + ctx["diagnosis_md"]
+        if ctx.get("outside"):
+            o = ctx["outside"]
+            user += (f"\n\nOUTSIDE EVIDENCE (Exa, published on or before {o['cutoff']}; newest found this turn, "
+                     f"then the evidence memory):\n" + json.dumps(o["memory_for_prompt"], indent=1))
         if feedback:
             user += f"\n\nYour previous proposal was refused: {feedback}\nPropose a different, valid experiment."
         txt = self._chat(SYSTEM, user, as_json=True)
@@ -370,6 +380,12 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
     rejects = 0
     for i in range(iters):
         ctx = context()
+        if USE_EXA:
+            import exa_scout
+            ctx["outside"] = exa_scout.scout(ctx, i + 1)
+            o = ctx["outside"]
+            print(f"[iter {i + 1}] Exa: {len(o['found_this_turn'])} results, {o['new_in_memory']} new in memory"
+                  + (f", errors {o['errors']}" if o["errors"] else ""))
         prop, feedback, refused = {}, None, []
         for _ in range(3):
             prop = proposer.propose(ctx, feedback) or {}
@@ -413,7 +429,10 @@ def loop(proposer, iters: int, max_rejects: int, seed: str | None, heavy: bool):
         lesson = proposer.lesson(rec, ctx)
         ledger.lesson(rec["id"], lesson)
         with open(log, "a") as f:
+            exa_log = ({k: ctx["outside"][k] for k in ("cutoff", "queries", "found_this_turn", "errors")}
+                       if ctx.get("outside") else None)
             f.write(json.dumps({"id": rec["id"], "proposal": prop, "refused_before": refused, "sweep": sweep_rows,
+                                "exa": exa_log, "source_url": prop.get("source_url"),
                                 "accepted": rec["accepted"],
                                 "lesson": lesson, "llm_calls": getattr(proposer, "calls", [])}, default=str) + "\n")
         proposer.calls = []
@@ -441,11 +460,14 @@ def main():
     ap.add_argument("--model", default=None)
     ap.add_argument("--seed", default=None, help=f"spec used if the ledger has no champion (default {SEED_SPEC.name})")
     ap.add_argument("--allow-heavy", action="store_true", help="let the proposer use chronos/chronos2/timestral")
+    ap.add_argument("--exa", action="store_true",
+                    help="each iteration, search the web with Exa (EXA_API_KEY) for methods and dated market news")
     ap.add_argument("--no-memory", action="store_true",
                     help="ablation: hide past hypotheses and lessons from the proposer")
     a = ap.parse_args()
-    global NO_MEMORY
+    global NO_MEMORY, USE_EXA
     NO_MEMORY = a.no_memory
+    USE_EXA = a.exa
     prop = (LLMProposer(a.provider, a.model, a.allow_heavy) if a.proposer == "llm"
             else HeuristicProposer(a.allow_heavy))
     loop(prop, a.iters, a.max_rejects, a.seed, a.allow_heavy)

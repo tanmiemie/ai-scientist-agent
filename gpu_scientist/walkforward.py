@@ -55,6 +55,7 @@ def main():
                     help="starting spec; default is the starter kit's drift so every improvement is found by the loop")
     ap.add_argument("--run", default=None)
     ap.add_argument("--no-memory", action="store_true", help="ablation: proposer sees no past lessons")
+    ap.add_argument("--exa", action="store_true", help="outside evidence from Exa each iteration")
     a = ap.parse_args()
 
     run = a.run or f"{a.proposer}_{dt.datetime.now():%Y%m%d_%H%M}"
@@ -73,6 +74,8 @@ def main():
             cmd += ["--model", a.model]
         if a.no_memory:
             cmd += ["--no-memory"]
+        if a.exa:
+            cmd += ["--exa"]
         print(f"\n### {sl['name']}: dev {sl['dev']} gate {sl['gate']} test {sl['test']}")
         subprocess.run(cmd, check=True, env=env, cwd=C.ROOT)
         cache = {}

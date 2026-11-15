@@ -1,0 +1,33 @@
+{
+ "n_pairs": 466,
+ "n_series": 20,
+ "gpus": [
+  "A100",
+  "B200",
+  "H100",
+  "H200"
+ ],
+ "share_by_index_state": {
+  "down": {
+   "down": 0.088,
+   "flat": 0.312,
+   "up": 0.6
+  },
+  "flat": {
+   "down": 0.279,
+   "flat": 0.284,
+   "up": 0.438
+  },
+  "up": {
+   "down": 0.157,
+   "flat": 0.238,
+   "up": 0.605
+  }
+ },
+ "count_by_index_state": {
+  "flat": 201,
+  "up": 185,
+  "down": 80
+ },
+ "spearman_index7d_vs_fwd7d": 0.092
+}
