@@ -30,6 +30,7 @@ MODEL_HELP = {
 
 
 KEY_ENV = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}
+PROVIDER = {"openai": "OpenAI", "anthropic": "Anthropic"}
 
 
 @st.cache_resource
@@ -66,7 +67,7 @@ def _key_inputs():
         st.caption("For the LLM proposer. Kept in your browser session only, passed to the runs you start and never "
                    "written to disk.")
         for p in missing:
-            st.text_input(f"{p.capitalize()} API key", type="password", key=f"user_key_{p}")
+            st.text_input(f"{PROVIDER[p]} API key", type="password", key=f"user_key_{p}")
 
 
 def _status_bar():
@@ -79,7 +80,7 @@ def _status_bar():
                  icon=":material/database:", help=str(C.PACK))
         for provider in KEY_ENV:
             src = "server" if os.environ.get(KEY_ENV[provider]) else "yours" if _api_key(provider) else None
-            st.badge(f"{provider.capitalize()} key {'set (' + src + ')' if src else 'not set'}",
+            st.badge(f"{PROVIDER[provider]} key {'set (' + src + ')' if src else 'not set'}",
                      color="green" if src else "gray", icon=":material/key:")
         _key_inputs()
     if not ready:
@@ -259,7 +260,7 @@ def _autoloop(w, ready: bool):
     key = _api_key(provider) if prop == "llm" else None
     missing_key = prop == "llm" and not key
     if missing_key:
-        st.warning(f"No {provider.capitalize()} key: add yours with **Use your own API key** at the top of the page.")
+        st.warning(f"No {PROVIDER[provider]} key: add yours with **Use your own API key** at the top of the page.")
     running = lab.busy(w)
     if running:
         st.caption("A job is already running in this workspace; wait for it or stop it below.")
